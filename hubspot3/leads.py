@@ -64,17 +64,17 @@ MAX_BATCH = 100
 
 
 class LeadsClient(BaseClient):
-    """
+    '''
     The hubspot3 Leads client uses the _make_request method to call the API for data.
     It returns a python object translated from the json return
-    """
+    '''
 
     def __init__(self, *args, **kwargs):
         super(LeadsClient, self).__init__(*args, **kwargs)
         self.log = logging_helper.get_log('hapi.leads')
 
     def camelcase_search_options(self, options):
-        """change all underscored variants back to what the API is expecting"""
+        '''change all underscored variants back to what the API is expecting'''
         new_options = {}
         for key in options:
             value = options[key]
@@ -95,7 +95,7 @@ class LeadsClient(BaseClient):
         return self.get_leads(guid, **options)[0]
 
     def get_leads(self, *guids, **options):
-        """Supports all the search parameters in the API as well as python underscored variants"""
+        '''Supports all the search parameters in the API as well as python underscored variants'''
         original_options = options
         options = self.camelcase_search_options(options.copy())
         params = {}
@@ -118,13 +118,13 @@ class LeadsClient(BaseClient):
         params = {}
         for key in options:
             params[key] = options[key]
-        """ Set guid to -1 as default for not finding a user """
+        ''' Set guid to -1 as default for not finding a user '''
         lead = {'guid': '-1'}
-        """ wrap lead call so that it doesn't error out when not finding a lead """
+        ''' wrap lead call so that it doesn't error out when not finding a lead '''
         try:
             lead = self._call('lead/{}'.format(cur_guid), params, **options)
         except:
-            """ no lead here """
+            ''' no lead here '''
         return lead
 
     def update_lead(self, guid, update_data=None, **options):

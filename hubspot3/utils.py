@@ -17,7 +17,7 @@ def get_log(name):
 
 
 def auth_checker(access_token):
-    # Do a simple api request using the access token
+    '''Do a simple api request using the access token'''
     url = (
         '{}/contacts/v1/lists/all/contacts/all?count=1&offset=0&access_token={}'.format(
             BASE_URL,
@@ -29,7 +29,7 @@ def auth_checker(access_token):
 
 
 def refresh_access_token(refresh_token, client_id):
-    # Refreshes an OAuth access token
+    '''Refreshes an OAuth access token'''
     payload = 'refresh_token={}&client_id={}&grant_type=refresh_token'.format(
         refresh_token,
         client_id

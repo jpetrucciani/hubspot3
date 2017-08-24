@@ -4,27 +4,28 @@ PROSPECTS_API_VERSION = 'v1'
 
 
 class ProspectsClient(BaseClient):
-    """ Python client for the HubSpot Prospects API.
+    '''
+    Python client for the HubSpot Prospects API.
 
     This client provides convenience methods for the HubSpot Prospects API.
     It is a work in progress, and contributions are welcome.
 
     Questions, comments, etc: http://docs.hubapi.com/wiki/Discussion_Group.
-
-    """
+    '''
 
     def _get_path(self, method):
+        '''returns the given path for the api call'''
         return 'prospects/{}/{}'.format(PROSPECTS_API_VERSION, method)
 
     def get_prospects(self, offset=None, orgoffset=None, limit=None):
-        """ Return the prospects for the current API key.
+        '''
+        Return the prospects for the current API key.
 
         Optionally start the result list at the given offset.
 
         Each member of the return list is a prospect element containing
         organizational information such as name and location.
-
-        """
+        '''
         params = {}
         if limit:
             params['count'] = limit
@@ -36,22 +37,22 @@ class ProspectsClient(BaseClient):
         return self._call('timeline', params)
 
     def get_company(self, company_slug):
-        # Return the specific named organization for the given API key, if we find a match.
+        '''Return the specific named organization for the given API key, if we find a match.'''
         return self._call('timeline/{}'.format(company_slug))
 
     def get_options_for_query(self, query):
-        # This method allows for discovery of prospects with partial names.
+        '''This method allows for discovery of prospects with partial names.'''
         return self._call('typeahead/', {'q': query})
 
     def search_prospects(self, search_type, query, offset=None, orgoffset=None):
-        """ Supports doing a search for prospects by city, reion, or country.
+        '''
+        Supports doing a search for prospects by city, reion, or country.
 
         search_type should be one of 'city' 'region' 'country'.
 
         This method is intended to be called with one of the outputs from the
         get_options_for_query method above.
-
-        """
+        '''
 
         params = {'q': query}
         if offset and orgoffset:
@@ -61,11 +62,11 @@ class ProspectsClient(BaseClient):
         return self._call('search/{}'.format(search_type, params))
 
     def get_hidden_prospects(self):
-        # Return the list of prospects hidden by the customer (or this API), if any.
+        '''Return the list of prospects hidden by the customer (or this API), if any.'''
         return self._call('filters')
 
     def hide_prospect(self, company_name):
-        # Hides the given prospect from the user interface.
+        '''Hides the given prospect from the user interface.'''
         return self._call(
             'filters',
             data=('organization={}'.format(company_name)),
@@ -74,5 +75,5 @@ class ProspectsClient(BaseClient):
         )
 
     def unhide_prospect(self, company_name):
-        # Un-hides, i.e. displays, the given prospect in the user interface.
+        '''Un-hides, i.e. displays, the given prospect in the user interface.'''
         return self._call('filters', data={'organization': company_name}, method="DELETE")

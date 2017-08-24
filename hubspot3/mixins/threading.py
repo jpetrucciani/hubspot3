@@ -40,7 +40,7 @@ class Hubspot3ThreadedError(ValueError):
 
 
 class PyCurlMixin(object):
-    """
+    '''
     PyCurlMixin relies on PyCurl, which is a library around libcurl which enables efficient
     multi-threaded requests.  Use this mixin when you want to be able to execute multiple
     API calls at once, instead of in sequence.
@@ -56,7 +56,7 @@ class PyCurlMixin(object):
     The results object will then return a list of dicts, containing the response to your calls
     in the order they were called. Dicts have keys: data, code, and
     (if something went wrong) exception.
-    """
+    '''
 
     def _call(self, subpath, params=None, method='GET', data=None, doseq=False, **options):
         opts = self.options.copy()
@@ -103,10 +103,10 @@ class PyCurlMixin(object):
         return c
 
     def process_queue(self):
-        """
+        '''
         Processes all API calls since last invocation, returning a list of data
         in the order the API calls were created
-        """
+        '''
         m = pycurl.CurlMulti()
         m.handles = []
 

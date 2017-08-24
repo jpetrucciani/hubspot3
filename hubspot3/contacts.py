@@ -7,10 +7,10 @@ CONTACTS_API_VERSION = '1'
 
 
 class ContactsClient(BaseClient):
-    """
+    '''
     The hubspot3 Contacts client uses the _make_request method to call the
     API for data.  It returns a python object translated from the json return
-    """
+    '''
 
     def __init__(self, *args, **kwargs):
         super(ContactsClient, self).__init__(*args, **kwargs)
@@ -23,7 +23,7 @@ class ContactsClient(BaseClient):
         )
 
     def create_or_update_a_contact(self, email, data=None, **options):
-        """ Creates or Updates a client with the supplied data. """
+        ''' Creates or Updates a client with the supplied data. '''
         data = data or {}
         return self._call(
             'contact/createOrUpdate/email/{email}'.format(email=email),
@@ -31,7 +31,7 @@ class ContactsClient(BaseClient):
         )
 
     def get_contact_by_email(self, email, **options):
-        """ Gets contact specified by email address. """
+        ''' Gets contact specified by email address. '''
         return self._call(
             'contact/email/{email}/profile'.format(email=email),
             method='GET',
@@ -48,7 +48,7 @@ class ContactsClient(BaseClient):
         )
 
     def update_a_contact(self, contact_id, data=None, **options):
-        """ Updates the contact by contact_id with the given data. """
+        ''' Updates the contact by contact_id with the given data. '''
         data = data or {}
         return self._call(
             'contact/vid/{contact_id}/profile'.format(contact_id=contact_id),
@@ -56,7 +56,7 @@ class ContactsClient(BaseClient):
         )
 
     def delete_a_contact(self, contact_id, **options):
-        """ Deletes a contact by contact_id. """
+        ''' Deletes a contact by contact_id. '''
         return self._call(
             'contact/vid/{contact_id}'.format(contact_id=contact_id),
             method='DELETE',
