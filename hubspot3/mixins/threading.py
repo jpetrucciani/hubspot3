@@ -1,17 +1,12 @@
-'''
-The the mixins in this file require PyCURL in order to make parallel API calls.
-On OSX and Linux machines, PyCURL can be installed via pip (run "pip install pycurl" ).
-For windows machines, pre-compiled PyCURL binaries can be downloaded
-[here for python 2.6 and 2.7](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pycurl), and
-[here for python 2.5](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pycurl).
-'''
-
-import pycurl
+"""
+allow threaded execution of hubspot api calls
+"""
 import io
+import pycurl
 
 
 class Hubspot3ThreadedError(ValueError):
-
+    """"""
     def __init__(self, curl):
         super(Hubspot3ThreadedError, self).__init__(curl.body.getvalue())
         self.c = curl
@@ -20,9 +15,9 @@ class Hubspot3ThreadedError(ValueError):
 
     def __str__(self):
         return (
-            "\n---- request ----\n{} {}{} [timeout={}]\n\n---- body ----\n{}\n\n---- headers"
-            " ----\n{}\n\n---- result ----\n{}\n\n---- body ----\n{}\n\n---- headers "
-            "----\n{}".format(
+            '\n---- request ----\n{} {}{} [timeout={}]\n\n---- body ----\n{}\n\n---- headers'
+            ' ----\n{}\n\n---- result ----\n{}\n\n---- body ----\n{}\n\n---- headers '
+            '----\n{}'.format(
                 getattr(self.c, 'method', ''),
                 self.c.host,
                 self.c.path,
@@ -40,7 +35,12 @@ class Hubspot3ThreadedError(ValueError):
 
 
 class PyCurlMixin(object):
-    '''
+    """
+    The the mixins in this file require PyCURL in order to make parallel API calls.
+    On OSX and Linux machines, PyCURL can be installed via pip (run "pip install pycurl" ).
+    For windows machines, pre-compiled PyCURL binaries can be downloaded
+    [here for python 2.6 and 2.7](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pycurl), and
+    [here for python 2.5](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pycurl).
     PyCurlMixin relies on PyCurl, which is a library around libcurl which enables efficient
     multi-threaded requests.  Use this mixin when you want to be able to execute multiple
     API calls at once, instead of in sequence.
@@ -56,8 +56,7 @@ class PyCurlMixin(object):
     The results object will then return a list of dicts, containing the response to your calls
     in the order they were called. Dicts have keys: data, code, and
     (if something went wrong) exception.
-    '''
-
+    """
     def _call(self, subpath, params=None, method='GET', data=None, doseq=False, **options):
         opts = self.options.copy()
         opts.update(options)
@@ -66,7 +65,7 @@ class PyCurlMixin(object):
         self._enqueue(request_parts)
 
     def _enqueue(self, parts):
-        if not hasattr(self, "_queue"):
+        if not hasattr(self, '_queue'):
             self._queue = []
 
         self._queue.append(parts)
@@ -74,7 +73,7 @@ class PyCurlMixin(object):
     def _create_curl(self, url, headers, data):
         c = pycurl.Curl()
 
-        full_url = "{}://{}{}".format(self.options['protocol'], self.options['api_base'], url)
+        full_url = '{}://{}{}'.format(self.options['protocol'], self.options['api_base'], url)
 
         c.timeout = self.options['timeout']
         c.protocol = self.options['protocol']
@@ -94,7 +93,7 @@ class PyCurlMixin(object):
         c.setopt(c.HEADERFUNCTION, c.response_headers.write)
 
         if headers:
-            c.setopt(c.HTTPHEADER, ["{}: {}".format(x, y) for x, y in list(headers.items())])
+            c.setopt(c.HTTPHEADER, ['{}: {}'.format(x, y) for x, y in list(headers.items())])
 
         if data:
             c.data_out = io.StringIO(data)
@@ -103,10 +102,10 @@ class PyCurlMixin(object):
         return c
 
     def process_queue(self):
-        '''
+        """
         Processes all API calls since last invocation, returning a list of data
         in the order the API calls were created
-        '''
+        """
         m = pycurl.CurlMulti()
         m.handles = []
 
@@ -132,7 +131,7 @@ class PyCurlMixin(object):
             c.status = c.getinfo(c.HTTP_CODE)
             if 'Content-Encoding: gzip' in c.response_headers.getvalue():
                 c.body = io.StringIO(self._gunzip_body(c.body.getvalue()))
-            result = {"data": self._digest_result(c.body.getvalue()), "code": c.status}
+            result = {'data': self._digest_result(c.body.getvalue()), 'code': c.status}
             if not c.status or c.status >= 400:
                 # Don't throw the exception because some might have succeeded
                 result['exception'] = Hubspot3ThreadedError(c)
@@ -141,7 +140,7 @@ class PyCurlMixin(object):
 
         # cleanup
         for c in m.handles:
-            if hasattr(c, "data_out"):
+            if hasattr(c, 'data_out'):
                 c.data_out.close()
 
             c.body.close()

@@ -1,6 +1,10 @@
 import unittest
-from . import helper
-from hubspot3.leads import LeadsClient
+from . import (
+    helper
+)
+from hubspot3.leads import (
+    LeadsClient
+)
 
 
 class LeadsClientTest(unittest.TestCase):
@@ -25,5 +29,5 @@ class LeadsClientTest(unittest.TestCase):
         self.assertEqual(out_options, self.client.camelcase_search_options(in_options))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

@@ -1,17 +1,25 @@
-from hubspot3.base import BaseClient
-from hubspot3 import logging_helper
-from hubspot3.utils import prettify
+"""
+hubspot deals api
+"""
+from hubspot3 import (
+    logging_helper
+)
+from hubspot3.base import (
+    BaseClient
+)
+from hubspot3.utils import (
+    prettify
+)
 
 
 DEALS_API_VERSION = '1'
 
 
 class DealsClient(BaseClient):
-    '''
+    """
     The hubspot3 Deals client uses the _make_request method to call the API
     for data.  It returns a python object translated from the json return
-    '''
-
+    """
     def __init__(self, *args, **kwargs):
         super(DealsClient, self).__init__(*args, **kwargs)
         self.log = logging_helper.get_log('hapi.deals')

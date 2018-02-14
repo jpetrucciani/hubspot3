@@ -1,11 +1,18 @@
-from hubspot3.base import BaseClient
+"""
+hubspot blog api client
+"""
 import json
+from hubspot3.base import (
+    BaseClient
+)
 
 BLOG_API_VERSION = '1'
 
 
 class BlogClient(BaseClient):
-
+    """
+    provides a client for accessing hubspot blog info
+    """
     def _get_path(self, subpath):
         return 'blog/v{}/{}'.format(BLOG_API_VERSION, subpath)
 

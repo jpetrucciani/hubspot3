@@ -1,10 +1,15 @@
-from hubspot3.base import BaseClient
+"""
+hubspot keywords api
+"""
+from hubspot3.base import (
+    BaseClient
+)
 
 KEYWORDS_API_VERSION = 'v1'
 
 
 class KeywordsClient(BaseClient):
-
+    """allows access to the keywords api"""
     def _get_path(self, subpath):
         return 'keywords/{}/{}'.format(KEYWORDS_API_VERSION, subpath)
 
@@ -26,9 +31,9 @@ class KeywordsClient(BaseClient):
         data = []
         for keyword in keywords:
             if keyword != '':
-                if type(keyword) is dict:
+                if isinstance(keyword, dict):
                     data.append(keyword)
-                elif type(keyword) is str:
+                elif isinstance(keyword, str):
                     data.append(dict(keyword=str(keyword)))
         return self._call('keywords', data=data, method='PUT', **options)['keywords']
 

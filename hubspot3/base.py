@@ -1,3 +1,6 @@
+"""
+base hubspot client class
+"""
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -8,7 +11,9 @@ import sys
 import time
 import traceback
 import zlib
-from hubspot3 import utils
+from hubspot3 import (
+    utils
+)
 from hubspot3.utils import (
     force_utf8
 )
@@ -26,8 +31,7 @@ _PYTHON25 = sys.version_info < (2, 6)
 
 
 class BaseClient(object):
-    '''Base abstract object for interacting with the HubSpot APIs'''
-
+    """Base abstract object for interacting with the HubSpot APIs"""
     # Controls how long we sleep for during retries, overridden by unittests
     # so tests run faster
     sleep_multiplier = 1
@@ -55,9 +59,9 @@ class BaseClient(object):
         self.client_id = client_id or extra_options.get('client_id')
         self.log = utils.get_log('hubspot3')
         if self.api_key and self.access_token:
-            raise Exception("Cannot use both api_key and access_token.")
+            raise Exception('Cannot use both api_key and access_token.')
         if not (self.api_key or self.access_token or self.refresh_token):
-            raise Exception("Missing required credentials.")
+            raise Exception('Missing required credentials.')
         self.options = {'api_base': 'api.hubapi.com'}
         if not _PYTHON25:
             self.options['timeout'] = timeout
@@ -76,7 +80,7 @@ class BaseClient(object):
         self.options['api_base'] = parts[-1]
 
     def _get_path(self, subpath):
-        raise Exception("Unimplemented get_path for BaseClient subclass!")
+        raise Exception('Unimplemented get_path for BaseClient subclass!')
 
     def _prepare_request_auth(self, subpath, params, data, opts):
         if self.api_key:
@@ -126,7 +130,7 @@ class BaseClient(object):
 
     def _gunzip_body(self, body):
         # sio = io.StringIO(body)
-        # gf = gzip.GzipFile(fileobj=sio, mode="rb")
+        # gf = gzip.GzipFile(fileobj=sio, mode='rb')
         # return gf.read()
         return zlib.decompress(body)
 
@@ -138,7 +142,7 @@ class BaseClient(object):
     def _execute_request_raw(self, conn, request):
         try:
             result = conn.getresponse()
-        except:
+        except Exception:
             raise HubspotTimeout(None, request, traceback.format_exc())
 
         encoding = [i[1] for i in result.getheaders() if i[0] == 'content-encoding']
@@ -167,12 +171,12 @@ class BaseClient(object):
 
     def _digest_result(self, data):
         if data:
-            if type(data) == str:
+            if isinstance(data, str):
                 try:
                     data = json.loads(data)
                 except ValueError:
                     pass
-            elif type(data) == bytes:
+            elif isinstance(data, bytes):
                 data = json.loads(utils.force_utf8(data))
 
         return data
@@ -224,10 +228,10 @@ class BaseClient(object):
                 request_info = self._create_request(connection, method, url, headers, data)
                 result = self._execute_request_raw(connection, request_info)
                 break
-            except HubspotUnauthorized as e:
-                self.log.warning("401 Unauthorized response to API request.")
+            except HubspotUnauthorized as exception:
+                self.log.warning('401 Unauthorized response to API request.')
                 if self.access_token and self.refresh_token and self.client_id and not retried:
-                    self.log.info("Refreshing access token")
+                    self.log.info('Refreshing access token')
                     try:
                         token_response = utils.refresh_access_token(
                             self.refresh_token,
@@ -235,9 +239,9 @@ class BaseClient(object):
                         )
                         decoded = json.loads(token_response)
                         self.access_token = decoded['access_token']
-                        self.log.info('Retrying with new token %' % (self.access_token))
-                    except Exception as e:
-                        self.log.error("Unable to refresh access_token: %s" % (e))
+                        self.log.info('Retrying with new token {}'.format(self.access_token))
+                    except Exception as exception:
+                        self.log.error('Unable to refresh access_token: {}'.format(exception))
                         raise
                     return self._call_raw(
                         subpath,
@@ -252,29 +256,33 @@ class BaseClient(object):
                 else:
                     if self.access_token and self.refresh_token and self.client_id and retried:
                         self.log.error(
-                            "Refreshed token, but request still was not authorized. "
-                            " You may need to grant additional permissions."
+                            'Refreshed token, but request still was not authorized. '
+                            ' You may need to grant additional permissions.'
                         )
                     elif self.access_token and not self.refresh_token:
                         self.log.error(
-                            "In order to enable automated refreshing of your access "
-                            "token, please provide a refresh token as well."
+                            'In order to enable automated refreshing of your access '
+                            'token, please provide a refresh token as well.'
                         )
                     elif self.access_token and not self.client_id:
                         self.log.error(
-                            "In order to enable automated refreshing of your access "
-                            "token, please provide a client_id in addition to a refresh token."
+                            'In order to enable automated refreshing of your access '
+                            'token, please provide a client_id in addition to a refresh token.'
                         )
                     raise
-            except HubspotError as e:
+            except HubspotError as exception:
                 if try_count > num_retries:
-                    logging.warning("Too many retries for {}".format(url))
+                    logging.warning('Too many retries for {}'.format(url))
                     raise
                 # Don't retry errors from 300 to 499
-                if e.result and e.result.status >= 300 and e.result.status < 500:
+                if (
+                    exception.result and
+                    exception.result.status >= 300 and
+                    exception.result.status < 500
+                ):
                     raise
                 self._prepare_request_retry(method, url, headers, data)
-                self.log.warning('HubspotError {} calling {}, retrying'.format(e, url))
+                self.log.warning('HubspotError {} calling {}, retrying'.format(exception, url))
             # exponential back off - wait 0 seconds, 1 second, 3 seconds, 7 seconds, 15 seconds, etc
             time.sleep((pow(2, try_count - 1) - 1) * self.sleep_multiplier)
         return result

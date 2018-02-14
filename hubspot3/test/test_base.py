@@ -1,20 +1,23 @@
 import unittest
 import json
 import zlib
-from collections import defaultdict
-
-from hubspot3.base import BaseClient
-from hubspot3.error import HubspotError
+from collections import (
+    defaultdict
+)
+from hubspot3.base import (
+    BaseClient
+)
+from hubspot3.error import (
+    HubspotError
+)
 
 
 class TestBaseClient(BaseClient):
-
     def _get_path(self, subpath):
         return 'unit_path/{}'.format(subpath)
 
 
 class TestResult(object):
-
     def __init__(self, *args, **kwargs):
         for k, v in list(kwargs.items()):
             setattr(self, k, v)
@@ -24,7 +27,6 @@ class TestResult(object):
 
 
 class BaseTest(unittest.TestCase):
-
     def setUp(self):
         self.client = TestBaseClient('unit_api_key')
 
@@ -88,7 +90,7 @@ class BaseTest(unittest.TestCase):
         """
         Test parsing returned data in various forms
         """
-        plain_text = "Hello Plain Text"
+        plain_text = 'Hello Plain Text'
         data = self.client._process_body(plain_text, False)
         self.assertEqual(plain_text, data)
 

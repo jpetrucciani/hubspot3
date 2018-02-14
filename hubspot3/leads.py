@@ -1,21 +1,28 @@
+"""
+hubspot leads api
+"""
 import time
-from hubspot3.base import BaseClient
-from hubspot3 import logging_helper
+from hubspot3.base import (
+    BaseClient
+)
+from hubspot3 import (
+    logging_helper
+)
 
 
 LEADS_API_VERSION = '1'
 
 
-def list_to_dict_with_python_case_keys(list_):
-    d = {}
+def list_to_snake_dict(list_):
+    dictionary = {}
     for item in list_:
-        d[item] = item
+        dictionary[item] = item
         if item.lower() != item:
             python_variant = item[0].lower() + ''.join(
                 [c if c.lower() == c else '_{}'.format(c.lower()) for c in item[1:]]
             )
-            d[python_variant] = item
-    return d
+            dictionary[python_variant] = item
+    return dictionary
 
 
 SORT_OPTIONS = [
@@ -29,7 +36,7 @@ SORT_OPTIONS = [
     'lce.convertDate',
     'lastModifiedAt',
     'closedAt']
-SORT_OPTIONS_DICT = list_to_dict_with_python_case_keys(SORT_OPTIONS)
+SORT_OPTIONS_DICT = list_to_snake_dict(SORT_OPTIONS)
 TIME_PIVOT_OPTIONS = [
     'insertedAt',
     'firstConvertedAt',
@@ -37,7 +44,7 @@ TIME_PIVOT_OPTIONS = [
     'lastModifiedAt',
     'closedAt'
 ]
-TIME_PIVOT_OPTIONS_DICT = list_to_dict_with_python_case_keys(TIME_PIVOT_OPTIONS)
+TIME_PIVOT_OPTIONS_DICT = list_to_snake_dict(TIME_PIVOT_OPTIONS)
 SEARCH_OPTIONS = [
     'search',
     'sort',
@@ -52,7 +59,7 @@ SEARCH_OPTIONS = [
     'eligibleForEmail',
     'bounced',
     'isNotImported']
-SEARCH_OPTIONS_DICT = list_to_dict_with_python_case_keys(SEARCH_OPTIONS)
+SEARCH_OPTIONS_DICT = list_to_snake_dict(SEARCH_OPTIONS)
 BOOLEAN_SEARCH_OPTIONS = set([
     'excludeConversionEvents',
     'emailOptOut',
@@ -64,17 +71,16 @@ MAX_BATCH = 100
 
 
 class LeadsClient(BaseClient):
-    '''
+    """
     The hubspot3 Leads client uses the _make_request method to call the API for data.
     It returns a python object translated from the json return
-    '''
-
+    """
     def __init__(self, *args, **kwargs):
         super(LeadsClient, self).__init__(*args, **kwargs)
         self.log = logging_helper.get_log('hapi.leads')
 
     def camelcase_search_options(self, options):
-        '''change all underscored variants back to what the API is expecting'''
+        """change all underscored variants back to what the API is expecting"""
         new_options = {}
         for key in options:
             value = options[key]
@@ -95,18 +101,18 @@ class LeadsClient(BaseClient):
         return self.get_leads(guid, **options)[0]
 
     def get_leads(self, *guids, **options):
-        '''Supports all the search parameters in the API as well as python underscored variants'''
+        """Supports all the search parameters in the API as well as python underscored variants"""
         original_options = options
         options = self.camelcase_search_options(options.copy())
         params = {}
-        for i in range(0, len(guids)):
-            params['guids[{}]'.format(i)] = guids[i]
+        for i, guid in enumerate(guids):
+            params['guids[{}]'.format(i)] = guid
         for k in list(options.keys()):
             if k in SEARCH_OPTIONS:
                 params[k] = options[k]
                 del options[k]
         leads = self._call('list/', params, **options)
-        self.log.info("retrieved {} leads through API ( {}options={} )".format(
+        self.log.info('retrieved {} leads through API ( {}options={} )'.format(
             len(leads),
             guids and 'guids={}, '.format(guids or ''),
             original_options)
@@ -118,13 +124,14 @@ class LeadsClient(BaseClient):
         params = {}
         for key in options:
             params[key] = options[key]
-        ''' Set guid to -1 as default for not finding a user '''
+        # Set guid to -1 as default for not finding a user
         lead = {'guid': '-1'}
-        ''' wrap lead call so that it doesn't error out when not finding a lead '''
+        # wrap lead call so that it doesn't error out when not finding a lead
         try:
             lead = self._call('lead/{}'.format(cur_guid), params, **options)
-        except:
-            ''' no lead here '''
+        except Exception:
+            # no lead here
+            pass
         return lead
 
     def update_lead(self, guid, update_data=None, **options):

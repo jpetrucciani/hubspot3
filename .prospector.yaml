@@ -1,0 +1,79 @@
+strictness: veryhigh
+doc-warnings: true
+member-warnings: false
+test-warnings: false
+
+ignore-patterns:
+  - (^|/)\..+
+  - .*/env\.py
+  - .*\.html
+  - .*\.env\.py
+  - .*templates/
+
+pylint:
+  disable:
+    - fixme
+    - bad-continuation
+    - too-many-arguments
+    - dangerous-default-value
+    - import-self
+    - broad-except
+    - no-self-use
+    - unused-argument
+    - logging-format-interpolation
+    - missing-docstring
+    - wrong-import-order
+
+  options:
+    max-arguments: 10
+    max-locals: 100
+    max-returns: 6
+    max-branches: 50
+    max-statements: 180
+    max-parents: 10
+    max-attributes: 10
+    min-public-methods: 0
+    max-public-methods: 20
+    max-module-lines: 2000
+    max-line-length: 100
+
+mccabe:
+  options:
+    max-complexity: 30
+
+pep8:
+  disable:
+    - N802
+  options:
+    max-line-length: 100
+    single-line-if-stmt: n
+
+vulture:
+  run: false
+
+pyroma:
+  run: false
+  disable:
+    - PYR19
+    - PYR16
+
+pep257:
+  disable:
+    - D000
+    - D100
+    - D101
+    - D102
+    - D103
+    - D104
+    - D105
+    - D107
+    - D200
+    - D203
+    - D205
+    - D212
+    - D204
+    - D300
+    - D400
+    - D401
+    - D404
+    - D403

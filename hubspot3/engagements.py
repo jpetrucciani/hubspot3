@@ -1,16 +1,22 @@
-from hubspot3.base import BaseClient
-from hubspot3 import logging_helper
+"""
+hubspot engagements api
+"""
+from hubspot3 import (
+    logging_helper
+)
+from hubspot3.base import (
+    BaseClient
+)
 
 
 ENGAGEMENTS_API_VERSION = '1'
 
 
 class EngagementsClient(BaseClient):
-    '''
+    """
     The hubspot3 Engagements client uses the _make_request method to call the API
     for data.  It returns a python object translated from the json return
-    '''
-
+    """
     def __init__(self, *args, **kwargs):
         super(EngagementsClient, self).__init__(*args, **kwargs)
         self.log = logging_helper.get_log('hapi.engagements')

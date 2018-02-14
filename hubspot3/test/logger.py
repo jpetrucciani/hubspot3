@@ -1,15 +1,15 @@
 import logging
-import sys
 import os
+import sys
 
 
 def configure_log():
 
-    log = logging.getLogger("hapi")
+    log = logging.getLogger('hubspot3')
     log.setLevel(logging.DEBUG)
 
     file_handler = logging.FileHandler(os.path.join(
-        os.path.dirname(__file__), 'test_run.log'), mode="w")
+        os.path.dirname(__file__), 'test_run.log'), mode='w')
     file_handler.setLevel(logging.DEBUG)
 
     console_handler = logging.StreamHandler(sys.stdout)

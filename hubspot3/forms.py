@@ -1,10 +1,13 @@
-import logging
-from hubspot3.base import BaseClient
-logger = logging.getLogger(__name__)
+"""
+hubspot forms api
+"""
+from hubspot3.base import (
+    BaseClient
+)
 
 
 class FormSubmissionClient(BaseClient):
-
+    """allows acccess to the forms api"""
     def __init__(self, *args, **kwargs):
         super(FormSubmissionClient, self).__init__(*args, **kwargs)
         self.options['api_base'] = 'forms.hubspot.com'

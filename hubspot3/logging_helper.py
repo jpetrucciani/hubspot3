@@ -1,8 +1,10 @@
+"""
+logging helper function
+"""
 import logging
 
 
 class NullHandler(logging.Handler):
-
     def emit(self, record):
         pass
 

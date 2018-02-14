@@ -3,10 +3,15 @@ import unittest
 import uuid
 
 import json
-from nose.plugins.attrib import attr
-
-from . import helper
-from hubspot3.keywords import KeywordsClient
+from nose.plugins.attrib import (
+    attr
+)
+from . import (
+    helper
+)
+from hubspot3.keywords import (
+    KeywordsClient
+)
 
 
 class KeywordsClientTest(unittest.TestCase):
@@ -16,7 +21,6 @@ class KeywordsClientTest(unittest.TestCase):
 
     Questions, comments: http://docs.hubapi.com/wiki/Discussion_Group
     """
-
     def setUp(self):
         self.client = KeywordsClient(**helper.get_options())
         self.keyword_guids = None
@@ -32,35 +36,21 @@ class KeywordsClientTest(unittest.TestCase):
     def test_get_keywords(self):
         keywords = self.client.get_keywords()
         self.assertTrue(len(keywords))
-        print(("\n\nGot some keywords: {}".format(json.dumps(keywords))))
+        print(('\n\nGot some keywords: {}'.format(json.dumps(keywords))))
 
     @attr('api')
     def test_get_keyword(self):
         keywords = self.client.get_keywords()
         if len(keywords) < 1:
-            self.fail("No keywords available for test.")
+            self.fail('No keywords available for test.')
 
         keyword = keywords[0]
-        print(("\n\nGoing to get a specific keyword: {}".format(keyword)))
+        print(('\n\nGoing to get a specific keyword: {}'.format(keyword)))
 
         result = self.client.get_keyword(keyword['keyword_guid'])
         self.assertEqual(keyword, result)
 
-        print(("\n\nGot a single matching keyword: {}".format(keyword['keyword_guid'])))
-
-# TODO This test does not currently work because there is no traffic on the demo portal
-# Becuase there is no traffic, there are no visits or leads for this to look at
-#    @attr('api')
-#    def test_get_keyword_with_visit_lead(self):
-#        # Change the test keyword if you are running on not the demo portal
-#        test_keyword = "app"
-#        keywords = self.client.get_keywords()
-#        if len(keywords) < 1:
-#            self.fail("No keywords available for test.")
-#        for keyword in keywords:
-#            if keyword['keyword'] == test_keyword:
-#                self.assertTrue(keyword.has_key('visits'))
-#                self.assertTrue(keyword.has_key('leads'))
+        print(('\n\nGot a single matching keyword: {}'.format(keyword['keyword_guid'])))
 
     @attr('api')
     def test_add_keyword(self):
@@ -75,7 +65,7 @@ class KeywordsClientTest(unittest.TestCase):
         # make sure 'result' has one keyword in it
         self.assertEqual(len(result['keywords']), 1)
 
-        print(("\n\nAdded keyword: {}".format(json.dumps(result))))
+        print('\n\nAdded keyword: {}'.format(json.dumps(result)))
 
         # holds the guid of the keyword being added
         self.keyword_guid = []
@@ -94,7 +84,7 @@ class KeywordsClientTest(unittest.TestCase):
         # check if it was filtered. If it was, it is in the client
         self.assertEqual(len(check), 1)
 
-        print(("\n\nSaved keyword {}".format(json.dumps(check))))
+        print('\n\nSaved keyword {}'.format(json.dumps(check)))
 
     @attr('api')
     def test_add_keywords(self):
@@ -127,7 +117,7 @@ class KeywordsClientTest(unittest.TestCase):
         keywords = [x for x in keywords if x['keyword_guid'] in self.keyword_guids]
         self.assertEqual(len(keywords), 10)
 
-        print(("\n\nAdded multiple keywords: {}".format(keywords)))
+        print('\n\nAdded multiple keywords: {}'.format(keywords))
 
     @attr('api')
     def test_delete_keyword(self):
@@ -136,7 +126,7 @@ class KeywordsClientTest(unittest.TestCase):
         result = self.client.add_keyword(keyword)
         keywords = result['keywords']
         first_keyword = keywords[0]
-        print(("\n\nAbout to delete a keyword, result= {}".format(json.dumps(result))))
+        print('\n\nAbout to delete a keyword, result= {}'.format(json.dumps(result)))
 
         self.client.delete_keyword(first_keyword['keyword_guid'])
 
@@ -146,7 +136,7 @@ class KeywordsClientTest(unittest.TestCase):
         keywords = [x for x in keywords if x['keyword_guid'] == first_keyword['keyword_guid']]
         self.assertTrue(len(keywords) == 0)
 
-        print(("\n\nDeleted keyword {}".format(json.dumps(first_keyword))))
+        print('\n\nDeleted keyword {}'.format(json.dumps(first_keyword)))
 
     @attr('api')
     def test_utf8_keywords(self):
@@ -156,9 +146,9 @@ class KeywordsClientTest(unittest.TestCase):
 
         keyword_guids = []
         for utf8_keyword_base in utf8_keyword_bases:
-            original_keyword = '{} - {}'.format((utf8_keyword_base, str(uuid.uuid4())))
+            original_keyword = '{} - {}'.format(utf8_keyword_base, str(uuid.uuid4()))
             result = self.client.add_keyword(original_keyword)
-            print(("\n\nAdded keyword: {}".format(json.dumps(result))))
+            print('\n\nAdded keyword: {}'.format(json.dumps(result)))
             print(result)
 
             keywords_results = result.get('keywords')
@@ -183,5 +173,5 @@ class KeywordsClientTest(unittest.TestCase):
             self.assertEqual(actual_unicode_keyword, original_unicode_keyword)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

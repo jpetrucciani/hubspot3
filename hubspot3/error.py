@@ -1,12 +1,16 @@
-from hubspot3.utils import force_utf8
+"""
+hubspot3 error helpers
+"""
+from hubspot3.utils import (
+    force_utf8
+)
 
 
 class EmptyResult(object):
-    '''
+    """
     Null Object pattern to prevent Null reference errors
     when there is no result
-    '''
-
+    """
     def __init__(self):
         self.status = 0
         self.body = ''
@@ -19,7 +23,7 @@ class EmptyResult(object):
 
 class HubspotError(ValueError):
     """Any problems get thrown as HubspotError exceptions with the relevant info inside"""
-    as_str_template = '''
+    as_str_template = """
 ---- request ----
 {method} {host}{url}, [timeout={timeout}]
 
@@ -43,7 +47,7 @@ class HubspotError(ValueError):
 
 ---- trigger error ----
 {error}
-        '''
+        """
 
     def __contains__(self, item):
         """tests if the given item text is in the error text"""
@@ -53,7 +57,7 @@ class HubspotError(ValueError):
         return False
 
     def __init__(self, result, request, err=None):
-        super(HubspotError, self).__init__(result and result.reason or "Unknown Reason")
+        super(HubspotError, self).__init__(result and result.reason or 'Unknown Reason')
         if result is None:
             self.result = EmptyResult()
         else:
@@ -83,7 +87,7 @@ class HubspotError(ValueError):
         unicode_data = {}
         for key, val in list(data.items()):
             if not val:
-                unicode_data[key] = ""
+                unicode_data[key] = ''
             if isinstance(val, bytes):
                 unicode_data[key] = force_utf8(val)
             elif isinstance(val, str):
@@ -95,20 +99,20 @@ class HubspotError(ValueError):
 
 # Create more specific error cases, to make filtering errors easier
 class HubspotBadRequest(HubspotError):
-    '''Error wrapper for most 40X results and 501 results'''
+    """Error wrapper for most 40X results and 501 results"""
 
 
 class HubspotNotFound(HubspotError):
-    '''Error wrapper for 404 and 410 results'''
+    """Error wrapper for 404 and 410 results"""
 
 
 class HubspotTimeout(HubspotError):
-    '''Wrapper for socket timeouts, sslerror, and 504'''
+    """Wrapper for socket timeouts, sslerror, and 504"""
 
 
 class HubspotUnauthorized(HubspotError):
-    '''Wrapper for 401 Unauthorized errors'''
+    """Wrapper for 401 Unauthorized errors"""
 
 
 class HubspotServerError(HubspotError):
-    '''Wrapper for most 500 errors'''
+    """Wrapper for most 500 errors"""
