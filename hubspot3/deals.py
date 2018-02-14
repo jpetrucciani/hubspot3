@@ -22,6 +22,9 @@ class DealsClient(BaseClient):
             subpath
         )
 
+    def get(self, deal_id, **options):
+        return self._call('deal/{}'.format(deal_id), method='GET', **options)
+
     def create(self, data=None, **options):
         data = data or {}
         return self._call('deal/', data=data, method='POST', **options)
