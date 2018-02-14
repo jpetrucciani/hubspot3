@@ -173,7 +173,6 @@ class BaseClient(object):
                 except ValueError:
                     pass
             elif type(data) == bytes:
-                print(utils.force_utf8(data))
                 data = json.loads(utils.force_utf8(data))
 
         return data

@@ -1,4 +1,4 @@
-from hubspot.base import BaseClient
+from hubspot3.base import BaseClient
 import json
 
 BLOG_API_VERSION = '1'
