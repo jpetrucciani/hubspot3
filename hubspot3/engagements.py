@@ -27,6 +27,15 @@ class EngagementsClient(BaseClient):
             subpath
         )
 
+    def get(self, engagement_id, **options):
+        """Get a HubSpot engagement."""
+        return self._call('engagements/{}'.format(engagement_id), method='GET', **options)
+
+    def get_associated(self, object_type, object_id, **options):
+        """Get associated HubSpot engagements."""
+        return self._call('engagements/associated/{}/{}/paged'
+                          .format(object_type, object_id), method='GET', **options)
+
     def create(self, data=None, **options):
         data = data or {}
         return self._call('engagements', data=data, method='POST', **options)
