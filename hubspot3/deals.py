@@ -11,6 +11,7 @@ from hubspot3.utils import (
     prettify
 )
 
+import urllib.parse
 
 DEALS_API_VERSION = '1'
 
@@ -41,6 +42,15 @@ class DealsClient(BaseClient):
         data = data or {}
         return self._call('deal/{}'.format(key), data=data,
                           method='PUT', **options)
+
+    def associate(self, deal_id, object_type, object_ids, **options):
+        # Encoding the query string here since HubSpot is expecting the "id" parameter to be
+        # repeated for each object ID, which is not a standard practice and won't work otherwise.
+        object_ids = [('id', object_id) for object_id in object_ids]
+        query = urllib.parse.urlencode(object_ids)
+
+        return self._call('deal/{}/associations/{}'.format(deal_id, object_type), method='PUT',
+                          query=query, **options)
 
     def get_all(self, limit=None, offset=0, **options):
         finished = False
