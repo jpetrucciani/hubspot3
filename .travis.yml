@@ -1,6 +1,8 @@
 language: python
 python:
-- '3.6'
+  - '3.6'
+script:
+  - touch foo
 deploy:
   provider: pypi
   user: jacobi
