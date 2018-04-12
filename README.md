@@ -1,6 +1,6 @@
 # hubspot3
 
-A python wrapper around HubSpot\'s APIs, for python 3.
+A python wrapper around HubSpot\'s APIs, _for python 3_.
 
 Built initially around hapipy, but heavily modified.
 
@@ -15,6 +15,17 @@ client = CompaniesClient(api_key=API)
 for company in client.get_all():
     print(company)
 ```
+
+## Rate Limiting
+
+Be aware that this uses the HubSpot API directly, so you are subject to all of the guidelines that HubSpot has in place:
+https://developers.hubspot.com/apps/api_guidelines
+
+at the time of writing, HubSpot has the following limits in place for API requests:
+10 requests per second.
+40,000 requests per day. This daily limit resets at midnight based on the time zone setting of the HubSpot account.
+
+
 
 ## List of available clients
 
