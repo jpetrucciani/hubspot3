@@ -4,6 +4,18 @@ A python wrapper around HubSpot\'s APIs, for python 3.
 
 Built initially around hapipy, but heavily modified.
 
+## Quick start
+
+Here is a basic usage
+
+```python
+from hubspot3.companies import CompaniesClient
+API = "your-api"
+client = CompaniesClient(api_key=API)
+for company in client.get_all():
+    print(company)
+```
+
 
 ```yaml
 hubspot3/
