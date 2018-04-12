@@ -22,8 +22,8 @@ Be aware that this uses the HubSpot API directly, so you are subject to all of t
 https://developers.hubspot.com/apps/api_guidelines
 
 at the time of writing, HubSpot has the following limits in place for API requests:
-10 requests per second.
-40,000 requests per day. This daily limit resets at midnight based on the time zone setting of the HubSpot account.
+- 10 requests per second
+- 40,000 requests per day. This daily limit resets at midnight based on the time zone setting of the HubSpot account
 
 
 
