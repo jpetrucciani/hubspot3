@@ -9,6 +9,7 @@ from setuptools import (
     setup
 )
 
+
 setup(
     name='hubspot3',
     version=__version__,
@@ -20,7 +21,7 @@ setup(
     author_email='jacobi@mimirhq.com',
     url='https://github.com/jpetrucciani/hubspot3.git',
     download_url='https://github.com/jpetrucciani/hubspot3.git',
-    license='LICENSE.txt',
+    license='LICENSE',
     packages=['hubspot3', 'hubspot3.mixins'],
     install_requires=[
         'nose==1.3.6'

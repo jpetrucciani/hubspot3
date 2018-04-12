@@ -1,5 +1,9 @@
 # hubspot3
 
+[![PyPI version](https://badge.fury.io/py/hubspot3.svg)](https://badge.fury.io/py/hubspot3)
+[![Code Health](https://landscape.io/github/jpetrucciani/hubspot3/master/landscape.svg?style=flat)](https://landscape.io/github/jpetrucciani/hubspot3/master)
+
+
 A python wrapper around HubSpot\'s APIs, _for python 3_.
 
 Built initially around hapipy, but heavily modified.
@@ -10,8 +14,10 @@ Here is a basic usage
 
 ```python
 from hubspot3.companies import CompaniesClient
-API = "your-api"
+API = 'your-api'
+
 client = CompaniesClient(api_key=API)
+
 for company in client.get_all():
     print(company)
 ```

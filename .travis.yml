@@ -2,7 +2,7 @@ language: python
 python:
   - '3.6'
 script:
-  - touch foo
+  - echo 'override'
 deploy:
   provider: pypi
   user: jacobi
