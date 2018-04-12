@@ -16,6 +16,7 @@ for company in client.get_all():
     print(company)
 ```
 
+## List of available clients
 
 ```yaml
 hubspot3/
