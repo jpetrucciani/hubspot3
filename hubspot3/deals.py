@@ -86,6 +86,6 @@ class DealsClient(BaseClient):
                 for deal in batch['deals'] if not deal['isDeleted']
             ])
             finished = not batch['hasMore']
-            offset += batch['offset']
+            offset = batch['offset']
 
         return output
