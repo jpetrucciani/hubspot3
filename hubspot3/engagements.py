@@ -38,8 +38,15 @@ class EngagementsClient(BaseClient):
         offset = 0
         while not finished:
             print(offset)
-            batch = self._call('engagements/associated/{}/{}/paged'
-                          .format(object_type, object_id), method='GET', params={'limit': querylimit, 'offset': offset}, **options)
+            batch = self._call(
+                'engagements/associated/{}/{}/paged'.format(
+                    object_type,
+                    object_id
+                ),
+                method='GET',
+                params={'limit': querylimit, 'offset': offset},
+                **options
+            )
             print(len(batch['results']))
             output.extend(batch['results'])
             finished = not batch['hasMore']

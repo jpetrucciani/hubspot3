@@ -49,8 +49,12 @@ class DealsClient(BaseClient):
         object_ids = [('id', object_id) for object_id in object_ids]
         query = urllib.parse.urlencode(object_ids)
 
-        return self._call('deal/{}/associations/{}'.format(deal_id, object_type), method='PUT',
-                          query=query, **options)
+        return self._call(
+            'deal/{}/associations/{}'.format(deal_id, object_type),
+            method='PUT',
+            query=query,
+            **options
+        )
 
     def get_all(self, limit=None, offset=0, **options):
         finished = False

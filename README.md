@@ -10,16 +10,35 @@ Built initially around hapipy, but heavily modified.
 
 ## Quick start
 
-Here is a basic usage
+### Basic Usage
 
 ```python
 from hubspot3.companies import CompaniesClient
-API = 'your-api'
+API_KEY = 'your-api-key'
 
-client = CompaniesClient(api_key=API)
+client = CompaniesClient(api_key=API_KEY)
 
 for company in client.get_all():
     print(company)
+```
+
+### Passing Params
+
+```python
+import json
+from hubspot3.deals import DealsClient
+
+deal_id = '12345'
+API_KEY = 'your_api_key'
+
+deals_client = DealsClient(api_key=API_KEY)
+
+params = {
+    'includePropertyVersions': 'true'
+}  # Note values are camelCase as they appear in the Hubspot Documentation!
+
+deal_data = deals_client.get(deal_id, params=params)
+print(json.dumps(deal_data))
 ```
 
 ## Rate Limiting
@@ -31,6 +50,45 @@ at the time of writing, HubSpot has the following limits in place for API reques
 - 10 requests per second
 - 40,000 requests per day. This daily limit resets at midnight based on the time zone setting of the HubSpot account
 
+
+## Extending the BaseClient - thanks [@Guysoft](https://github.com/guysoft)!
+
+Some of the APIs are not yet complete! If you\'d like to use an API that isn\'t yet in this repo, you can extend the BaseClient class! 
+
+```python
+import json
+from hubspot3.base import BaseClient
+
+
+PIPELINES_API_VERSION = '1'
+
+
+class PipelineClient(BaseClient):
+    """
+    Lets you extend to non-existing clients, this example extends pipelines
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(PipelineClient, self).__init__(*args, **kwargs)
+
+    def get_pipelines(self, **options):
+        params = {}
+
+        return self._call('pipelines', method='GET', params=params)
+
+    def _get_path(self, subpath):
+        return 'deals/v{}/{}'.format(
+            self.options.get('version') or PIPELINES_API_VERSION,
+            subpath
+        )
+
+
+if __name__ == "__main__":
+    import json
+    API_KEY = "your_api_key"
+    a = PipelineClient(api_key=API_KEY)
+    print(json.dumps(a.get_pipelines()))
+```
 
 
 ## List of available clients

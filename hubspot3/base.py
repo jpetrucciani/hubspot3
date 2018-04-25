@@ -62,7 +62,10 @@ class BaseClient(object):
             raise Exception('Cannot use both api_key and access_token.')
         if not (self.api_key or self.access_token or self.refresh_token):
             raise Exception('Missing required credentials.')
-        self.options = {'api_base': 'api.hubapi.com'}
+        self.options = {
+            'api_base': 'api.hubapi.com',
+            'debug': False
+        }
         if not _PYTHON25:
             self.options['timeout'] = timeout
         self.options.update(extra_options)
@@ -129,9 +132,6 @@ class BaseClient(object):
         return params
 
     def _gunzip_body(self, body):
-        # sio = io.StringIO(body)
-        # gf = gzip.GzipFile(fileobj=sio, mode='rb')
-        # return gf.read()
         return zlib.decompress(body)
 
     def _process_body(self, data, gzipped):
@@ -197,6 +197,9 @@ class BaseClient(object):
     ):
         opts = self.options.copy()
         opts.update(options)
+
+        debug = opts.get('debug')
+
         url, headers, data = self._prepare_request(
             subpath,
             params,
@@ -205,16 +208,32 @@ class BaseClient(object):
             doseq=doseq,
             query=query
         )
+
+        if debug:
+            print(
+                json.dumps(
+                    {
+                        'url': url,
+                        'headers': headers,
+                        'data': data
+                    },
+                    sort_keys=True,
+                    indent=2
+                )
+            )
+
         kwargs = {}
         if not _PYTHON25:
             kwargs['timeout'] = opts['timeout']
 
         num_retries = opts.get('number_retries', 0)
+
         # Never retry a POST, PUT, or DELETE unless explicitly told to
         if method != 'GET' and not opts.get('retry_on_post'):
             num_retries = 0
         if num_retries > 6:
             num_retries = 6
+
         emergency_brake = 10
         try_count = 0
         while True:
