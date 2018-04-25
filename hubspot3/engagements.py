@@ -34,11 +34,13 @@ class EngagementsClient(BaseClient):
     def get_associated(self, object_type, object_id, **options):
         finished = False
         output = []
-        querylimit = 250  # Max value according to docs
+        querylimit = 100  # Max value according to docs
         offset = 0
         while not finished:
+            print(offset)
             batch = self._call('engagements/associated/{}/{}/paged'
-                          .format(object_type, object_id), method='GET', **options)
+                          .format(object_type, object_id), method='GET', params={'limit': querylimit, 'offset': offset}, **options)
+            print(len(batch['results']))
             output.extend(batch['results'])
             finished = not batch['hasMore']
             offset = batch['offset']
