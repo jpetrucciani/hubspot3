@@ -32,9 +32,20 @@ class EngagementsClient(BaseClient):
         return self._call('engagements/{}'.format(engagement_id), method='GET', **options)
 
     def get_associated(self, object_type, object_id, **options):
-        """Get associated HubSpot engagements."""
-        return self._call('engagements/associated/{}/{}/paged'
-                          .format(object_type, object_id), method='GET', **options)
+        finished = False
+        output = []
+        querylimit = 100  # Max value according to docs
+        offset = 0
+        while not finished:
+            print(offset)
+            batch = self._call('engagements/associated/{}/{}/paged'
+                          .format(object_type, object_id), method='GET', params={'limit': querylimit, 'offset': offset}, **options)
+            print(len(batch['results']))
+            output.extend(batch['results'])
+            finished = not batch['hasMore']
+            offset = batch['offset']
+
+        return output
 
     def create(self, data=None, **options):
         data = data or {}
