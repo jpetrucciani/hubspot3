@@ -6,27 +6,28 @@ import pycurl
 
 
 class Hubspot3ThreadedError(ValueError):
-    """"""
+    """general exception for the multithreading mixin"""
+
     def __init__(self, curl):
         super(Hubspot3ThreadedError, self).__init__(curl.body.getvalue())
-        self.c = curl
-        self.response_body = self.c.body.getvalue()
-        self.response_headers = self.c.response_headers.getvalue()
+        self.curl_call = curl
+        self.response_body = self.curl_call.body.getvalue()
+        self.response_headers = self.curl_call.response_headers.getvalue()
 
     def __str__(self):
         return (
-            '\n---- request ----\n{} {}{} [timeout={}]\n\n---- body ----\n{}\n\n---- headers'
-            ' ----\n{}\n\n---- result ----\n{}\n\n---- body ----\n{}\n\n---- headers '
-            '----\n{}'.format(
-                getattr(self.c, 'method', ''),
-                self.c.host,
-                self.c.path,
-                self.c.timeout,
-                self.c.data,
-                self.c.headers,
-                self.c.status,
+            "\n---- request ----\n{} {}{} [timeout={}]\n\n---- body ----\n{}\n\n---- headers"
+            " ----\n{}\n\n---- result ----\n{}\n\n---- body ----\n{}\n\n---- headers "
+            "----\n{}".format(
+                getattr(self.curl_call, "method", ""),
+                self.curl_call.host,
+                self.curl_call.path,
+                self.curl_call.timeout,
+                self.curl_call.data,
+                self.curl_call.headers,
+                self.curl_call.status,
                 self.response_body,
-                self.response_headers
+                self.response_headers,
             )
         )
 
@@ -57,7 +58,10 @@ class PyCurlMixin(object):
     in the order they were called. Dicts have keys: data, code, and
     (if something went wrong) exception.
     """
-    def _call(self, subpath, params=None, method='GET', data=None, doseq=False, **options):
+
+    def _call(
+        self, subpath, params=None, method="GET", data=None, doseq=False, **options
+    ):
         opts = self.options.copy()
         opts.update(options)
 
@@ -65,91 +69,101 @@ class PyCurlMixin(object):
         self._enqueue(request_parts)
 
     def _enqueue(self, parts):
-        if not hasattr(self, '_queue'):
+        if not hasattr(self, "_queue"):
             self._queue = []
 
         self._queue.append(parts)
 
     def _create_curl(self, url, headers, data):
-        c = pycurl.Curl()
+        curl_call = pycurl.Curl()
 
-        full_url = '{}://{}{}'.format(self.options['protocol'], self.options['api_base'], url)
+        full_url = "{}://{}{}".format(
+            self.options["protocol"], self.options["api_base"], url
+        )
 
-        c.timeout = self.options['timeout']
-        c.protocol = self.options['protocol']
-        c.host = self.options['api_base']
-        c.path = url
-        c.full_url = full_url
-        c.headers = headers
-        c.data = data
+        curl_call.timeout = self.options["timeout"]
+        curl_call.protocol = self.options["protocol"]
+        curl_call.host = self.options["api_base"]
+        curl_call.path = url
+        curl_call.full_url = full_url
+        curl_call.headers = headers
+        curl_call.data = data
 
-        c.status = -1
-        c.body = io.StringIO()
-        c.response_headers = io.StringIO()
+        curl_call.status = -1
+        curl_call.body = io.StringIO()
+        curl_call.response_headers = io.StringIO()
 
-        c.setopt(c.URL, c.full_url)
-        c.setopt(c.TIMEOUT, self.options['timeout'])
-        c.setopt(c.WRITEFUNCTION, c.body.write)
-        c.setopt(c.HEADERFUNCTION, c.response_headers.write)
+        curl_call.setopt(curl_call.URL, curl_call.full_url)
+        curl_call.setopt(curl_call.TIMEOUT, self.options["timeout"])
+        curl_call.setopt(curl_call.WRITEFUNCTION, curl_call.body.write)
+        curl_call.setopt(curl_call.HEADERFUNCTION, curl_call.response_headers.write)
 
         if headers:
-            c.setopt(c.HTTPHEADER, ['{}: {}'.format(x, y) for x, y in list(headers.items())])
+            curl_call.setopt(
+                curl_call.HTTPHEADER,
+                ["{}: {}".format(x, y) for x, y in list(headers.items())],
+            )
 
         if data:
-            c.data_out = io.StringIO(data)
-            c.setopt(c.READFUNCTION, c.data_out.getvalue)
+            curl_call.data_out = io.StringIO(data)
+            curl_call.setopt(curl_call.READFUNCTION, curl_call.data_out.getvalue)
 
-        return c
+        return curl_call
 
     def process_queue(self):
         """
         Processes all API calls since last invocation, returning a list of data
         in the order the API calls were created
         """
-        m = pycurl.CurlMulti()
-        m.handles = []
+        multi_curl = pycurl.CurlMulti()
+        multi_curl.handles = []
 
         # Loop the queue and create Curl objects for processing
         for item in self._queue:
-            c = self._create_curl(*item)
-            m.add_handle(c)
-            m.handles.append(c)
+            curl_call = self._create_curl(*item)
+            multi_curl.add_handle(curl_call)
+            multi_curl.handles.append(curl_call)
 
         # Process the collected Curl handles
-        num_handles = len(m.handles)
+        num_handles = len(multi_curl.handles)
         while num_handles:
             while 1:
                 # Perform the calls
-                ret, num_handles = m.perform()
+                ret, num_handles = multi_curl.perform()
                 if ret != pycurl.E_CALL_MULTI_PERFORM:
                     break
-            m.select(1.0)
+            multi_curl.select(1.0)
 
         # Collect data
         results = []
-        for c in m.handles:
-            c.status = c.getinfo(c.HTTP_CODE)
-            if 'Content-Encoding: gzip' in c.response_headers.getvalue():
-                c.body = io.StringIO(self._gunzip_body(c.body.getvalue()))
-            result = {'data': self._digest_result(c.body.getvalue()), 'code': c.status}
-            if not c.status or c.status >= 400:
+        for curl_call in multi_curl.handles:
+            curl_call.status = curl_call.getinfo(curl_call.HTTP_CODE)
+            if "Content-Encoding: gzip" in curl_call.response_headers.getvalue():
+                curl_call.body = io.StringIO(
+                    self._gunzip_body(curl_call.body.getvalue())
+                )
+            result = {
+                "data": self._digest_result(curl_call.body.getvalue()),
+                "code": curl_call.status,
+            }
+            if not curl_call.status or curl_call.status >= 400:
                 # Don't throw the exception because some might have succeeded
-                result['exception'] = Hubspot3ThreadedError(c)
+                result["exception"] = Hubspot3ThreadedError(curl_call)
 
             results.append(result)
 
         # cleanup
-        for c in m.handles:
-            if hasattr(c, 'data_out'):
-                c.data_out.close()
+        for curl_call in multi_curl.handles:
+            if hasattr(curl_call, "data_out"):
+                curl_call.data_out.close()
 
-            c.body.close()
-            c.response_headers.close()
-            c.close()
-            m.remove_handle(c)
+            curl_call.body.close()
+            curl_call.response_headers.close()
+            curl_call.close()
+            multi_curl.remove_handle(curl_call)
 
-        m.close()
-        del m.handles
+        multi_curl.close()
+        del multi_curl.handles
         self._queue = []
 
         return results

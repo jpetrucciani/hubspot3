@@ -5,27 +5,22 @@ test-warnings: false
 
 ignore-patterns:
   - (^|/)\..+
-  - .*/env\.py
   - .*\.html
-  - .*\.env\.py
-  - .*templates/
 
 pylint:
   disable:
-    - fixme
     - bad-continuation
-    - too-many-arguments
-    - dangerous-default-value
-    - import-self
     - broad-except
-    - no-self-use
-    - unused-argument
+    - import-error
+    - import-self
     - logging-format-interpolation
     - missing-docstring
+    - no-self-use
+    - unused-argument
     - wrong-import-order
 
   options:
-    max-arguments: 10
+    max-args: 10
     max-locals: 100
     max-returns: 6
     max-branches: 50
@@ -44,6 +39,8 @@ mccabe:
 pep8:
   disable:
     - N802
+    - N807
+    - W503
   options:
     max-line-length: 100
     single-line-if-stmt: n

@@ -1,9 +1,7 @@
 """
 hubspot3 error helpers
 """
-from hubspot3.utils import (
-    force_utf8
-)
+from hubspot3.utils import force_utf8
 
 
 class EmptyResult(object):
@@ -11,11 +9,12 @@ class EmptyResult(object):
     Null Object pattern to prevent Null reference errors
     when there is no result
     """
+
     def __init__(self):
         self.status = 0
-        self.body = ''
-        self.msg = ''
-        self.reason = ''
+        self.body = ""
+        self.msg = ""
+        self.reason = ""
 
     def __bool__(self):
         return False
@@ -23,6 +22,7 @@ class EmptyResult(object):
 
 class HubspotError(ValueError):
     """Any problems get thrown as HubspotError exceptions with the relevant info inside"""
+
     as_str_template = """
 ---- request ----
 {method} {host}{url}, [timeout={timeout}]
@@ -57,7 +57,7 @@ class HubspotError(ValueError):
         return False
 
     def __init__(self, result, request, err=None):
-        super(HubspotError, self).__init__(result and result.reason or 'Unknown Reason')
+        super(HubspotError, self).__init__(result and result.reason or "Unknown Reason")
         if result is None:
             self.result = EmptyResult()
         else:
@@ -72,13 +72,13 @@ class HubspotError(ValueError):
 
     def __unicode__(self):
         params = {}
-        request_keys = ('method', 'host', 'url', 'data', 'headers', 'timeout', 'body')
-        result_attrs = ('status', 'reason', 'msg', 'body', 'headers')
-        params['error'] = self.err
+        request_keys = ("method", "host", "url", "data", "headers", "timeout", "body")
+        result_attrs = ("status", "reason", "msg", "body", "headers")
+        params["error"] = self.err
         for key in request_keys:
             params[key] = self.request.get(key)
         for attr in result_attrs:
-            params['result_{}'.format(attr)] = getattr(self.result, attr, '')
+            params["result_{}".format(attr)] = getattr(self.result, attr, "")
 
         params = self._dict_vals_to_unicode(params)
         return self.as_str_template.format(**params)
@@ -87,7 +87,7 @@ class HubspotError(ValueError):
         unicode_data = {}
         for key, val in list(data.items()):
             if not val:
-                unicode_data[key] = ''
+                unicode_data[key] = ""
             if isinstance(val, bytes):
                 unicode_data[key] = force_utf8(val)
             elif isinstance(val, str):

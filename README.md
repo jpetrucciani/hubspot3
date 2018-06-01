@@ -1,8 +1,7 @@
 # hubspot3
 
 [![PyPI version](https://badge.fury.io/py/hubspot3.svg)](https://badge.fury.io/py/hubspot3)
-[![Code Health](https://landscape.io/github/jpetrucciani/hubspot3/master/landscape.svg?style=flat)](https://landscape.io/github/jpetrucciani/hubspot3/master)
-
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 A python wrapper around HubSpot\'s APIs, _for python 3_.
 
@@ -10,11 +9,22 @@ Built initially around hapipy, but heavily modified.
 
 ## Quick start
 
+### Installation
+
+```bash
+# on ubuntu you may need this apt package:
+sudo apt-get install libcurl4-openssl-dev
+
+# install hubspot3
+pip install hubspot3
+```
+
 ### Basic Usage
 
 ```python
 from hubspot3.companies import CompaniesClient
-API_KEY = 'your-api-key'
+
+API_KEY = "your-api-key"
 
 client = CompaniesClient(api_key=API_KEY)
 
@@ -28,13 +38,13 @@ for company in client.get_all():
 import json
 from hubspot3.deals import DealsClient
 
-deal_id = '12345'
-API_KEY = 'your_api_key'
+deal_id = "12345"
+API_KEY = "your_api_key"
 
 deals_client = DealsClient(api_key=API_KEY)
 
 params = {
-    'includePropertyVersions': 'true'
+    "includePropertyVersions": "true"
 }  # Note values are camelCase as they appear in the Hubspot Documentation!
 
 deal_data = deals_client.get(deal_id, params=params)
@@ -47,20 +57,20 @@ Be aware that this uses the HubSpot API directly, so you are subject to all of t
 https://developers.hubspot.com/apps/api_guidelines
 
 at the time of writing, HubSpot has the following limits in place for API requests:
+
 - 10 requests per second
 - 40,000 requests per day. This daily limit resets at midnight based on the time zone setting of the HubSpot account
 
-
 ## Extending the BaseClient - thanks [@Guysoft](https://github.com/guysoft)!
 
-Some of the APIs are not yet complete! If you\'d like to use an API that isn\'t yet in this repo, you can extend the BaseClient class! 
+Some of the APIs are not yet complete! If you\'d like to use an API that isn\'t yet in this repo, you can extend the BaseClient class!
 
 ```python
 import json
 from hubspot3.base import BaseClient
 
 
-PIPELINES_API_VERSION = '1'
+PIPELINES_API_VERSION = "1"
 
 
 class PipelineClient(BaseClient):
@@ -74,22 +84,19 @@ class PipelineClient(BaseClient):
     def get_pipelines(self, **options):
         params = {}
 
-        return self._call('pipelines', method='GET', params=params)
+        return self._call("pipelines", method="GET", params=params)
 
     def _get_path(self, subpath):
-        return 'deals/v{}/{}'.format(
-            self.options.get('version') or PIPELINES_API_VERSION,
-            subpath
+        return "deals/v{}/{}".format(
+            self.options.get("version") or PIPELINES_API_VERSION, subpath
         )
 
 
 if __name__ == "__main__":
-    import json
     API_KEY = "your_api_key"
     a = PipelineClient(api_key=API_KEY)
     print(json.dumps(a.get_pipelines()))
 ```
-
 
 ## List of available clients
 
