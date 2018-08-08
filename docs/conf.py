@@ -32,8 +32,6 @@ src_dir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 sys.path.insert(0, src_dir)
 from hubspot3.globals import __version__  # noqa
 
-# sys.path.insert(0, os.path.abspath('.'))
-
 
 # -- Project information -----------------------------------------------------
 
@@ -172,7 +170,7 @@ texinfo_documents = [
         "hubspot3 Documentation",
         author,
         "hubspot3",
-        "One line description of project.",
+        "hubspot library for python3.",
         "Miscellaneous",
     )
 ]
