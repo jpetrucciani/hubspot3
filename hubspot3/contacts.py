@@ -99,7 +99,7 @@ class ContactsClient(BaseClient):
                     "hs_lifecyclestage_customer_date",
                     "source",
                     "source_code",
-                    "campaign_objective"
+                    "campaign_objective",
                     "campaign_name",
                     "campaign_term",
                     "associatedcompanyid",
