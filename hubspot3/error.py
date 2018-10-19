@@ -24,6 +24,8 @@ class HubspotError(ValueError):
     """Any problems get thrown as HubspotError exceptions with the relevant info inside"""
 
     as_str_template = """
+{error_message} 
+
 ---- request ----
 {method} {host}{url}, [timeout={timeout}]
 
@@ -75,6 +77,9 @@ class HubspotError(ValueError):
         request_keys = ("method", "host", "url", "data", "headers", "timeout", "body")
         result_attrs = ("status", "reason", "msg", "body", "headers")
         params["error"] = self.err
+        params["error_message"] = "Hubspot Error"
+        if type(self.result.body) is dict:
+            params["error_message"] = self.result.body.get("message", "Hubspot Error")
         for key in request_keys:
             params[key] = self.request.get(key)
         for attr in result_attrs:
