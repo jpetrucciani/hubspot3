@@ -24,7 +24,7 @@ class HubspotError(ValueError):
     """Any problems get thrown as HubspotError exceptions with the relevant info inside"""
 
     as_str_template = """
-{error_message} 
+{error_message}
 
 ---- request ----
 {method} {host}{url}, [timeout={timeout}]
