@@ -37,3 +37,22 @@ def test_unicode_error():
 def test_error_with_no_result_or_request():
     exc = HubspotError(None, None, "a silly error")
     ok_("a silly error" in exc)
+
+
+def test_error_string_summary():
+    result = MockResult()
+    result.body = {
+        "status": "error",
+        "message": "Property values were not valid"
+    }
+
+    # Make sure string representation of the error starts with the error
+    # message returned by HubSpot.
+    exc = HubspotError(result=result, request={})
+    exc_str_first_line = str(exc).split("\n", 1)[1]
+    ok_(exc_str_first_line.startswith(result.body["message"]))
+
+    # Test falling back to a default error in case response doesn't contain one.
+    exc = HubspotError(result=MockResult(), request={})
+    exc_str_first_line = str(exc).split("\n", 1)[1]
+    ok_(exc_str_first_line.startswith("Hubspot Error"))
