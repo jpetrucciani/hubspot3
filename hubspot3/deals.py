@@ -75,7 +75,7 @@ class DealsClient(BaseClient):
                         "source_code",
                         "city",
                         "createdate",
-                        "numemployees",
+                        "number_of_employees",
                     ],
                     "includeAssociations": True,
                 },
