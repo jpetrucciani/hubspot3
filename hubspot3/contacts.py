@@ -88,6 +88,7 @@ class ContactsClient(BaseClient):
                     "lastname",
                     "company",
                     "contact_city",
+                    "numemployees",
                     "hubspot_owner_id",
                     "lifecyclestage",
                     "hs_lead_status",
