@@ -94,6 +94,41 @@ class DealsClient(BaseClient):
 
         return output
 
+    def get_all_stagehist(self, offset=0, **options):
+        """get all deals in the hubspot account"""
+        finished = False
+        output = []
+        querylimit = 250  # Max value according to docs
+        while not finished:
+            batch = self._call(
+                "deal/paged",
+                method="GET",
+                params={
+                    "limit": querylimit,
+                    "offset": offset,
+                    "properties": [
+                        "dealname",
+                        "dealstage",
+                        "pipeline",
+                    ],
+                    "includeAssociations": True,
+                    "includePropertyVersions": True,
+                },
+                doseq=True,
+                **options
+            )
+            output.extend(
+                [
+                    prettify(deal, id_key="dealId")
+                    for deal in batch["deals"]
+                    if not deal["isDeleted"]
+                ]
+            )
+            finished = not batch["hasMore"]
+            offset = batch["offset"]
+
+        return output    
+    
     def get_recently_created(
         self, limit=100, offset=0, since=None, include_versions=False, **options
     ):
