@@ -41,16 +41,16 @@ def test_error_with_no_result_or_request():
 
 def test_error_string_summary():
     result = MockResult()
-    result.body = {
+    result.body = '''{
         "status": "error",
         "message": "Property values were not valid"
-    }
+    }'''
 
     # Make sure string representation of the error starts with the error
     # message returned by HubSpot.
     exc = HubspotError(result=result, request={})
     exc_str_first_line = str(exc).split("\n", 1)[1]
-    ok_(exc_str_first_line.startswith(result.body["message"]))
+    ok_(exc_str_first_line.startswith("Property values were not valid"))
 
     # Test falling back to a default error in case response doesn't contain one.
     exc = HubspotError(result=MockResult(), request={})

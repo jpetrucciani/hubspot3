@@ -1,6 +1,8 @@
 """
 hubspot3 error helpers
 """
+import json
+
 from hubspot3.utils import force_utf8
 
 
@@ -78,8 +80,12 @@ class HubspotError(ValueError):
         result_attrs = ("status", "reason", "msg", "body", "headers")
         params["error"] = self.err
         params["error_message"] = "Hubspot Error"
-        if type(self.result.body) is dict:
-            params["error_message"] = self.result.body.get("message", "Hubspot Error")
+        if self.result.body:
+            try:
+                result_body = json.loads(self.result.body)
+            except ValueError:
+                result_body = {}
+            params["error_message"] = result_body.get("message", "Hubspot Error")
         for key in request_keys:
             params[key] = self.request.get(key)
         for attr in result_attrs:
