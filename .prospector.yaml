@@ -6,6 +6,7 @@ test-warnings: false
 ignore-patterns:
   - (^|/)\..+
   - .*\.html
+  - docs/.*
 
 pylint:
   disable:

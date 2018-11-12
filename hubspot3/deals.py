@@ -49,11 +49,33 @@ class DealsClient(BaseClient):
             **options
         )
 
-    def get_all(self, offset=0, **options):
-        """get all deals in the hubspot account"""
+    def get_all(self, offset=0, extra_properties=None, **options):
+        """
+        get all deals in the hubspot account.
+        extra_properties: a list used to extend the properties fetched
+        """
         finished = False
         output = []
         querylimit = 250  # Max value according to docs
+
+        # default properties to fetch
+        properties = [
+            "associations",
+            "dealname",
+            "dealstage",
+            "pipeline",
+            "hubspot_owner_id",
+            "description",
+            "closedate",
+            "amount",
+            "dealtype",
+            "createdate",
+        ]
+
+        # append extras if they exist
+        if extra_properties and isinstance(extra_properties, list):
+            properties += extra_properties
+
         while not finished:
             batch = self._call(
                 "deal/paged",
@@ -61,18 +83,7 @@ class DealsClient(BaseClient):
                 params={
                     "limit": querylimit,
                     "offset": offset,
-                    "properties": [
-                        "associations",
-                        "dealname",
-                        "dealstage",
-                        "pipeline",
-                        "hubspot_owner_id",
-                        "description",
-                        "closedate",
-                        "amount",
-                        "dealtype",
-                        "createdate",
-                    ],
+                    "properties": properties,
                     "includeAssociations": True,
                 },
                 doseq=True,
