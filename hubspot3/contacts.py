@@ -63,11 +63,12 @@ class ContactsClient(BaseClient):
         )
 
     def create(self, data=None, **options):
+        """create a contact"""
         data = data or {}
         return self._call("contact", data=data, method="POST", **options)
 
     def update(self, key, data=None, **options):
-
+        """update the given vid with the given data"""
         if not data:
             data = {}
 
@@ -75,34 +76,42 @@ class ContactsClient(BaseClient):
             "contact/vid/{}/profile".format(key), data=data, method="POST", **options
         )
 
-    def get_batch(self, ids):
+    def get_batch(self, ids, extra_properties=None):
+        """given a batch of vids, get more of their info"""
+        # default properties to fetch
+        properties = [
+            "email",
+            "firstname",
+            "lastname",
+            "company",
+            "website",
+            "phone",
+            "address",
+            "city",
+            "state",
+            "zip",
+            "associatedcompanyid",
+        ]
+
+        # append extras if they exist
+        if extra_properties and isinstance(extra_properties, list):
+            properties += extra_properties
+
         batch = self._call(
             "contact/vids/batch",
             method="GET",
             doseq=True,
-            params={
-                "vid": ids,
-                "property": [
-                    "email",
-                    "firstname",
-                    "lastname",
-                    "company",
-                    "website",
-                    "phone",
-                    "address",
-                    "city",
-                    "state",
-                    "zip",
-                    "associatedcompanyid",
-                ],
-            },
+            params={"vid": ids, "property": properties},
         )
         # It returns a dict with IDs as keys
         return [prettify(batch[contact], id_key="vid") for contact in batch]
 
-    def get_all(self, **options):
-        # Can't get phone number from a get-all, so we just grab IDs and
-        # then have to make ANOTHER call in batches
+    def get_all(self, extra_properties=None, **options):
+        """
+        get all contacts in hubspot, fetching additional properties if passed in
+        Can't get phone number from a get-all, so we just grab IDs and
+        then have to make ANOTHER call in batches
+        """
         finished = False
         output = []
         offset = 0
@@ -115,7 +124,10 @@ class ContactsClient(BaseClient):
                 **options
             )
             output.extend(
-                self.get_batch([contact["vid"] for contact in batch["contacts"]])
+                self.get_batch(
+                    [contact["vid"] for contact in batch["contacts"]],
+                    extra_properties=extra_properties,
+                )
             )
             finished = not batch["has-more"]
             offset = batch["vid-offset"]
