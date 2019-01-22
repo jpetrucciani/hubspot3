@@ -37,11 +37,31 @@ class CompaniesClient(BaseClient):
     def get(self, companyid, **options):
         return self._call("companies/{}".format(companyid), method="GET", **options)
 
-    def get_all(self, **options):
+    def get_all(self, extra_properties=None, **options):
         finished = False
         output = []
         offset = 0
         querylimit = 250  # Max value according to docs
+
+        # default properties to fetch
+        properties = [
+            "name",
+            "description",
+            "address",
+            "address2",
+            "city",
+            "state",
+            "story",
+            "hubspot_owner_id",
+        ]
+
+        # append extras if they exist
+        if extra_properties:
+            if isinstance(extra_properties, list):
+                properties += extra_properties
+            if isinstance(extra_properties, str):
+                properties.append(extra_properties)
+
         while not finished:
             batch = self._call(
                 "companies/paged",
@@ -50,16 +70,7 @@ class CompaniesClient(BaseClient):
                 params={
                     "limit": querylimit,
                     "offset": offset,
-                    "properties": [
-                        "name",
-                        "description",
-                        "address",
-                        "address2",
-                        "city",
-                        "state",
-                        "story",
-                        "hubspot_owner_id",
-                    ],
+                    "properties": properties,
                 },
                 **options
             )

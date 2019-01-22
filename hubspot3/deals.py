@@ -73,8 +73,11 @@ class DealsClient(BaseClient):
         ]
 
         # append extras if they exist
-        if extra_properties and isinstance(extra_properties, list):
-            properties += extra_properties
+        if extra_properties:
+            if isinstance(extra_properties, list):
+                properties += extra_properties
+            if isinstance(extra_properties, str):
+                properties.append(extra_properties)
 
         while not finished:
             batch = self._call(
