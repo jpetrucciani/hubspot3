@@ -25,17 +25,45 @@ class CompaniesClient(BaseClient):
         )
 
     def create(self, data=None, **options):
+        """create a new company"""
         data = data or {}
         return self._call("companies/", data=data, method="POST", **options)
 
-    def update(self, key, data=None, **options):
+    def update(self, company_id, data=None, **options):
+        """update the given company with data"""
         data = data or {}
         return self._call(
-            "companies/{}".format(key), data=data, method="PUT", **options
+            "companies/{}".format(company_id), data=data, method="PUT", **options
         )
 
-    def get(self, companyid, **options):
-        return self._call("companies/{}".format(companyid), method="GET", **options)
+    def get(self, company_id, **options):
+        """get a single company by it's ID"""
+        return self._call("companies/{}".format(company_id), method="GET", **options)
+
+    def search_domain(self, domain, limit=1, extra_properties=None, **options):
+        """searches for companies by domain name. limit is max'd at 100"""
+        # default properties to fetch
+        properties = [
+            "domain",
+            "createdate",
+            "name",
+            "hs_lastmodifieddate",
+            "hubspot_owner_id",
+        ]
+
+        # append extras if they exist
+        if extra_properties:
+            if isinstance(extra_properties, list):
+                properties += extra_properties
+            if isinstance(extra_properties, str):
+                properties.append(extra_properties)
+
+        return self._call(
+            "domains/{}/companies".format(domain),
+            method="POST",
+            data={"limit": limit, "requestOptions": {"properties": properties}},
+            **options,
+        )
 
     def get_all(self, extra_properties=None, **options):
         finished = False
@@ -72,7 +100,7 @@ class CompaniesClient(BaseClient):
                     "offset": offset,
                     "properties": properties,
                 },
-                **options
+                **options,
             )
             output.extend(
                 [
