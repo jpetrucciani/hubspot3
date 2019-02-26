@@ -113,3 +113,45 @@ class CompaniesClient(BaseClient):
             offset = batch["offset"]
 
         return output
+
+    def _get_recent(self, recency_type, **options):
+        """
+          Returns either list of recently modified companies or recently created companies, depending on
+          recency_type passed in. Both API endpoints take identical parameters and return identical formats,
+          they differ only in the URLs (companies/recent/created or companies/recent/modified)
+          @see: https://developers.hubspot.com/docs/methods/companies/get_companies_modified
+          @see: https://developers.hubspot.com/docs/methods/companies/get_companies_created
+        """
+        finished = False
+        output = []
+        offset = 0
+        querylimit = 250  # Max value according to docs
+
+        while not finished:
+            batch = self._call(
+                "companies/recent/%s" % recency_type,
+                method="GET",
+                doseq=True,
+                params={
+                    "count": querylimit,
+                    "offset": offset
+                },
+                **options,
+            )
+            output.extend(
+                [
+                    prettify(company, id_key="companyId")
+                    for company in batch["results"]
+                    if not company["isDeleted"]
+                ]
+            )
+            finished = not batch["hasMore"]
+            offset = batch["offset"]
+
+        return output
+
+    def get_recently_modified(self, **options):
+        return self._get_recent('modified', **options)
+
+    def get_recently_created(self, **options):
+        return self._get_recent('created', **options)
