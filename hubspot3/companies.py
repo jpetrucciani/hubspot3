@@ -36,6 +36,10 @@ class CompaniesClient(BaseClient):
             "companies/{}".format(company_id), data=data, method="PUT", **options
         )
 
+    def delete(self, company_id, **options):
+        """delete a company"""
+        return self._call("companies/{}".format(company_id), method="DELETE", **options)
+
     def get(self, company_id, **options):
         """get a single company by it's ID"""
         return self._call("companies/{}".format(company_id), method="GET", **options)
