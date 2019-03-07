@@ -31,7 +31,7 @@ def refresh_access_token(refresh_token, client_id):
     payload = "refresh_token={}&client_id={}&grant_type=refresh_token".format(
         refresh_token, client_id
     )
-    url = "{}/auth/v1/refresh".format(BASE_URL)
+    url = "{}/oauth/v1/token".format(BASE_URL)
     result = requests.post(url, data=payload)
     return result.text
 

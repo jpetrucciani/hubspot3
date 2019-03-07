@@ -50,11 +50,15 @@ class BaseClient(object):
         mixins.reverse()
         for mixin_class in mixins:
             if mixin_class not in self.__class__.__bases__:
-                self.__class__.__bases__ = (mixin_class,) + self.__class__.__bases__
+                self.__class__.__bases__ = (
+                    mixin_class,
+                ) + self.__class__.__bases__
 
         self.api_key = api_key or extra_options.get("api_key")
         self.access_token = access_token or extra_options.get("access_token")
-        self.refresh_token = refresh_token or extra_options.get("refresh_token")
+        self.refresh_token = refresh_token or extra_options.get(
+            "refresh_token"
+        )
         self.client_id = client_id or extra_options.get("client_id")
         self.log = utils.get_log("hubspot3")
         if self.api_key and self.access_token:
@@ -88,11 +92,16 @@ class BaseClient(object):
             # Be sure that we're consistent about what access_token is being used
             # If one was provided at instantiation, that is always used.  If it was not
             # but one was provided as part of the method invocation, we persist it
-            if params.get("access_token") and not self.access_token:
-                self.access_token = params.get("access_token")
-            params["access_token"] = self.access_token
+            headers = opts.get("headers") or {}
+            if headers.get("Authorization") and not self.access_token:
+                self.access_token = headers.get("Authorization").split(" ")[-1]
+            headers.update(
+                {"Authorization": "Bearer {}".format(self.access_token)}
+            )
 
-    def _prepare_request(self, subpath, params, data, opts, doseq=False, query=""):
+    def _prepare_request(
+        self, subpath, params, data, opts, doseq=False, query=""
+    ):
         params = params or {}
         self._prepare_request_auth(subpath, params, data, opts)
 
@@ -105,7 +114,9 @@ class BaseClient(object):
         if query and not query.startswith("&"):
             query = "&" + query
         url = opts.get("url") or "/{}?{}{}".format(
-            self._get_path(subpath), urllib.parse.urlencode(params, doseq), query
+            self._get_path(subpath),
+            urllib.parse.urlencode(params, doseq),
+            query,
         )
         headers = opts.get("headers") or {}
         headers.update(
@@ -147,10 +158,14 @@ class BaseClient(object):
         except Exception:
             raise HubspotTimeout(None, request, traceback.format_exc())
 
-        encoding = [i[1] for i in result.getheaders() if i[0] == "content-encoding"]
+        encoding = [
+            i[1] for i in result.getheaders() if i[0] == "content-encoding"
+        ]
         possibly_encoded = result.read()
         try:
-            possibly_encoded = zlib.decompress(possibly_encoded, 16 + zlib.MAX_WBITS)
+            possibly_encoded = zlib.decompress(
+                possibly_encoded, 16 + zlib.MAX_WBITS
+            )
         except Exception:
             pass
         result.body = self._process_body(
@@ -162,7 +177,11 @@ class BaseClient(object):
             raise HubspotNotFound(result, request)
         elif result.status == 401:
             raise HubspotUnauthorized(result, request)
-        elif result.status >= 400 and result.status < 500 or result.status == 501:
+        elif (
+            result.status >= 400
+            and result.status < 500
+            or result.status == 501
+        ):
             raise HubspotBadRequest(result, request)
         elif result.status >= 500:
             raise HubspotServerError(result, request)
@@ -238,7 +257,9 @@ class BaseClient(object):
                 break
             try:
                 try_count += 1
-                connection = opts["connection_type"](opts["api_base"], **kwargs)
+                connection = opts["connection_type"](
+                    opts["api_base"], **kwargs
+                )
                 request_info = self._create_request(
                     connection, method, url, headers, data
                 )
@@ -260,11 +281,15 @@ class BaseClient(object):
                         decoded = json.loads(token_response)
                         self.access_token = decoded["access_token"]
                         self.log.info(
-                            "Retrying with new token {}".format(self.access_token)
+                            "Retrying with new token {}".format(
+                                self.access_token
+                            )
                         )
                     except Exception as exception:
                         self.log.error(
-                            "Unable to refresh access_token: {}".format(exception)
+                            "Unable to refresh access_token: {}".format(
+                                exception
+                            )
                         )
                         raise
                     return self._call_raw(
@@ -312,7 +337,9 @@ class BaseClient(object):
                     raise
                 self._prepare_request_retry(method, url, headers, data)
                 self.log.warning(
-                    "HubspotError {} calling {}, retrying".format(exception, url)
+                    "HubspotError {} calling {}, retrying".format(
+                        exception, url
+                    )
                 )
             # exponential back off - wait 0 seconds, 1 second, 3 seconds, 7 seconds, 15 seconds, etc
             time.sleep((pow(2, try_count - 1) - 1) * self.sleep_multiplier)
