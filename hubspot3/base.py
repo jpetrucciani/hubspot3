@@ -88,16 +88,6 @@ class BaseClient(object):
     def _prepare_request_auth(self, subpath, params, data, opts):
         if self.api_key:
             params["hapikey"] = params.get("hapikey") or self.api_key
-        else:
-            # Be sure that we're consistent about what access_token is being used
-            # If one was provided at instantiation, that is always used.  If it was not
-            # but one was provided as part of the method invocation, we persist it
-            headers = opts.get("headers") or {}
-            if headers.get("Authorization") and not self.access_token:
-                self.access_token = headers.get("Authorization").split(" ")[-1]
-            headers.update(
-                {"Authorization": "Bearer {}".format(self.access_token)}
-            )
 
     def _prepare_request(
         self, subpath, params, data, opts, doseq=False, query=""
@@ -125,6 +115,10 @@ class BaseClient(object):
                 "Content-Type": opts.get("content_type") or "application/json",
             }
         )
+        if self.access_token:
+            headers.update(
+                {"Authorization": "Bearer {}".format(self.access_token)}
+            )
 
         if data and headers["Content-Type"] == "application/json":
             data = json.dumps(data)
