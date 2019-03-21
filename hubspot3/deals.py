@@ -18,7 +18,7 @@ class DealsClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(DealsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hapi.deals")
+        self.log = logging_helper.get_log("hubspot3.deals")
 
     def _get_path(self, subpath):
         return "deals/v{}/{}".format(

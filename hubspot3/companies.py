@@ -17,7 +17,7 @@ class CompaniesClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(CompaniesClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hapi.companies")
+        self.log = logging_helper.get_log("hubspot3.companies")
 
     def _get_path(self, subpath):
         return "companies/v{}/{}".format(
@@ -136,10 +136,7 @@ class CompaniesClient(BaseClient):
                 "companies/recent/%s" % recency_type,
                 method="GET",
                 doseq=True,
-                params={
-                    "count": querylimit,
-                    "offset": offset
-                },
+                params={"count": querylimit, "offset": offset},
                 **options,
             )
             output.extend(
@@ -155,7 +152,7 @@ class CompaniesClient(BaseClient):
         return output
 
     def get_recently_modified(self, **options):
-        return self._get_recent('modified', **options)
+        return self._get_recent("modified", **options)
 
     def get_recently_created(self, **options):
-        return self._get_recent('created', **options)
+        return self._get_recent("created", **options)

@@ -3,9 +3,7 @@ hubspot crm_pipelines api
 """
 from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify
 
-import urllib.parse
 
 CRM_PIPELINES_API_VERSION = "1"
 
@@ -18,7 +16,7 @@ class PipelinesClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(PipelinesClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hapi.crm-pipelines")
+        self.log = logging_helper.get_log("hubspot3.crm-pipelines")
 
     def _get_path(self, subpath):
         return "crm-pipelines/v{}/{}".format(
@@ -27,11 +25,18 @@ class PipelinesClient(BaseClient):
 
     def create(self, object_type, data=None, **options):
         data = data or {}
-        return self._call("pipeline/{}".format(object_type), data=data, method="POST", **options)
+        return self._call(
+            "pipeline/{}".format(object_type), data=data, method="POST", **options
+        )
 
     def update(self, object_type, key, data=None, **options):
         data = data or {}
-        return self._call("pipeline/{}/{}".format(object_type, key), data=data, method="PUT", **options)
+        return self._call(
+            "pipeline/{}/{}".format(object_type, key),
+            data=data,
+            method="PUT",
+            **options
+        )
 
     def get_all(self, object_type="deals", offset=0, extra_properties=None, **options):
         """
@@ -39,12 +44,8 @@ class PipelinesClient(BaseClient):
         object_type (default='deals'): must be 'deals' or 'tickets'
         extra_properties: a list used to extend the properties fetched
         """
-        finished = False
         output = []
 
-        output = self._call("pipelines/{}".format(object_type),
-                            method="GET",
-                            **options)
-
+        output = self._call("pipelines/{}".format(object_type), method="GET", **options)
 
         return output["results"]

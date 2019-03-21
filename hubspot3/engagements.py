@@ -16,7 +16,7 @@ class EngagementsClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(EngagementsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hapi.engagements")
+        self.log = logging_helper.get_log("hubspot3.engagements")
 
     def _get_path(self, subpath):
         return "engagements/v{}/{}".format(

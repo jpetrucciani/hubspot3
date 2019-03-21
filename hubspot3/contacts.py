@@ -16,8 +16,9 @@ class ContactsClient(BaseClient):
     """
 
     def __init__(self, *args, **kwargs):
+        """initialize a contacts client"""
         super(ContactsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hapi.contacts")
+        self.log = logging_helper.get_log("hubspot3.contacts")
 
     def _get_path(self, subpath):
         return "contacts/v{}/{}".format(CONTACTS_API_VERSION, subpath)
