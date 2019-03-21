@@ -2,6 +2,9 @@
 hubspot3
 ========
 
+.. image:: https://travis-ci.org/jpetrucciani/hubspot3.svg?branch=master
+    :target: https://travis-ci.org/jpetrucciani/hubspot3
+
 
 .. image:: https://badge.fury.io/py/hubspot3.svg
    :target: https://badge.fury.io/py/hubspot3
