@@ -7,7 +7,7 @@ from setuptools import setup
 
 
 with open("README.rst") as readme:
-    long_description = readme.read()
+    LONG_DESCRIPTION = readme.read()
 
 
 setup(
@@ -17,7 +17,7 @@ setup(
         "A python wrapper around HubSpot's APIs, for python 3. "
         "Built initially around hapipy, but heavily modified."
     ),
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     author="HubSpot Dev Team, Jacobi Petrucciani",
     author_email="jacobi@mimirhq.com",
     url="https://github.com/jpetrucciani/hubspot3.git",

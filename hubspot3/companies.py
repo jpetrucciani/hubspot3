@@ -70,6 +70,7 @@ class CompaniesClient(BaseClient):
         )
 
     def get_all(self, extra_properties=None, **options):
+        """get all companies"""
         finished = False
         output = []
         offset = 0
@@ -120,11 +121,12 @@ class CompaniesClient(BaseClient):
 
     def _get_recent(self, recency_type, **options):
         """
-          Returns either list of recently modified companies or recently created companies, depending on
-          recency_type passed in. Both API endpoints take identical parameters and return identical formats,
-          they differ only in the URLs (companies/recent/created or companies/recent/modified)
-          @see: https://developers.hubspot.com/docs/methods/companies/get_companies_modified
-          @see: https://developers.hubspot.com/docs/methods/companies/get_companies_created
+        Returns either list of recently modified companies or recently created companies,
+        depending on recency_type passed in. Both API endpoints take identical parameters
+        and return identical formats, they differ only in the URLs
+        (companies/recent/created or companies/recent/modified)
+        @see: https://developers.hubspot.com/docs/methods/companies/get_companies_modified
+        @see: https://developers.hubspot.com/docs/methods/companies/get_companies_created
         """
         finished = False
         output = []

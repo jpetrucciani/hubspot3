@@ -87,6 +87,14 @@ at the time of writing, HubSpot has the following limits in place for API reques
 * 10 requests per second
 * 40,000 requests per day. This daily limit resets at midnight based on the time zone setting of the HubSpot account
 
+Retrying API Calls
+------------------
+
+By default, hubspot3 will attempt to retry all API calls up to 2 times upon failure.
+
+If you'd like to override this behavior, you can add a ``number_retries`` keyword argument to any Client constructor, or to individual API calls.
+
+
 Extending the BaseClient - thanks `@Guysoft <https://github.com/guysoft>`_\ !
 -------------------------------------------------------------------------------
 
@@ -141,6 +149,7 @@ List of available clients
        companies.py:         hubspot companies api
        contact_lists.py:     hubspot contact lists api
        contacts.py:          hubspot contacts api
+       crm_pipelines.py:     hubspot crm_pipelines api
        deals.py:             hubspot deals api
        engagements.py:       hubspot engagements api
        error.py:             hubspot3 error helpers
