@@ -6,13 +6,10 @@ from hubspot3.settings import SettingsClient
 
 
 class SettingsClientTest(unittest.TestCase):
-    """ Unit tests for the HubSpot Settings API Python client.
-
+    """
+    Unit tests for the HubSpot Settings API Python client.
     This file contains some unittest tests for the Settings API.
-
     Docs: http://docs.hubapi.com/wiki/Settings_API
-
-    Questions, comments: http://docs.hubapi.com/wiki/Discussion_Group
     """
 
     def setUp(self):

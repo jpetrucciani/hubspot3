@@ -149,6 +149,7 @@ List of available clients
        companies.py:         hubspot companies api
        contact_lists.py:     hubspot contact lists api
        contacts.py:          hubspot contacts api
+       crm_associations.py:  hubspot crm_associations api
        crm_pipelines.py:     hubspot crm_pipelines api
        deals.py:             hubspot deals api
        engagements.py:       hubspot engagements api

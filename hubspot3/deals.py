@@ -1,11 +1,11 @@
 """
 hubspot deals api
 """
+import urllib.parse
 from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify
 
-import urllib.parse
 
 DEALS_API_VERSION = "1"
 
@@ -13,7 +13,7 @@ DEALS_API_VERSION = "1"
 class DealsClient(BaseClient):
     """
     The hubspot3 Deals client uses the _make_request method to call the API
-    for data.  It returns a python object translated from the json return
+    for data.  It returns a python object translated from the json returned
     """
 
     def __init__(self, *args, **kwargs):
@@ -56,7 +56,7 @@ class DealsClient(BaseClient):
         """
         finished = False
         output = []
-        querylimit = 250  # Max value according to docs
+        query_limit = 250  # Max value according to docs
 
         # default properties to fetch
         properties = [
@@ -84,7 +84,7 @@ class DealsClient(BaseClient):
                 "deal/paged",
                 method="GET",
                 params={
-                    "limit": querylimit,
+                    "limit": query_limit,
                     "offset": offset,
                     "properties": properties,
                     "includeAssociations": True,
@@ -115,11 +115,11 @@ class DealsClient(BaseClient):
         """
         finished = False
         output = []
-        querylimit = 100  # max according to the docs
+        query_limit = 100  # max according to the docs
 
         while not finished:
             params = {
-                "count": querylimit,
+                "count": query_limit,
                 "offset": offset,
                 "includePropertyVersions": include_versions,
             }
@@ -155,11 +155,11 @@ class DealsClient(BaseClient):
         """
         finished = False
         output = []
-        querylimit = 100  # max according to the docs
+        query_limit = 100  # max according to the docs
 
         while not finished:
             params = {
-                "count": querylimit,
+                "count": query_limit,
                 "offset": offset,
                 "includePropertyVersions": include_versions,
             }

@@ -74,7 +74,7 @@ MAX_BATCH = 100
 class LeadsClient(BaseClient):
     """
     The hubspot3 Leads client uses the _make_request method to call the API for data.
-    It returns a python object translated from the json return
+    It returns a python object translated from the json returned
     """
 
     def __init__(self, *args, **kwargs):
@@ -97,6 +97,7 @@ class LeadsClient(BaseClient):
         return new_options
 
     def _get_path(self, subpath):
+        """get the full api url for the given subpath on this client"""
         return "leads/v{}/{}".format(
             self.options.get("version") or LEADS_API_VERSION, subpath
         )

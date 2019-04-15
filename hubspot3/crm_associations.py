@@ -1,6 +1,10 @@
+"""
+hubspot crm_associations api
+"""
 from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
 from enum import Enum
+
 
 ASSOCIATIONS_API_VERSION = "1"
 
@@ -33,8 +37,9 @@ class Definitions(Enum):
 
 
 class CRMAssociationsClient(BaseClient):
-    """Associations extension for Associations API endpoint
-    :See: https://developers.hubspot.com/docs/methods/crm-associations/crm-associations-overview
+    """
+    Associations extension for Associations API endpoint
+    :see: https://developers.hubspot.com/docs/methods/crm-associations/crm-associations-overview
     """
 
     def __init__(self, *args, **kwargs):
@@ -47,25 +52,23 @@ class CRMAssociationsClient(BaseClient):
         )
 
     def get(self, object_id, definition: Definitions):
-        """get all associations for the defined object
-
-        :param object_id: Object ID for the object your looking up
-        :param definition: Definition ID for the objects your looking for associations of
         """
-
+        get all associations for the defined object
+        :param object_id: Object ID for the object you're looking up
+        :param definition: Definition ID for the objects you're looking for associations of
+        """
         finished = False
         output = []
         offset = 0
-        querylimit = 100  # Max value according to docs
+        query_limit = 100  # Max value according to docs
 
         while not finished:
             batch = self._call(
-                "associations/{}/{}/{}".format(object_id, 'HUBSPOT_DEFINED', definition.value),
+                "associations/{}/{}/{}".format(
+                    object_id, "HUBSPOT_DEFINED", definition.value
+                ),
                 method="GET",
-                params={
-                    "limit": querylimit,
-                    "offset": offset,
-                },
+                params={"limit": query_limit, "offset": offset},
             )
             output.extend([id_ for id_ in batch["results"]])
             finished = not batch["hasMore"]
@@ -74,24 +77,23 @@ class CRMAssociationsClient(BaseClient):
         return output
 
     def get_all(self, object_id, definition: Definitions, **options):
-        """get all crm associations
-
-        :param object_id: Object ID for the object your looking up
-        :param definition: Definition ID for the objects your looking for associations of
+        """
+        get all crm associations
+        :param object_id: Object ID for the object you're looking up
+        :param definition: Definition ID for the objects you're looking for associations of
         """
         finished = False
         output = []
         offset = 0
-        querylimit = 100  # Max value according to docs
+        query_limit = 100  # Max value according to docs
 
         while not finished:
             batch = self._call(
-                "associations/{}/{}/{}".format(object_id, 'HUBSPOT_DEFINED', definition.value),
+                "associations/{}/{}/{}".format(
+                    object_id, "HUBSPOT_DEFINED", definition.value
+                ),
                 method="GET",
-                params={
-                    "limit": querylimit,
-                    "offset": offset,
-                },
+                params={"limit": query_limit, "offset": offset},
             )
             output.extend([id_ for id_ in batch["results"]])
             finished = not batch["hasMore"]
@@ -101,10 +103,10 @@ class CRMAssociationsClient(BaseClient):
 
     def create(self, from_object, to_object, definition: Definitions, **options):
         """
-        Create a hubspot association
+        create a hubspot association
         :param from_object: ID of object to relate
         :param to_object: ID of object to relate to
-        :param definition: Definition ID for the objects your looking for associations of
+        :param definition: Definition ID for the objects you're looking for associations of
         """
         return self._call(
             "associations",
@@ -112,7 +114,7 @@ class CRMAssociationsClient(BaseClient):
             data={
                 "fromObjectId": from_object,
                 "toObjectId": to_object,
-                "category": 'HUBSPOT_DEFINED',
+                "category": "HUBSPOT_DEFINED",
                 "definitionId": definition.value,
             },
             **options
@@ -120,10 +122,10 @@ class CRMAssociationsClient(BaseClient):
 
     def delete(self, from_object, to_object, definition: Definitions, **options):
         """
-        Create a hubspot association
+        delete a hubspot association
         :param from_object: ID of object to relate
         :param to_object: ID of object to relate to
-        :param definition: Definition ID for the objects your looking for associations of
+        :param definition: Definition ID for the objects you're looking for associations of
         """
         return self._call(
             "associations/delete",
@@ -131,7 +133,7 @@ class CRMAssociationsClient(BaseClient):
             data={
                 "fromObjectId": from_object,
                 "toObjectId": to_object,
-                "category": 'HUBSPOT_DEFINED',
+                "category": "HUBSPOT_DEFINED",
                 "definitionId": definition.value,
             },
             **options

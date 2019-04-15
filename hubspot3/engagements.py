@@ -11,7 +11,7 @@ ENGAGEMENTS_API_VERSION = "1"
 class EngagementsClient(BaseClient):
     """
     The hubspot3 Engagements client uses the _make_request method to call the API
-    for data.  It returns a python object translated from the json return
+    for data.  It returns a python object translated from the json returned
     """
 
     def __init__(self, *args, **kwargs):
@@ -30,16 +30,21 @@ class EngagementsClient(BaseClient):
         )
 
     def get_associated(self, object_type, object_id, **options):
+        """
+        get all engagements associated with the given object
+        :param object_type: type of object to get associations on [CONTACT, COMPANY, DEAL]
+        :param object_id: ID of the object to get associations on
+        """
         finished = False
         output = []
-        querylimit = 100  # Max value according to docs
+        query_limit = 100  # Max value according to docs
         offset = 0
         while not finished:
             print(offset)
             batch = self._call(
                 "engagements/associated/{}/{}/paged".format(object_type, object_id),
                 method="GET",
-                params={"limit": querylimit, "offset": offset},
+                params={"limit": query_limit, "offset": offset},
                 **options
             )
             print(len(batch["results"]))
@@ -60,15 +65,16 @@ class EngagementsClient(BaseClient):
         )
 
     def get_all(self, **options):
+        """get all engagements"""
         finished = False
         output = []
-        querylimit = 250  # Max value according to docs
+        query_limit = 250  # Max value according to docs
         offset = 0
         while not finished:
             batch = self._call(
                 "engagements/paged",
                 method="GET",
-                params={"limit": querylimit, "offset": offset},
+                params={"limit": query_limit, "offset": offset},
                 **options
             )
             output.extend(batch["results"])

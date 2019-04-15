@@ -11,7 +11,7 @@ CRM_PIPELINES_API_VERSION = "1"
 class PipelinesClient(BaseClient):
     """
     The hubspot3 Pipelines client uses the _make_request method to call the API
-    for data.  It returns a python object translated from the json return
+    for data.  It returns a python object translated from the json returned
     """
 
     def __init__(self, *args, **kwargs):

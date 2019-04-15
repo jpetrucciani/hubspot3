@@ -1,7 +1,5 @@
-# coding: utf-8
 import unittest
 import uuid
-
 import json
 from nose.plugins.attrib import attr
 from . import helper
@@ -9,11 +7,9 @@ from hubspot3.keywords import KeywordsClient
 
 
 class KeywordsClientTest(unittest.TestCase):
-    """ Unit tests for the HubSpot Keyword API Python client.
-
+    """
+    Unit tests for the HubSpot Keyword API Python client.
     This file contains some unittest tests for the Keyword API.
-
-    Questions, comments: http://docs.hubapi.com/wiki/Discussion_Group
     """
 
     def setUp(self):

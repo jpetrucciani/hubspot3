@@ -10,16 +10,13 @@ SETTINGS_API_VERSION = "v1"
 
 class SettingsClient(BaseClient):
     """
-    Basic Python client for the HubSpot Settings API.
-
+    hubspot3 Settings client
     Use this to read settings for a given API key, as well as update a setting.
-
-    Reference docs: http://docs.hubapi.com/wiki/Settings_API
-
-    Comments, questions, etc: http://docs.hubapi.com/wiki/Discussion_Group
+    :see: http://docs.hubapi.com/wiki/Settings_API
     """
 
     def _get_path(self, subpath):
+        """get the full api url for the given subpath on this client"""
         return "settings/{}/{}".format(SETTINGS_API_VERSION, subpath)
 
     def get_settings(self, **options):
@@ -44,7 +41,7 @@ class SettingsClient(BaseClient):
         )
 
     def delete_setting(self, name, **options):
-        """"Deletes" a specific setting by emptying out its value."""
+        """Deletes a specific setting by emptying out its value."""
         params = {}
         if name:
             params["name"] = name

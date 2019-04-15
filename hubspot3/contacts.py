@@ -12,7 +12,7 @@ CONTACTS_API_VERSION = "1"
 class ContactsClient(BaseClient):
     """
     The hubspot3 Contacts client uses the _make_request method to call the
-    API for data.  It returns a python object translated from the json return
+    API for data.  It returns a python object translated from the json returned
     """
 
     def __init__(self, *args, **kwargs):
@@ -119,12 +119,12 @@ class ContactsClient(BaseClient):
         finished = False
         output = []
         offset = 0
-        querylimit = 100  # Max value according to docs
+        query_limit = 100  # Max value according to docs
         while not finished:
             batch = self._call(
                 "lists/all/contacts/all",
                 method="GET",
-                params={"count": querylimit, "vidOffset": offset},
+                params={"count": query_limit, "vidOffset": offset},
                 **options
             )
             output.extend(

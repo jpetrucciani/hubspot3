@@ -67,11 +67,11 @@ Below is an example of how to deal with pagination from the DealsClient included
         """
         finished = False
         output = []
-        querylimit = 100  # max according to the docs
+        query_limit = 100  # max according to the docs
 
         while not finished:
             params = {
-                "count": querylimit,
+                "count": query_limit,
                 "offset": offset,
                 "includePropertyVersions": include_versions,
             }

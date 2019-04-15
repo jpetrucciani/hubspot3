@@ -10,15 +10,12 @@ PROSPECTS_API_VERSION = "v1"
 class ProspectsClient(BaseClient):
     """
     Python client for the HubSpot Prospects API.
-
     This client provides convenience methods for the HubSpot Prospects API.
     It is a work in progress, and contributions are welcome.
-
-    Questions, comments, etc: http://docs.hubapi.com/wiki/Discussion_Group.
     """
 
     def _get_path(self, subpath):
-        """returns the given path for the api call"""
+        """get the full api url for the given subpath on this client"""
         return "prospects/{}/{}".format(PROSPECTS_API_VERSION, subpath)
 
     def get_prospects(self, offset=None, orgoffset=None, limit=None):

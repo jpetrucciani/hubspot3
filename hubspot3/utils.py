@@ -17,7 +17,7 @@ def get_log(name):
     return logger
 
 
-def auth_checker(access_token):
+def auth_checker(access_token: str) -> int:
     """Do a simple api request using the access token"""
     url = "{}/contacts/v1/lists/all/contacts/all?count=1&offset=0&access_token={}".format(
         BASE_URL, access_token
@@ -26,7 +26,7 @@ def auth_checker(access_token):
     return result.status_code
 
 
-def refresh_access_token(refresh_token, client_id):
+def refresh_access_token(refresh_token: str, client_id: str) -> str:
     """Refreshes an OAuth access token"""
     payload = "refresh_token={}&client_id={}&grant_type=refresh_token".format(
         refresh_token, client_id

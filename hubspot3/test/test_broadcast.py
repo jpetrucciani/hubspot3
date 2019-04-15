@@ -6,11 +6,9 @@ from hubspot3.broadcast import Broadcast, BroadcastClient
 
 
 class BroadcastClientTest(unittest.TestCase):
-    """ Unit tests for the HubSpot Broadcast API Python client.
-
+    """
+    Unit tests for the HubSpot Broadcast API Python client.
     This file contains some unittest tests for the Broadcast API.
-
-    Questions, comments: http://docs.hubapi.com/wiki/Discussion_Group
     """
 
     def setUp(self):
