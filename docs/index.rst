@@ -7,7 +7,7 @@ hubspot3
 ========
 
 
-A python wrapper around HubSpot's APIs, for *python 3*
+A python wrapper around HubSpot's APIs, for *python 3.5+*
 
 
 hubspot3's source code hosted on `GitHub <https://github.com/jpetrucciani/hubspot3>`_.

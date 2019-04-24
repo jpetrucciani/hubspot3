@@ -35,7 +35,7 @@ from hubspot3.globals import __version__  # noqa
 # -- Project information -----------------------------------------------------
 
 project = "hubspot3"
-copyright = "2018, Jacobi Petrucciani"
+copyright = "2019, Jacobi Petrucciani"
 author = "Jacobi Petrucciani"
 
 # The short X.Y version

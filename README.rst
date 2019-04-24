@@ -21,7 +21,12 @@ hubspot3
    :alt: Documentation Status
 
 
-A python wrapper around HubSpot\'s APIs, *for python 3*.
+.. image:: https://img.shields.io/badge/python-3.5+-blue.svg
+   :target: https://www.python.org/downloads/release/python-350/
+   :alt: Python 3.5+ supported
+
+
+A python wrapper around HubSpot\'s APIs, *for python 3.5+*.
 
 Built initially around hapipy, but heavily modified.
 
@@ -164,7 +169,7 @@ List of available clients
 Testing
 -------
 
-I'm currently working on rewriting many of the tests with `pytest <https://docs.pytest.org/en/latest/>`_\ to work against the public API and ensure that we get the correct type of mock data back. These tests are currently in a **very** early state - I'll be working soon to get them all built out.
+I'm currently working on rewriting many of the tests with `pytest <https://docs.pytest.org/en/latest/>`_\  to work against the public API and ensure that we get the correct type of mock data back. These tests are currently in a **very** early state - I'll be working soon to get them all built out.
 
 .. code-block:: bash
 
