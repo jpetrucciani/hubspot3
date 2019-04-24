@@ -13,11 +13,12 @@ import zlib
 from hubspot3 import utils
 from hubspot3.utils import force_utf8
 from hubspot3.error import (
-    HubspotError,
     HubspotBadRequest,
+    HubspotConflict,
+    HubspotError,
     HubspotNotFound,
-    HubspotTimeout,
     HubspotServerError,
+    HubspotTimeout,
     HubspotUnauthorized,
 )
 
@@ -152,6 +153,8 @@ class BaseClient(object):
             raise HubspotNotFound(result, request)
         elif result.status == 401:
             raise HubspotUnauthorized(result, request)
+        elif result.status == 409:
+            raise HubspotConflict(result, request)
         elif result.status >= 400 and result.status < 500 or result.status == 501:
             raise HubspotBadRequest(result, request)
         elif result.status >= 500:

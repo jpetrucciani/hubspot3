@@ -35,9 +35,6 @@ Installation
 
 .. code-block:: bash
 
-   # on ubuntu you may need this apt package:
-   sudo apt-get install libcurl4-openssl-dev
-
    # install hubspot3
    pip install hubspot3
 
@@ -78,8 +75,7 @@ Passing Params
 Rate Limiting
 -------------
 
-Be aware that this uses the HubSpot API directly, so you are subject to all of the guidelines that HubSpot has in place:
-https://developers.hubspot.com/apps/api_guidelines
+Be aware that this uses the HubSpot API directly, so you are subject to all of the `guidelines that HubSpot has in place <https://developers.hubspot.com/apps/api_guidelines>`_\.
 
 at the time of writing, HubSpot has the following limits in place for API requests:
 
@@ -164,17 +160,15 @@ List of available clients
        settings.py:          hubspot settings api
        utils.py:             base utils for the hubspot3 library
 
-       mixins/
-         __init__.py:          extra functionalities for hubspot3
-         threading.py:         allow threaded execution of hubspot api calls
 
-       test/
-         __init__.py:          no documentation found
-         helper.py:            no documentation found
-         logger.py:            no documentation found
-         test_base.py:         no documentation found
-         test_broadcast.py:    no documentation found
-         test_error.py:        no documentation found
-         test_keywords.py:     no documentation found
-         test_leads.py:        no documentation found
-         test_settings.py:     no documentation found
+Testing
+-------
+
+I'm currently working on rewriting many of the tests with `pytest <https://docs.pytest.org/en/latest/>`_\ to work against the public API and ensure that we get the correct type of mock data back. These tests are currently in a **very** early state - I'll be working soon to get them all built out.
+
+.. code-block:: bash
+
+   # run tests
+   make
+   # or
+   make test_all

@@ -23,8 +23,8 @@ setup(
     url="https://github.com/jpetrucciani/hubspot3.git",
     download_url="https://github.com/jpetrucciani/hubspot3.git",
     license="LICENSE",
-    packages=["hubspot3", "hubspot3.mixins"],
-    install_requires=["nose"],
+    packages=["hubspot3"],
+    install_requires=[],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
@@ -32,6 +32,4 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     zip_safe=False,
-    test_suite="nose.collector",
-    tests_require=["nose"],
 )

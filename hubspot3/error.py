@@ -110,20 +110,24 @@ class HubspotError(ValueError):
 
 # Create more specific error cases, to make filtering errors easier
 class HubspotBadRequest(HubspotError):
-    """Error wrapper for most 40X results and 501 results"""
+    """wrapper for most 40X results and 501 results"""
 
 
 class HubspotNotFound(HubspotError):
-    """Error wrapper for 404 and 410 results"""
+    """wrapper for 404 and 410 results"""
 
 
 class HubspotTimeout(HubspotError):
-    """Wrapper for socket timeouts, sslerror, and 504"""
+    """wrapper for socket timeouts, sslerror, and 504"""
 
 
 class HubspotUnauthorized(HubspotError):
-    """Wrapper for 401 Unauthorized errors"""
+    """wrapper for 401 Unauthorized errors"""
+
+
+class HubspotConflict(HubspotError):
+    """wrapper for 409 conflict errors"""
 
 
 class HubspotServerError(HubspotError):
-    """Wrapper for most 500 errors"""
+    """wrapper for most 500 errors"""
