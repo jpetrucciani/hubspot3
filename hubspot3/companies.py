@@ -165,9 +165,7 @@ class CompaniesClient(BaseClient):
     def get_recently_created(self, **options) -> Optional[List]:
         return self._get_recent("created", **options)
 
-    def get_contacts_at_a_company(
-        self, company_id, **options
-    ) -> Optional[List]:
+    def get_contacts_at_a_company(self, company_id: str, **options) -> Optional[List]:
         """
         Returns all of the contacts who have an associatedcompanyid contact property of
         `company_id`.
