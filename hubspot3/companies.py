@@ -164,3 +164,16 @@ class CompaniesClient(BaseClient):
 
     def get_recently_created(self, **options) -> Optional[List]:
         return self._get_recent("created", **options)
+
+    def get_contacts_at_a_company(
+        self, company_id, **options
+    ) -> Optional[List]:
+        """
+        Returns all of the contacts who have an associatedcompanyid contact property of
+        `company_id`.
+
+        :see: https://developers.hubspot.com/docs/methods/companies/get_company_contacts
+        """
+        return self._call(
+            "companies/{}/contacts".format(company_id), method="GET", **options
+        )
