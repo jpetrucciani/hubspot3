@@ -13,10 +13,13 @@ import zlib
 from hubspot3 import utils
 from hubspot3.utils import force_utf8
 from hubspot3.error import (
+    HubspotBadConfig,
     HubspotBadRequest,
     HubspotConflict,
     HubspotError,
+    HubspotNoConfig,
     HubspotNotFound,
+    HubspotRateLimited,
     HubspotServerError,
     HubspotTimeout,
     HubspotUnauthorized,
@@ -33,11 +36,13 @@ class BaseClient(object):
     def __init__(
         self,
         api_key=None,
-        timeout=10,
-        mixins=None,
         access_token=None,
         refresh_token=None,
         client_id=None,
+        timeout=10,
+        mixins=None,
+        api_base="api.hubapi.com",
+        debug=False,
         **extra_options
     ):
         super(BaseClient, self).__init__()
@@ -55,11 +60,10 @@ class BaseClient(object):
         self.client_id = client_id or extra_options.get("client_id")
         self.log = utils.get_log("hubspot3")
         if self.api_key and self.access_token:
-            raise Exception("Cannot use both api_key and access_token.")
+            raise HubspotBadConfig("Cannot use both api_key and access_token.")
         if not (self.api_key or self.access_token or self.refresh_token):
-            raise Exception("Missing required credentials.")
-        self.options = {"api_base": "api.hubapi.com", "debug": False}
-        self.options["timeout"] = timeout
+            raise HubspotNoConfig("Missing required credentials.")
+        self.options = {"api_base": api_base, "debug": debug, "timeout": timeout}
         self.options.update(extra_options)
         self._prepare_connection_type()
 
@@ -76,7 +80,7 @@ class BaseClient(object):
 
     def _get_path(self, subpath):
         """get the full api url for the given subpath on this client"""
-        raise Exception("Unimplemented get_path for BaseClient subclass!")
+        return subpath
 
     def _prepare_request_auth(self, subpath, params, data, opts):
         if self.api_key:
@@ -155,6 +159,8 @@ class BaseClient(object):
             raise HubspotUnauthorized(result, request)
         elif result.status == 409:
             raise HubspotConflict(result, request)
+        elif result.status == 429:
+            raise HubspotRateLimited(result, request)
         elif result.status >= 400 and result.status < 500 or result.status == 501:
             raise HubspotBadRequest(result, request)
         elif result.status >= 500:

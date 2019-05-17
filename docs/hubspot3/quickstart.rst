@@ -20,9 +20,6 @@ Installation
 
 .. code-block:: bash
 
-    # on ubuntu you may need this apt package:
-    sudo apt-get install libcurl4-openssl-dev
-
     # install hubspot3
     pip install hubspot3
 
@@ -32,32 +29,56 @@ Basic Usage
 
 .. code-block:: python
 
-    from hubspot3.companies import CompaniesClient
+   from hubspot3 import Hubspot3
 
-    API_KEY = "your-api-key"
+   API_KEY = "your-api-key"
 
-    client = CompaniesClient(api_key=API_KEY)
+   client = Hubspot3(api_key=API_KEY)
 
-    for company in client.get_all():
-        print(company)
+   # all of the clients are accessible as attributes of the main Hubspot3 Client
+   contact = client.contacts.get_contact_by_email('testingapis@hubspot.com')
+   contact_id = contact['vid']
 
+   all_companies = client.companies.get_all()
+
+   # new usage limit functionality - keep track of your API calls
+   client.usage_limit
+   # <Hubspot3UsageLimits: 28937/1000000 (0.028937%) [reset in 22157s, cached for 299s]>
+
+   client.usage_limit.calls_remaining
+   # 971063
+
+
+Individual Clients
+------------------
+
+.. code-block:: python
+
+   from hubspot3.companies import CompaniesClient
+
+   API_KEY = "your-api-key"
+
+   client = CompaniesClient(api_key=API_KEY)
+
+   for company in client.get_all():
+       print(company)
 
 Passing Params
 --------------
 
 .. code-block:: python
 
-    import json
-    from hubspot3.deals import DealsClient
+   import json
+   from hubspot3.deals import DealsClient
 
-    deal_id = "12345"
-    API_KEY = "your_api_key"
+   deal_id = "12345"
+   API_KEY = "your_api_key"
 
-    deals_client = DealsClient(api_key=API_KEY)
+   deals_client = DealsClient(api_key=API_KEY)
 
-    params = {
-        "includePropertyVersions": "true"
-    }  # Note values are camelCase as they appear in the Hubspot Documentation!
+   params = {
+       "includePropertyVersions": "true"
+   }  # Note values are camelCase as they appear in the Hubspot Documentation!
 
-    deal_data = deals_client.get(deal_id, params=params)
-    print(json.dumps(deal_data))
+   deal_data = deals_client.get(deal_id, params=params)
+   print(json.dumps(deal_data))

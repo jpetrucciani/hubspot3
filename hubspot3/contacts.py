@@ -16,6 +16,12 @@ class ContactsClient(BaseClient):
     API for data.  It returns a python object translated from the json returned
     """
 
+    class Recency:
+        """recency type enum"""
+
+        CREATED = "created"
+        MODIFIED = "modified"
+
     def __init__(self, *args, **kwargs):
         """initialize a contacts client"""
         super(ContactsClient, self).__init__(*args, **kwargs)
@@ -128,6 +134,8 @@ class ContactsClient(BaseClient):
         offset = 0
         query_limit = 100  # Max value according to docs
         limited = limit > 0
+        if limited and limit < query_limit:
+            query_limit = limit
         while not finished:
             batch = self._call(
                 "lists/all/contacts/all",
@@ -145,3 +153,59 @@ class ContactsClient(BaseClient):
             offset = batch["vid-offset"]
 
         return output if not limited else output[:limit]
+
+    def _get_recent(
+        self,
+        recency_type: str,
+        limit: int = 100,
+        vid_offset: int = 0,
+        time_offset: int = 0,
+        **options
+    ):
+        """
+        returns a list of either recently created or recently modified/created contacts
+        """
+        finished = False
+        output = []
+        query_limit = 100  # max according to the docs
+        recency_string = (
+            "all"
+            if recency_type == ContactsClient.Recency.CREATED
+            else "recently_updated"
+        )
+        limited = limit > 0
+        if limited and limit < query_limit:
+            query_limit = limit
+
+        while not finished:
+            params = {"count": query_limit}
+            if vid_offset and time_offset:
+                params["vidOffset"] = vid_offset
+                params["timeOffset"] = time_offset
+            batch = self._call(
+                "lists/{}/contacts/recent".format(recency_string),
+                method="GET",
+                params=params,
+                doseq=True,
+                **options
+            )
+            output.extend([contact for contact in batch["contacts"]])
+            finished = not batch["has-more"] or len(output) >= limit
+            vid_offset = batch["vid-offset"]
+            time_offset = batch["time-offset"]
+
+        return output[:limit]
+
+    def get_recently_created(self, limit: int = 100):
+        """
+        get recently created contacts
+        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_created_contacts
+        """
+        return self._get_recent(ContactsClient.Recency.CREATED, limit=limit)
+
+    def get_recently_modified(self, limit: int = 100):
+        """
+        get recently modified and created contacts
+        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+        """
+        return self._get_recent(ContactsClient.Recency.MODIFIED, limit=limit)

@@ -108,26 +108,38 @@ class HubspotError(ValueError):
         return unicode_data
 
 
+class HubspotBadConfig(Exception):
+    """misconfigured api_key and/or access_token credentials client"""
+
+
+class HubspotNoConfig(Exception):
+    """no api_key or access_token credentials were passed to the client"""
+
+
 # Create more specific error cases, to make filtering errors easier
 class HubspotBadRequest(HubspotError):
-    """wrapper for most 40X results and 501 results"""
+    """most 40X results and 501 results"""
 
 
 class HubspotNotFound(HubspotError):
-    """wrapper for 404 and 410 results"""
+    """404 and 410 results"""
 
 
 class HubspotTimeout(HubspotError):
-    """wrapper for socket timeouts, sslerror, and 504"""
+    """socket timeouts, sslerror, and 504"""
 
 
 class HubspotUnauthorized(HubspotError):
-    """wrapper for 401 Unauthorized errors"""
+    """401 Unauthorized errors"""
 
 
 class HubspotConflict(HubspotError):
-    """wrapper for 409 conflict errors"""
+    """409 conflict errors"""
 
 
 class HubspotServerError(HubspotError):
-    """wrapper for most 500 errors"""
+    """most 500 errors"""
+
+
+class HubspotRateLimited(HubspotError):
+    """exception for when we're rate limited"""

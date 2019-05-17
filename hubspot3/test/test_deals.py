@@ -9,7 +9,7 @@ from hubspot3.test.globals import TEST_KEY
 
 DEALS = DealsClient(TEST_KEY)
 
-DEFAULT_DEAL_PROPERTIES = ["dealname", "amount"]
+DEFAULT_DEAL_PROPERTIES = ["dealname", "createdate"]
 
 
 def _is_deal(deal: dict) -> bool:
@@ -27,8 +27,10 @@ def test_get_deal():
     with pytest.raises(HubspotNotFound):
         DEALS.get("-1")
 
-    deal = DEALS.get("24051600")  # value pulled from demo data
-    assert _is_deal(deal["properties"])
+    deal = DEALS.get_recently_created(limit=1)[0]
+    deal_check = DEALS.get(deal["id"])
+    assert _is_deal(deal)
+    assert _is_deal(deal_check["properties"])
 
 
 def test_create_deal():
@@ -45,9 +47,9 @@ def test_get_recently_created():
     gets recently created deals
     :see: https://developers.hubspot.com/docs/methods/deals/get_deals_created
     """
-    new_deals = DEALS.get_recently_created(limit=200)
+    new_deals = DEALS.get_recently_created(limit=20)
     assert new_deals
-    assert len(new_deals) <= 200
+    assert len(new_deals) <= 20
     assert _is_deal(new_deals[0])
 
 
@@ -56,7 +58,7 @@ def test_get_recently_modified():
     gets recently modified deals
     :see: https://developers.hubspot.com/docs/methods/deals/get_deals_modified
     """
-    modified_deals = DEALS.get_recently_created(limit=200)
+    modified_deals = DEALS.get_recently_created(limit=20)
     assert modified_deals
-    assert len(modified_deals) <= 200
+    assert len(modified_deals) <= 20
     assert _is_deal(modified_deals[0])

@@ -17,6 +17,12 @@ class DealsClient(BaseClient):
     for data.  It returns a python object translated from the json returned
     """
 
+    class Recency:
+        """recency type enum"""
+
+        CREATED = "created"
+        MODIFIED = "modified"
+
     def __init__(self, *args, **kwargs):
         super(DealsClient, self).__init__(*args, **kwargs)
         self.log = logging_helper.get_log("hubspot3.deals")
@@ -70,6 +76,8 @@ class DealsClient(BaseClient):
         output = []
         query_limit = 250  # Max value according to docs
         limited = limit > 0
+        if limited and limit < query_limit:
+            query_limit = limit
 
         # default properties to fetch
         properties = [
@@ -134,6 +142,9 @@ class DealsClient(BaseClient):
         finished = False
         output = []
         query_limit = 100  # max according to the docs
+        limited = limit > 0
+        if limited and limit < query_limit:
+            query_limit = limit
 
         while not finished:
             params = {
@@ -177,7 +188,7 @@ class DealsClient(BaseClient):
         since: must be a UNIX formatted timestamp in milliseconds
         """
         return self._get_recent(
-            "created",
+            DealsClient.Recency.CREATED,
             limit=limit,
             offset=offset,
             since=since,
@@ -200,7 +211,7 @@ class DealsClient(BaseClient):
         since: must be a UNIX formatted timestamp in milliseconds
         """
         return self._get_recent(
-            "modified",
+            DealsClient.Recency.MODIFIED,
             limit=limit,
             offset=offset,
             since=since,

@@ -48,6 +48,31 @@ Basic Usage
 
 .. code-block:: python
 
+   from hubspot3 import Hubspot3
+
+   API_KEY = "your-api-key"
+
+   client = Hubspot3(api_key=API_KEY)
+
+   # all of the clients are accessible as attributes of the main Hubspot3 Client
+   contact = client.contacts.get_contact_by_email('testingapis@hubspot.com')
+   contact_id = contact['vid']
+
+   all_companies = client.companies.get_all()
+
+   # new usage limit functionality - keep track of your API calls
+   client.usage_limit
+   # <Hubspot3UsageLimits: 28937/1000000 (0.028937%) [reset in 22157s, cached for 299s]>
+
+   client.usage_limit.calls_remaining
+   # 971063
+
+
+Individual Clients
+^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
    from hubspot3.companies import CompaniesClient
 
    API_KEY = "your-api-key"

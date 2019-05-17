@@ -41,10 +41,8 @@ def _is_contact(contact: dict) -> bool:
     """tests some stuff on the contact return object"""
     assert contact
     assert contact["is-contact"]
+    assert contact["vid"]
     assert contact["properties"]
-    assert contact["properties"]["firstname"]
-    assert contact["properties"]["lastname"]
-    assert contact["properties"]["email"]
     return True
 
 
@@ -68,8 +66,11 @@ def test_get_contact_by_id():
     with pytest.raises(HubspotNotFound):
         contact = CONTACTS.get_contact_by_id("-1")
 
-    contact = CONTACTS.get_contact_by_id("11814674")
+    # since their demo data api doesn't seem stable, attempt to find one
+    contact = CONTACTS.get_contact_by_email("testingapis@hubspot.com")
+    contact_check = CONTACTS.get_contact_by_id(contact["vid"])
     assert _is_contact(contact)
+    assert _is_contact(contact_check)
 
 
 def test_get_all():
@@ -77,10 +78,31 @@ def test_get_all():
     tests getting all contacts
     :see: https://developers.hubspot.com/docs/methods/contacts/get_contacts
     """
-    contacts = CONTACTS.get_all(limit=200)
+    contacts = CONTACTS.get_all(limit=20)
     assert contacts
-    assert len(contacts) <= 200
+    assert len(contacts) <= 20
     assert contacts[0]
-    assert contacts[0]["firstname"]
-    assert contacts[0]["lastname"]
     assert contacts[0]["email"]
+    assert contacts[0]["id"]
+
+
+def test_get_recently_created():
+    """
+    gets recently created deals
+    :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_created_contacts
+    """
+    new_contacts = CONTACTS.get_recently_created(limit=20)
+    assert new_contacts
+    assert len(new_contacts) <= 20
+    assert _is_contact(new_contacts[0])
+
+
+def test_get_recently_modified():
+    """
+    gets recently modified deals
+    :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+    """
+    modified_contacts = CONTACTS.get_recently_created(limit=20)
+    assert modified_contacts
+    assert len(modified_contacts) <= 20
+    assert _is_contact(modified_contacts[0])
