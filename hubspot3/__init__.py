@@ -53,9 +53,7 @@ class Hubspot3UsageLimits:
     @property
     def until_cache_expire(self):
         """returns the number of seconds until the cache expires, and we need an update"""
-        return int(
-            (self.collected_at + timedelta(minutes=5) - datetime.now()).total_seconds()
-        )
+        return int((self.collected_at + timedelta(minutes=5) - datetime.now()).total_seconds())
 
     @property
     def calls_remaining(self) -> int:
@@ -92,6 +90,7 @@ class Hubspot3:
         timeout: int = 10,
         api_base: str = "api.hubapi.com",
         debug: bool = False,
+        disable_auth: bool = False,
         **extra_options: Any
     ) -> None:
         """full client constructor"""
@@ -99,17 +98,23 @@ class Hubspot3:
         self.access_token = access_token or extra_options.get("access_token")
         self.refresh_token = refresh_token or extra_options.get("refresh_token")
         self.client_id = client_id or extra_options.get("client_id")
-        if self.api_key and self.access_token:
-            raise HubspotBadConfig("Cannot use both api_key and access_token.")
-        if not (self.api_key or self.access_token or self.refresh_token):
-            raise HubspotNoConfig("Missing required credentials.")
+        if not disable_auth:
+            if self.api_key and self.access_token:
+                raise HubspotBadConfig("Cannot use both api_key and access_token.")
+            if not (self.api_key or self.access_token or self.refresh_token):
+                raise HubspotNoConfig("Missing required credentials.")
         self.auth = {
             "access_token": self.access_token,
             "api_key": self.api_key,
             "client_id": self.client_id,
             "refresh_token": self.refresh_token,
         }
-        self.options = {"api_base": api_base, "debug": debug, "timeout": timeout}
+        self.options = {
+            "api_base": api_base,
+            "debug": debug,
+            "disable_auth": disable_auth,
+            "timeout": timeout,
+        }
         self.options.update(extra_options)
 
         # rate limiting related stuff
@@ -186,11 +191,18 @@ class Hubspot3:
         return EngagementsClient(**self.auth, **self.options)
 
     @property
-    def forms(self):
-        """returns a hubspot3 forms client"""
+    def form_submissions(self):
+        """returns a hubspot3 form submissions client"""
         from hubspot3.forms import FormSubmissionClient
 
         return FormSubmissionClient(**self.auth, **self.options)
+
+    @property
+    def forms(self):
+        """returns a hubspot3 forms client"""
+        from hubspot3.forms import FormsClient
+
+        return FormsClient(**self.auth, **self.options)
 
     @property
     def keywords(self):

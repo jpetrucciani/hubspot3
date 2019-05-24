@@ -24,6 +24,7 @@ from hubspot3.error import (
     HubspotTimeout,
     HubspotUnauthorized,
 )
+from typing import Union
 
 
 class BaseClient(object):
@@ -43,6 +44,7 @@ class BaseClient(object):
         mixins=None,
         api_base="api.hubapi.com",
         debug=False,
+        disable_auth=False,
         **extra_options
     ):
         super(BaseClient, self).__init__()
@@ -59,11 +61,17 @@ class BaseClient(object):
         self.refresh_token = refresh_token or extra_options.get("refresh_token")
         self.client_id = client_id or extra_options.get("client_id")
         self.log = utils.get_log("hubspot3")
-        if self.api_key and self.access_token:
-            raise HubspotBadConfig("Cannot use both api_key and access_token.")
-        if not (self.api_key or self.access_token or self.refresh_token):
-            raise HubspotNoConfig("Missing required credentials.")
-        self.options = {"api_base": api_base, "debug": debug, "timeout": timeout}
+        if not disable_auth:
+            if self.api_key and self.access_token:
+                raise HubspotBadConfig("Cannot use both api_key and access_token.")
+            if not (self.api_key or self.access_token or self.refresh_token):
+                raise HubspotNoConfig("Missing required credentials.")
+        self.options = {
+            "api_base": api_base,
+            "debug": debug,
+            "disable_auth": disable_auth,
+            "timeout": timeout,
+        }
         self.options.update(extra_options)
         self._prepare_connection_type()
 
@@ -118,13 +126,7 @@ class BaseClient(object):
 
     def _create_request(self, conn, method, url, headers, data):
         conn.request(method, url, data, headers)
-        params = {
-            "method": method,
-            "url": url,
-            "data": data,
-            "headers": headers,
-            "host": conn.host,
-        }
+        params = {"method": method, "url": url, "data": data, "headers": headers, "host": conn.host}
         params["timeout"] = conn.timeout
         return params
 
@@ -148,9 +150,7 @@ class BaseClient(object):
             possibly_encoded = zlib.decompress(possibly_encoded, 16 + zlib.MAX_WBITS)
         except Exception:
             pass
-        result.body = self._process_body(
-            possibly_encoded, len(encoding) and encoding[0] == "gzip"
-        )
+        result.body = self._process_body(possibly_encoded, len(encoding) and encoding[0] == "gzip")
 
         conn.close()
         if result.status in (404, 410):
@@ -209,11 +209,7 @@ class BaseClient(object):
 
         if debug:
             print(
-                json.dumps(
-                    {"url": url, "headers": headers, "data": data},
-                    sort_keys=True,
-                    indent=2,
-                )
+                json.dumps({"url": url, "headers": headers, "data": data}, sort_keys=True, indent=2)
             )
 
         kwargs = {}
@@ -237,19 +233,12 @@ class BaseClient(object):
             try:
                 try_count += 1
                 connection = opts["connection_type"](opts["api_base"], **kwargs)
-                request_info = self._create_request(
-                    connection, method, url, headers, data
-                )
+                request_info = self._create_request(connection, method, url, headers, data)
                 result = self._execute_request_raw(connection, request_info)
                 break
             except HubspotUnauthorized:
                 self.log.warning("401 Unauthorized response to API request.")
-                if (
-                    self.access_token
-                    and self.refresh_token
-                    and self.client_id
-                    and not retried
-                ):
+                if self.access_token and self.refresh_token and self.client_id and not retried:
                     self.log.info("Refreshing access token")
                     try:
                         token_response = utils.refresh_access_token(
@@ -257,13 +246,9 @@ class BaseClient(object):
                         )
                         decoded = json.loads(token_response)
                         self.access_token = decoded["access_token"]
-                        self.log.info(
-                            "Retrying with new token {}".format(self.access_token)
-                        )
+                        self.log.info("Retrying with new token {}".format(self.access_token))
                     except Exception as exception:
-                        self.log.error(
-                            "Unable to refresh access_token: {}".format(exception)
-                        )
+                        self.log.error("Unable to refresh access_token: {}".format(exception))
                         raise
                     return self._call_raw(
                         subpath,
@@ -276,12 +261,7 @@ class BaseClient(object):
                         **options
                     )
                 else:
-                    if (
-                        self.access_token
-                        and self.refresh_token
-                        and self.client_id
-                        and retried
-                    ):
+                    if self.access_token and self.refresh_token and self.client_id and retried:
                         self.log.error(
                             "Refreshed token, but request still was not authorized. "
                             " You may need to grant additional permissions."
@@ -309,9 +289,7 @@ class BaseClient(object):
                 ):
                     raise
                 self._prepare_request_retry(method, url, headers, data)
-                self.log.warning(
-                    "HubspotError {} calling {}, retrying".format(exception, url)
-                )
+                self.log.warning("HubspotError {} calling {}, retrying".format(exception, url))
             # exponential back off
             # wait 0 seconds, 1 second, 3 seconds, 7 seconds, 15 seconds, etc
             time.sleep((pow(2, try_count - 1) - 1) * self.sleep_multiplier)
@@ -319,12 +297,13 @@ class BaseClient(object):
 
     def _call(
         self,
-        subpath,
-        params=None,
-        method="GET",
-        data=None,
-        doseq=False,
-        query="",
+        subpath: str,
+        params: dict = None,
+        method: str = "GET",
+        data: Union[str, dict] = None,
+        doseq: bool = False,
+        query: str = "",
+        raw: bool = False,
         **options
     ):
         result = self._call_raw(
@@ -337,4 +316,4 @@ class BaseClient(object):
             retried=False,
             **options
         )
-        return self._digest_result(result.body)
+        return result if raw else self._digest_result(result.body)

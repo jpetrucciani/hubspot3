@@ -7,7 +7,7 @@ from hubspot3.error import HubspotNotFound, HubspotBadRequest
 from hubspot3.test.globals import TEST_KEY
 
 
-DEALS = DealsClient(TEST_KEY)
+DEALS = DealsClient(api_key=TEST_KEY)
 
 DEFAULT_DEAL_PROPERTIES = ["dealname", "createdate"]
 

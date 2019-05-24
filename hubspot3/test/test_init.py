@@ -14,7 +14,7 @@ from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.crm_pipelines import PipelinesClient
 from hubspot3.deals import DealsClient
 from hubspot3.engagements import EngagementsClient
-from hubspot3.forms import FormSubmissionClient
+from hubspot3.forms import FormsClient, FormSubmissionClient
 from hubspot3.keywords import KeywordsClient
 from hubspot3.leads import LeadsClient
 from hubspot3.owners import OwnersClient
@@ -46,7 +46,8 @@ def test_create_hubspot3_client():
     assert isinstance(hubspot.crm_pipelines, PipelinesClient)
     assert isinstance(hubspot.deals, DealsClient)
     assert isinstance(hubspot.engagements, EngagementsClient)
-    assert isinstance(hubspot.forms, FormSubmissionClient)
+    assert isinstance(hubspot.form_submissions, FormSubmissionClient)
+    assert isinstance(hubspot.forms, FormsClient)
     assert isinstance(hubspot.keywords, KeywordsClient)
     assert isinstance(hubspot.leads, LeadsClient)
     assert isinstance(hubspot.owners, OwnersClient)
