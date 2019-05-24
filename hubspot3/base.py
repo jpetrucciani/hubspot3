@@ -300,7 +300,7 @@ class BaseClient(object):
         subpath: str,
         params: dict = None,
         method: str = "GET",
-        data: Union[str, dict] = None,
+        data: Union[str, dict, list] = None,
         doseq: bool = False,
         query: str = "",
         raw: bool = False,

@@ -240,6 +240,13 @@ class Hubspot3:
         return SettingsClient(**self.auth, **self.options)
 
     @property
+    def tickets(self):
+        """returns a hubspot3 tickets client"""
+        from hubspot3.tickets import TicketsClient
+
+        return TicketsClient(**self.auth, **self.options)
+
+    @property
     def usage_limits(self):
         """fetches and returns a nice usage liimitation object"""
         if self._usage_limits.need_update:

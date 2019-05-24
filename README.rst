@@ -159,38 +159,6 @@ Some of the APIs are not yet complete! If you\'d like to use an API that isn\'t 
        a = PipelineClient(api_key=API_KEY)
        print(json.dumps(a.get_pipelines()))
 
-List of available clients
--------------------------
-
-.. code-block:: yaml
-
-   hubspot3/
-     setup.py:             pip setup file
-
-     hubspot3/
-       __init__.py:          hubspot3 module
-       base.py:              base hubspot client class
-       blog.py:              hubspot blog api client
-       broadcast.py:         hubspot broadcast api
-       companies.py:         hubspot companies api
-       contact_lists.py:     hubspot contact lists api
-       contacts.py:          hubspot contacts api
-       crm_associations.py:  hubspot crm_associations api
-       crm_pipelines.py:     hubspot crm_pipelines api
-       deals.py:             hubspot deals api
-       engagements.py:       hubspot engagements api
-       error.py:             hubspot3 error helpers
-       forms.py:             hubspot forms api
-       globals.py:           globals file for hubspot3
-       keywords.py:          hubspot keywords api
-       leads.py:             hubspot leads api
-       logging_helper.py:    logging helper function
-       owners.py:            hubspot owners api
-       prospects.py:         hubspot prospects client
-       settings.py:          hubspot settings api
-       utils.py:             base utils for the hubspot3 library
-
-
 Testing
 -------
 
