@@ -9,6 +9,10 @@ from hubspot3.test.globals import TEST_KEY
 
 CONTACTS = ContactsClient(TEST_KEY)
 
+# since we need to have an id to submit and to attempt to get a contact,
+# we need to be hacky here and fetch one upon loading this file.
+BASE_CONTACT = CONTACTS.get_all(limit=1)[0]
+
 
 def test_create_contact():
     """
@@ -22,7 +26,7 @@ def test_create_contact():
         CONTACTS.create(
             data={
                 "properties": [
-                    {"property": "email", "value": "testingapis@hubspot.com"},
+                    {"property": "email", "value": BASE_CONTACT["email"]},
                     {"property": "firstname", "value": "Adrian"},
                     {"property": "lastname", "value": "Mott"},
                     {"property": "website", "value": "http://hubspot.com"},

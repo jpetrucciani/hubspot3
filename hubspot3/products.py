@@ -1,9 +1,9 @@
 """
 hubspot products api
 """
+from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify
-from hubspot3 import logging_helper
 from typing import List
 
 
@@ -14,7 +14,7 @@ class ProductsClient(BaseClient):
     """
     Products extension for products API endpoint
     THIS API ENDPOINT IS ONLY A PREVIEW AND IS SUBJECT TO CHANGE
-    see: https://developers.hubspot.com/docs/methods/products/products-overview
+    :see: https://developers.hubspot.com/docs/methods/products/products-overview
     """
 
     def __init__(self, *args, **kwargs) -> None:
