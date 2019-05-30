@@ -226,6 +226,13 @@ class Hubspot3:
         return OwnersClient(**self.auth, **self.options)
 
     @property
+    def products(self):
+        """returns a hubspot3 products client"""
+        from hubspot3.products import ProductsClient
+
+        return ProductsClient(**self.auth, **self.options)
+
+    @property
     def prospects(self):
         """returns a hubspot3 prospects client"""
         from hubspot3.prospects import ProspectsClient
