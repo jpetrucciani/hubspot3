@@ -58,7 +58,7 @@ def test_get_contact_by_email():
     with pytest.raises(HubspotNotFound):
         contact = CONTACTS.get_contact_by_email("thisemaildoesnotexist@test.com")
 
-    contact = CONTACTS.get_contact_by_email("testingapis@hubspot.com")
+    contact = CONTACTS.get_contact_by_email(BASE_CONTACT["email"])
     assert _is_contact(contact)
 
 
@@ -71,7 +71,7 @@ def test_get_contact_by_id():
         contact = CONTACTS.get_contact_by_id("-1")
 
     # since their demo data api doesn't seem stable, attempt to find one
-    contact = CONTACTS.get_contact_by_email("testingapis@hubspot.com")
+    contact = CONTACTS.get_contact_by_email(BASE_CONTACT["email"])
     contact_check = CONTACTS.get_contact_by_id(contact["vid"])
     assert _is_contact(contact)
     assert _is_contact(contact_check)
