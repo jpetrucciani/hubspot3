@@ -53,7 +53,9 @@ class Hubspot3UsageLimits:
     @property
     def until_cache_expire(self):
         """returns the number of seconds until the cache expires, and we need an update"""
-        return int((self.collected_at + timedelta(minutes=5) - datetime.now()).total_seconds())
+        return int(
+            (self.collected_at + timedelta(minutes=5) - datetime.now()).total_seconds()
+        )
 
     @property
     def calls_remaining(self) -> int:
