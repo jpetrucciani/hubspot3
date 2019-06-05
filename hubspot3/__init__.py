@@ -135,6 +135,13 @@ class Hubspot3:
         return BlogClient(**self.auth, **self.options)
 
     @property
+    def blog_comments(self):
+        """returns a hubspot3 blog comments client"""
+        from hubspot3.blog import BlogCommentsClient
+
+        return BlogCommentsClient(**self.auth, **self.options)
+
+    @property
     def broadcast(self):
         """returns a hubspot3 broadcast client"""
         from hubspot3.broadcast import BroadcastClient
