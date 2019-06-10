@@ -24,7 +24,7 @@ setup(
     download_url="https://github.com/jpetrucciani/hubspot3.git",
     license="LICENSE",
     packages=["hubspot3"],
-    install_requires=[],
+    install_requires=["requests"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
