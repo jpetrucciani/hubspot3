@@ -102,6 +102,22 @@ Passing Params
    deal_data = deals_client.get(deal_id, params=params)
    print(json.dumps(deal_data))
 
+Commandline interface
+^^^^^^^^^^^^^^^^^^^^^
+
+There is also a commandline tool available. After installing the Hubspot3 client, you can call it with ``hubspot3``:
+
+.. code-block:: bash
+
+    hubspot3 -- --help
+
+You have to provide at least the API key to display all available API methods and their parameters:
+
+.. code-block:: bash
+
+    hubspot3 --api-key <key>
+
+
 Rate Limiting
 -------------
 
