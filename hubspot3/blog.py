@@ -138,16 +138,15 @@ class BlogCommentsClient(BaseClient):
         return self._call("comments/{}".format(comment_guid), **options)
 
     def create_comment(
-        self, post_guid, author_name, author_email, author_uri, content, **options
+        self, blog_guid, post_guid, author_name, author_email, author_uri, content, **options
     ):
-        post = json.dumps(
-            dict(
-                contentId=post_guid,
-                userName=author_name,
-                userEmail=author_email,
-                userUrl=author_uri,
-                comment=content,
-            )
+        post = dict(
+            collectionId=blog_guid,
+            contentId=post_guid,
+            userName=author_name,
+            userEmail=author_email,
+            userUrl=author_uri,
+            comment=content,
         )
         raw_response = self._call(
             "comments",
