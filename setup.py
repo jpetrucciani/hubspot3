@@ -19,8 +19,8 @@ def find_version(*file_paths):
     imports from dependencies listed in install_requires.
     """
     base_module_file = os.path.join(*file_paths)
-    with open(base_module_file) as f:
-        base_module_data = f.read()
+    with open(base_module_file) as module_file:
+        base_module_data = module_file.read()
     version_match = re.search(
         r"^__version__ = ['\"]([^'\"]*)['\"]", base_module_data, re.M
     )

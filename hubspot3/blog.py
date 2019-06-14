@@ -3,6 +3,7 @@ hubspot blog api client
 """
 import json
 from hubspot3.base import BaseClient
+from typing import Dict
 
 
 BLOG_API_VERSION = "2"
@@ -23,29 +24,29 @@ class BlogClient(BaseClient):
     def get_blog_info(self, blog_guid, **options):
         return self._call("blogs/{}".format(blog_guid), **options)
 
-    def get_posts(self, blog_guid, **options):
-        if not 'params' in options:
-            options['params'] = {}
-        options['params'].update({"content_group_id": blog_guid})
+    def get_posts(self, blog_guid: str, **options) -> Dict:
+        if "params" not in options:
+            options["params"] = {}
+        options["params"].update({"content_group_id": blog_guid})
         return self._call("blog-posts", **options)
 
-    def get_draft_posts(self, blog_guid, **options):
-        if not 'params' in options:
-            options['params'] = {}
-        options['params'].update({"content_group_id": blog_guid, "state": "DRAFT"})
+    def get_draft_posts(self, blog_guid: str, **options) -> Dict:
+        if "params" not in options:
+            options["params"] = {}
+        options["params"].update({"content_group_id": blog_guid, "state": "DRAFT"})
         return self._call("blog-posts", **options)
 
-    def get_published_posts(self, blog_guid, **options):
-        if not 'params' in options:
-            options['params'] = {}
-        options['params'].update({"content_group_id": blog_guid, "state": "PUBLISHED"})
+    def get_published_posts(self, blog_guid: str, **options) -> Dict:
+        if "params" not in options:
+            options["params"] = {}
+        options["params"].update({"content_group_id": blog_guid, "state": "PUBLISHED"})
         return self._call("blog-posts", **options)
 
     # Spelled wrong but left for compat
-    def get_pulished_posts(self, blog_guid, **options):
+    def get_pulished_posts(self, blog_guid: str, **options) -> Dict:
         return self.get_published_posts(blog_guid, **options)
 
-    def get_post(self, post_guid, **options):
+    def get_post(self, post_guid: str, **options) -> Dict:
         return self._call("blog-posts/{}".format(post_guid), **options)
 
     def create_post(
@@ -104,7 +105,7 @@ class BlogClient(BaseClient):
         )
         return raw_response
 
-    def publish_post(self, post_guid, **options):
+    def publish_post(self, post_guid: str, **options) -> Dict:
         post = json.dumps(dict(action="schedule-publish"))
         raw_response = self._call(
             "blog-posts/{}/publish-action".format(post_guid),
@@ -128,17 +129,24 @@ class BlogCommentsClient(BaseClient):
     def get_comments(self, **options):
         return self._call("comments", **options)
 
-    def get_post_comments(self, post_guid, **options):
-        if not 'params' in options:
-            options['params'] = {}
-        options['params'].update({"contentId": post_guid})
+    def get_post_comments(self, post_guid: str, **options) -> Dict:
+        if "params" not in options:
+            options["params"] = {}
+        options["params"].update({"contentId": post_guid})
         return self._call("comments", **options)
 
-    def get_comment(self, comment_guid, **options):
+    def get_comment(self, comment_guid: str, **options) -> Dict:
         return self._call("comments/{}".format(comment_guid), **options)
 
     def create_comment(
-        self, blog_guid, post_guid, author_name, author_email, author_uri, content, **options
+        self,
+        blog_guid,
+        post_guid,
+        author_name,
+        author_email,
+        author_uri,
+        content,
+        **options
     ):
         post = dict(
             collectionId=blog_guid,

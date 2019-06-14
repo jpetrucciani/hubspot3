@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from http.client import HTTPResponse
 from hubspot3.base import BaseClient
 from hubspot3.error import HubspotNotFound, HubspotServerError
+from typing import Dict
 
 
 FORMS_API_VERSION = 2
@@ -33,7 +34,12 @@ class FormSubmissionClient(BaseClient):
         return "/uploads/form/v{}/{}".format(FORMS_API_VERSION, subpath)
 
     def submit_form(
-        self, portal_id: str, form_guid: str, data: dict, context: dict = None, **options
+        self,
+        portal_id: str,
+        form_guid: str,
+        data: dict,
+        context: dict = None,
+        **options
     ) -> HTTPResponse:
         """
         submit to a form on hubspot
@@ -50,7 +56,9 @@ class FormSubmissionClient(BaseClient):
         subpath = "{}/{}".format(portal_id, form_guid)
         opts = {"content_type": "application/x-www-form-urlencoded"}
         options.update(opts)
-        response = self._call(subpath, method="POST", data=urlencode(data), raw=True, **options)
+        response = self._call(
+            subpath, method="POST", data=urlencode(data), raw=True, **options
+        )
         if response.status in [
             FormSubmissionClient.ResponseCode.SUCCESS,
             FormSubmissionClient.ResponseCode.SUCCESS_AND_REDIRECT,
@@ -76,7 +84,7 @@ class FormsClient(BaseClient):
         """api path for the forms related calls"""
         return "forms/v{}/{}".format(FORMS_API_VERSION, subpath)
 
-    def get(self, form_id: str, **options) -> dict:
+    def get(self, form_id: str, **options) -> Dict:
         """
         get a form by its form_id
         :see: https://developers.hubspot.com/docs/methods/forms/v2/get_form
