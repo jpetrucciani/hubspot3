@@ -125,6 +125,9 @@ class BlogCommentsClient(BaseClient):
     def _get_path(self, subpath: str) -> str:
         return "comments/v{}/{}".format(COMMENTS_API_VERSION, subpath)
 
+    def get_comments(self, **options):
+        return self._call("comments", **options)
+
     def get_post_comments(self, post_guid, **options):
         if not 'params' in options:
             options['params'] = {}
