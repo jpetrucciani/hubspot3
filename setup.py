@@ -29,11 +29,6 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 
-with open("requirements.txt") as requirements:
-    install_requires = requirements.read().split("\n")
-    install_requires = [x.strip() for x in install_requires if x.strip()]
-
-
 setup(
     name="hubspot3",
     version=find_version("hubspot3", "globals.py"),
@@ -48,7 +43,7 @@ setup(
     download_url="https://github.com/jpetrucciani/hubspot3.git",
     license="LICENSE",
     packages=["hubspot3"],
-    install_requires=install_requires,
+    install_requires=["requests"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
