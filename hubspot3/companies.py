@@ -4,7 +4,7 @@ hubspot companies api
 from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify
-from typing import List, Mapping, Optional, Union
+from typing import List, Dict, Optional, Union
 
 
 COMPANIES_API_VERSION = "2"
@@ -26,29 +26,29 @@ class CompaniesClient(BaseClient):
             self.options.get("version") or COMPANIES_API_VERSION, subpath
         )
 
-    def create(self, data: Mapping = None, **options) -> Mapping:
+    def create(self, data: Dict = None, **options) -> Dict:
         """create a new company"""
         data = data or {}
         return self._call("companies/", data=data, method="POST", **options)
 
-    def update(self, company_id: str, data: Mapping = None, **options) -> Mapping:
+    def update(self, company_id: str, data: Dict = None, **options) -> Dict:
         """update the given company with data"""
         data = data or {}
         return self._call(
             "companies/{}".format(company_id), data=data, method="PUT", **options
         )
 
-    def delete(self, company_id: str, **options) -> Mapping:
+    def delete(self, company_id: str, **options) -> Dict:
         """delete a company"""
         return self._call("companies/{}".format(company_id), method="DELETE", **options)
 
-    def get(self, company_id: str, **options) -> Mapping:
+    def get(self, company_id: str, **options) -> Dict:
         """get a single company by it's ID"""
         return self._call("companies/{}".format(company_id), method="GET", **options)
 
     def search_domain(
-        self, domain: str, limit: int = 1, extra_properties: Mapping = None, **options
-    ) -> Mapping:
+        self, domain: str, limit: int = 1, extra_properties: Dict = None, **options
+    ) -> Dict:
         """searches for companies by domain name. limit is max'd at 100"""
         # default properties to fetch
         properties = [
