@@ -12,7 +12,6 @@ def filter_members(member) -> tuple:
     """Return only public API components."""
     name, component = member
     if isinstance(component, BaseClient) or inspect.ismethod(component):
-        print(type(member))
         return member
 
 
