@@ -64,5 +64,9 @@ class ClientCLIWrapper(object):
         return wrapper
 
 
-if __name__ == '__main__':
+def main():
     Fire(Hubspot3CLIWrapper)
+
+
+if __name__ == '__main__':
+    main()
