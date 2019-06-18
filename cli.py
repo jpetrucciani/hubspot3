@@ -14,6 +14,16 @@ from hubspot3.base import BaseClient
 STDIN_TOKEN = '__stdin__'
 
 
+def get_config_from_file(filename):
+    """Return the content of a JSON config file as a dictionary."""
+    with open(filename, 'r', encoding='utf-8') as fp:
+        config = json.load(fp)
+    if not isinstance(config, dict):
+        raise RuntimeError('Config file content must be an object, got "{}" instead.'
+                           .format(type(config).__name__))
+    return config
+
+
 class Hubspot3CLIWrapper(object):
     __doc__ = """
         Hubspot 3 CLI
@@ -32,11 +42,7 @@ class Hubspot3CLIWrapper(object):
 
         config_file = kwargs.pop('config', None)
         if config_file is not None:
-            with open(config_file, 'r', encoding='utf-8') as fp:
-                config = json.load(fp)
-            if not isinstance(config, dict):
-                raise RuntimeError('Config file content must be an object, got "{}" instead.'
-                                   .format(type(config).__name__))
+            config = get_config_from_file(config_file)
             kwargs = dict(config, **kwargs)
 
         hubspot3 = Hubspot3(**kwargs)
