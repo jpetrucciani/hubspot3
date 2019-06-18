@@ -105,18 +105,19 @@ Passing Params
 Commandline interface
 ^^^^^^^^^^^^^^^^^^^^^
 
-There is also a commandline tool available. After installing the Hubspot3 client, you can call it with ``hubspot3``:
+There is also a commandline tool available. Install the extra requirement for that tool via:
 
 .. code-block:: bash
 
-    hubspot3 -- --help
+    pip install hubspot3[cli]
 
-You have to provide at least the API key to display all available API methods and their parameters:
+and you can use it as a command:
 
 .. code-block:: bash
 
-    hubspot3 --api-key <key>
+    hubspot --help
 
+See the Sphinx documentation for more details and explanations.
 
 Rate Limiting
 -------------
