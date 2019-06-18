@@ -58,7 +58,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'hubspot3=cli:main'
+            'hubspot3=hubspot3.__main__:main'
         ]
     }
 )
