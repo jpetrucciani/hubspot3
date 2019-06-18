@@ -8,6 +8,7 @@ from typing import Dict
 
 BLOG_API_VERSION = "2"
 COMMENTS_API_VERSION = "3"
+TOPICS_API_VERSION = "3"
 
 
 class BlogClient(BaseClient):
@@ -165,3 +166,15 @@ class BlogCommentsClient(BaseClient):
             **options
         )
         return raw_response
+
+
+class BlogTopicsClient(BaseClient):
+    """
+    provides a client for accessing hubspot blog topics info
+    """
+
+    def _get_path(self, subpath: str) -> str:
+        return "blogs/v{}/{}".format(TOPICS_API_VERSION, subpath)
+
+    def get_topics(self, **options):
+        return self._call("topics", **options)
