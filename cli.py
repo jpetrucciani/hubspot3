@@ -1,7 +1,7 @@
 """Commandline entry for the Hubspot client."""
 import json
-import types
 import sys
+import types
 from functools import wraps
 
 from fire import Fire
@@ -113,7 +113,14 @@ class ClientCLIWrapper(object):
         ))
 
 
-def main():
+def split_args():
+    """
+    Split system args into three group of argument lists.
+
+    This method will separate all system args in client, API call and fire args
+    so that is much more easier to instantiate them independently with their
+    own arguments.
+    """
     args, fire_args = SeparateFlagArgs(sys.argv[1:])
     index = 0
     while index < len(args):
@@ -126,6 +133,11 @@ def main():
             break
     client_args, call_args = args[:index], args[index:]
     (call_args or client_args).extend(['--'] + fire_args)
+    return client_args, call_args, fire_args
+
+
+def main():
+    client_args, call_args, fire_args = split_args()
     if call_args:
         component_trace = _Fire(Hubspot3CLIWrapper, client_args, {})
         wrapper = component_trace.GetResult()
