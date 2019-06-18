@@ -21,7 +21,7 @@ class Hubspot3CLIWrapper(object):
             with open(config_file, 'r', encoding='utf-8') as fp:
                 config = json.load(fp)
             if not isinstance(config, dict):
-                raise RuntimeError('Config file content must be an object, got {} instead '.
+                raise RuntimeError('Config file content must be an object, got `{}` instead'.
                                    format(type(config).__name__))
             kwargs = dict(config, **kwargs)
 
