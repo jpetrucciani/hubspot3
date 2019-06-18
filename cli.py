@@ -1,28 +1,42 @@
 """Commandline entry for the Hubspot client."""
 import json
+import types
 import sys
 from functools import wraps
 
 from fire import Fire
 from fire.core import _Fire
+from fire.helputils import UsageString
 from fire.parser import SeparateFlagArgs
 from hubspot3 import Hubspot3
 from hubspot3.base import BaseClient
 
+STDIN_TOKEN = '__stdin__'
+
 
 class Hubspot3CLIWrapper(object):
+    __doc__ = """
+        Hubspot 3 CLI
+        
+        To get a list of supported operations, call this CLI without the "--help" option.
+        
+        The API client can be configured by providing options BEFORE specifying the operation to execute. KWARGS are:
+        [--config CONFIG_FILE_PATH] {}
+    """.format(UsageString(Hubspot3).split('\n')[-1])
 
     IGNORED_ATTRS = ('me', 'usage_limits')
 
     def __init__(self, **kwargs):
+        if not kwargs:
+            kwargs['disable_auth'] = True
 
         config_file = kwargs.pop('config', None)
         if config_file is not None:
             with open(config_file, 'r', encoding='utf-8') as fp:
                 config = json.load(fp)
             if not isinstance(config, dict):
-                raise RuntimeError('Config file content must be an object, got {} instead '.
-                                   format(type(config).__name__))
+                raise RuntimeError('Config file content must be an object, got {} instead.'
+                                   .format(type(config).__name__))
             kwargs = dict(config, **kwargs)
 
         hubspot3 = Hubspot3(**kwargs)
@@ -60,27 +74,43 @@ class ClientCLIWrapper(object):
             if attr.startswith('_'):
                 continue
             method = getattr(client, attr)
-            if hasattr(method, '__self__'):
+            if isinstance(method, types.MethodType):
                 methods[attr] = method
         return methods
 
     def _build_method_wrapper(self, method):
         @wraps(method)
-        def wrapper(**kwargs):
-
-            stdin_keys = [key for key, value in kwargs.items() if '<stdin>' == value]
-            if stdin_keys:
+        def wrapper(*args, **kwargs):
+            stdin_indices = [index for index, value in enumerate(args) if value == STDIN_TOKEN]
+            stdin_keys = [key for key, value in kwargs.items() if value == STDIN_TOKEN]
+            if stdin_indices or stdin_keys:
                 value = json.load(sys.stdin)
+                args = list(args)
+                for index in stdin_indices:
+                    args[index] = value
                 for key in stdin_keys:
                     kwargs[key] = value
 
-            result = method(**kwargs)
+            result = method(*args, **kwargs)
+            if isinstance(result, bytes):
+                result = result.decode('utf-8')
             try:
                 result = json.dumps(result)
             except Exception:
                 pass
             print(result)
+        wrapper.__doc__ = self._build_wrapper_doc(method)
         return wrapper
+
+    def _build_wrapper_doc(self, method):
+        return '\n'.join((
+            method.__doc__ or '',
+            '',
+            'Supported ARGS/KWARGS are:',
+            UsageString(method),
+            '',
+            'The token "{}" may be used as an argument value to use JSON data provided via stdin.'.format(STDIN_TOKEN),
+        ))
 
 
 def main():
