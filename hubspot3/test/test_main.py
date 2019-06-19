@@ -132,7 +132,7 @@ class TestHubspot3CLIWrapper:
         mock_get_config_from_file.return_value = config
         mock_discover_clients.return_value = clients
         wrapper = Hubspot3CLIWrapper(**kwargs)
-        mock_discover_clients.assert_called()
+        assert mock_discover_clients.called
         for name in clients.keys():
             assert hasattr(wrapper, name)
         mock_hubspot3.assert_called_with(**expected_kwargs)
@@ -255,7 +255,7 @@ class TestClientCLIWrapper:
         with patch('hubspot3.__main__.json.dumps', json_dumps):
             wrapped = client_wrapper._build_method_wrapper(method)
             wrapped()
-        mock_replace_stdin_token.assert_called()
+        assert mock_replace_stdin_token.called
         if isinstance(result, bytes):
             result = result.decode('utf-8')
         json_dumps.assert_called_with(result)
