@@ -127,10 +127,10 @@ python-fire will look for public methods and provide them as a commandline API e
 
 If you want to suppress python-fire to discover certain public methods (e.g. because the method will instantly make a
 call to Hubspot or the method doesn't reflect an API endpoint) you can hide that method by extending
-the ``__main__.Hubspot3CLIWrapper.IGNORED_ATTRS`` tuple within ``hubspot3.__main__.py``:
+the ``__main__.Hubspot3CLIWrapper.IGNORED_PROPERTIES`` tuple within ``hubspot3.__main__.py``:
 
 .. code-block:: python
 
     class Hubspot3CLIWrapper(object):
 
-        IGNORED_ATTRS = ('me', 'usage_limits', 'my_method_to_hide')
+        IGNORED_PROPERTIES = ('me', 'usage_limits', 'my_method_to_hide')
