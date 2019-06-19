@@ -184,7 +184,7 @@ def split_args() -> Tuple[List, List, List]:
         return [], [], args
 
     # Use a Fire function to split away the fire arguments.
-    args, fire_args = separate_flag_args(sys.argv[1:])
+    args, fire_args = separate_flag_args(args)
 
     # Search for an argument that represents the sub-client that should be
     # used. Since the CLI arguments have a fixed pattern (client options,
