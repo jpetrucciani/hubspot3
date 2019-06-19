@@ -183,7 +183,7 @@ def split_args() -> Tuple[List, List, List]:
         # argument for Fire to invoke its help functionality.
         return [], [], args
 
-    # Use a Fire function to split away the fire arguments.
+    # Use a Fire function to split away the Fire arguments.
     args, fire_args = separate_flag_args(args)
 
     # Search for an argument that represents the sub-client that should be
