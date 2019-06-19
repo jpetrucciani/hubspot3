@@ -75,7 +75,8 @@ get the deal information for a specific deal with:
 
     You will notice the leading ``--`` in front of the ``--help`` parameter. Hubspot3 uses the ``python-fire`` library
     to generate a dynamic commandline interface for all API clients. If you don't add the ``--`` the help command will
-    be passed to fire instead of the API method, so we have to set it.
+    be passed as an argument API method instead of invoking Fire's help output, so we have to set it. Generally
+    speaking, the arguments for the API method call need to be separated from general CLI arguments using ``--``.
 
 Configuration file
 ^^^^^^^^^^^^^^^^^^
@@ -114,8 +115,16 @@ In this case ``contact_data.json`` is a JSON file that contains the contacts dat
 .. code-block:: json
 
     {
-        "firstname": "Firstname",
-        "lastname": "Lastname"
+        "properties": [
+            {
+                "property": "firstname",
+                "value": "Adrian"
+            },
+            {
+                "property": "lastname",
+                "value": "Mott"
+            }
+        ]
     }
 
 Extending the APIs
