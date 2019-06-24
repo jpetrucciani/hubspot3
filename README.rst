@@ -115,7 +115,7 @@ and you can use it as a command:
 
 .. code-block:: bash
 
-    hubspot --help
+    hubspot3 --help
 
 See the Sphinx documentation for more details and explanations.
 
