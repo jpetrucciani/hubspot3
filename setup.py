@@ -51,4 +51,14 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     zip_safe=False,
+    extras_require={
+        'cli': [
+            'fire==0.1.3'
+        ],
+    },
+    entry_points={
+        'console_scripts': [
+            'hubspot3=hubspot3.__main__:main'
+        ]
+    }
 )

@@ -107,3 +107,7 @@ ENV/
 # End of https://www.gitignore.io/api/python
 old/
 test_credentials.json
+
+# IDEs
+.idea
+.vscode
