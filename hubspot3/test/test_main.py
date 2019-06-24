@@ -106,8 +106,8 @@ class TestHubspot3CLIWrapper:
         (
             {'config': 'config.json'},
             {},
-            {})
-        ,
+            {}
+        ),
         (
             {'api_key': 'xxx-xxx'},
             {'api_key': 'xxx-xxx'},

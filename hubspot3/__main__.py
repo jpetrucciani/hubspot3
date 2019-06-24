@@ -25,9 +25,9 @@ def get_config_from_file(filename):
 class Hubspot3CLIWrapper(object):
     __doc__ = """
         Hubspot3 CLI
-        
+
         To get a list of supported operations, call this CLI without the "--help" option.
-        
+
         The API client can be configured by providing options BEFORE specifying the operation to execute. KWARGS are:
         [--config CONFIG_FILE_PATH] {}
     """.format(build_usage_string(Hubspot3).split('\n')[-1])
