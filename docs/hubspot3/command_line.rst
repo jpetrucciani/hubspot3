@@ -1,15 +1,15 @@
-.. commandline:
+.. command_line:
 
-Commandline
-===========
+Command-line interface
+======================
 
-The hubspot3 client comes with an optional commandline interface that makes it easy to use the client's features without
-necessarily importing it within a Python project.
+The hubspot3 client comes with an optional command-line interface that makes it easy to use the client's features
+without necessarily importing it within a Python project.
 
 Installation
 ------------
 
-To use the commandline interface you will have to install an additional Python requirement:
+To use the command-line interface you will have to install an additional Python requirement:
 
 .. code-block:: bash
 
@@ -24,7 +24,7 @@ After the installation you can use the client with the ``hubspot3`` command, e.g
 
     hubspot3 --help
 
-This will display all arguments for the general usage of the commandline client, like the API key (or a config file,
+This will display all arguments for the general usage of the command-line client, like the API key (or a config file,
 see below). Please take a look into the constructor of the ``hubspot3.Hubspot3`` class for the list of provided
 arguments.
 
@@ -74,7 +74,7 @@ get the deal information for a specific deal with:
 .. note::
 
     You will notice the leading ``--`` in front of the ``--help`` parameter. Hubspot3 uses the ``python-fire`` library
-    to generate a dynamic commandline interface for all API clients. If you don't add the ``--`` the help command will
+    to generate a dynamic command-line interface for all API clients. If you don't add the ``--`` the help command will
     be passed as an argument API method instead of invoking Fire's help output, so we have to set it. Generally
     speaking, the arguments for the API method call need to be separated from general CLI arguments using ``--``.
 
@@ -132,14 +132,27 @@ Extending the APIs
 
 There is one specialty in the way python-fire discovers the API clients: it will parse all classes that are derived
 from ``BaseClient`` and are provided as a property within the ``hubspot3.Hubspot3`` class. Within these API clients
-python-fire will look for public methods and provide them as a commandline API endpoint.
+python-fire will look for public methods and provide them as a command-line operation.
 
-If you want to suppress python-fire to discover certain public methods (e.g. because the method will instantly make a
-call to Hubspot or the method doesn't reflect an API endpoint) you can hide that method by extending
-the ``__main__.Hubspot3CLIWrapper.IGNORED_PROPERTIES`` tuple within ``hubspot3.__main__.py``:
+If you want to hide python-fire certain properties from the ``hubspot3.Hubspot3`` class (e.g. because it will instantly
+make a call to Hubspot or the property doesn't reflect an API endpoint) you can hide that property by extending the
+``Hubspot3CLIWrapper.IGNORED_PROPERTIES`` tuple within ``hubspot3/__main__.py``:
 
 .. code-block:: python
 
     class Hubspot3CLIWrapper(object):
 
         IGNORED_PROPERTIES = ('me', 'usage_limits', 'my_method_to_hide')
+
+In a similar fashion, public methods of the individual API clients can be hidden by extending the dictionary
+``ClientCLIWrapper.IGNORED_METHODS`` within the same module. It uses the client classes as keys and iterables
+containing method names to hide as values:
+
+.. code-block:: python
+
+    class ClientCLIWrapper(object):
+
+        IGNORED_METHODS = {
+            LeadsClient: ('camelcase_search_options',),
+            MyClient: ('my_method',),
+        }

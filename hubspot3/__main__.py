@@ -1,4 +1,4 @@
-"""Commandline entry for the Hubspot client."""
+"""Command-line interface for the Hubspot client."""
 import json
 import sys
 import types

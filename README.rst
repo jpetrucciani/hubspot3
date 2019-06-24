@@ -102,10 +102,10 @@ Passing Params
    deal_data = deals_client.get(deal_id, params=params)
    print(json.dumps(deal_data))
 
-Commandline interface
-^^^^^^^^^^^^^^^^^^^^^
+Command-line interface
+^^^^^^^^^^^^^^^^^^^^^^
 
-There is also a commandline tool available. Install the extra requirement for that tool via:
+There is also a command-line tool available. Install the extra requirement for that tool via:
 
 .. code-block:: bash
 
