@@ -122,9 +122,8 @@ class TestHubspot3CLIWrapper:
     @patch('hubspot3.__main__.Hubspot3CLIWrapper._discover_clients')
     @patch('hubspot3.__main__.get_config_from_file')
     @patch('hubspot3.__main__.Hubspot3')
-    def test_constructor(self, mock_hubspot3, mock_get_config_from_file,
-                         mock_discover_clients, kwargs, expected_kwargs,
-                         config):
+    def test_constructor(self, mock_hubspot3, mock_get_config_from_file, mock_discover_clients,
+                         kwargs, expected_kwargs, config):
         clients = {
             'client_a': Mock(spec=BaseClient),
             'client_b': Mock(spec=BaseClient),
@@ -141,7 +140,7 @@ class TestHubspot3CLIWrapper:
 
     @pytest.mark.parametrize('properties, ignored_properties, expectation', [
         (
-            {}, [], []
+            {}, [], [],
         ),
         (
             {'client_a': property(lambda x: Mock(spec=BaseClient))},
@@ -154,7 +153,7 @@ class TestHubspot3CLIWrapper:
                 'client_b': property(lambda x: Mock(spec=BaseClient)),
             },
             ['client_a'],
-            ['client_b']
+            ['client_b'],
         ),
         (
             {'client_a': property(lambda x: x)},
@@ -168,7 +167,7 @@ class TestHubspot3CLIWrapper:
                 '__client_c': property(lambda x: Mock(spec=BaseClient)),
             },
             [],
-            ['client_a']
+            ['client_a'],
         ),
     ])
     def test_discover_clients(self, properties, ignored_properties, expectation, cli_wrapper):
@@ -176,10 +175,11 @@ class TestHubspot3CLIWrapper:
         class Hubspot3:
             pass
 
-        [setattr(Hubspot3, name, value) for name, value in properties.items()]
+        for name, value in properties.items():
+            setattr(Hubspot3, name, value)
         cli_wrapper.IGNORED_PROPERTIES = ignored_properties
         clients = cli_wrapper._discover_clients(Hubspot3())
-        assert list(clients.keys()) == expectation
+        assert list(clients) == expectation
 
 
 class TestClientCLIWrapper:
@@ -204,13 +204,18 @@ class TestClientCLIWrapper:
 
     @pytest.mark.parametrize('args, kwargs, expectation, stdin_value', [
         ([], {}, ((), {}), None),
-        ([], {'data': '__stdin__'}, ([], {'data': '{"firstname": "Test"}'}), '{"firstname": "Test"}'),
+        (
+            [],
+            {'data': '__stdin__'},
+            ([], {'data': '{"firstname": "Test"}'}),
+            '{"firstname": "Test"}',
+        ),
         (['__stdin__'], {}, (['{"firstname": "Test"}'], {}), '{"firstname": "Test"}'),
     ])
-    @patch('hubspot3.__main__.sys.stdin', new_callable=io.StringIO)
+    @patch('hubspot3.__main__.sys.stdin', Mock(new_callable=io.StringIO))
     @patch('hubspot3.__main__.json.load')
-    def test_replace_stdin_token(self, mock_load, mock_stdin, client_wrapper, args, kwargs,
-                                 expectation, stdin_value):
+    def test_replace_stdin_token(self, mock_load, client_wrapper, args, kwargs, expectation,
+                                 stdin_value):
         mock_load.return_value = stdin_value
         value = client_wrapper._replace_stdin_token(*args, **kwargs)
         assert value == expectation
@@ -218,12 +223,14 @@ class TestClientCLIWrapper:
             assert mock_load.called
 
     @pytest.mark.parametrize('methods, ignored_methods, expectation', [
-        ([], [], []),
-        (['_method_a'], [], []),
-        (['__method_a'], [], []),
-        (['__method_a', '_method_b'], [], []),
-        (['_method_a', 'method_b'], [], ['method_b']),
-        (['method_a', 'method_b'], ['method_b'], ['method_a']),
+        ({}, [], []),
+        ({'a': 1337}, [], []),
+        ({'_a': 1337}, [], []),
+        ({'_method_a': lambda x: x}, [], []),
+        ({'__method_a': lambda x: x}, [], []),
+        ({'__method_a': lambda x: x, '_method_b': lambda x: x}, [], []),
+        ({'_method_a': lambda x: x, 'method_b': lambda x: x, 'c': 1337}, [], ['method_b']),
+        ({'method_a': lambda x: x, 'method_b': lambda x: x}, ['method_b'], ['method_a']),
     ])
     def test_discover_methods(self, client_wrapper, methods, ignored_methods, expectation):
 
@@ -231,11 +238,11 @@ class TestClientCLIWrapper:
             pass
 
         client_wrapper.IGNORED_METHODS = {APIClient: method for method in ignored_methods}
-        [setattr(APIClient, name, lambda x: x) for name in methods]
+        for name, method in methods.items():
+            setattr(APIClient, name, method)
         client = APIClient()
-        methods = client_wrapper._discover_methods(client)
-        print(methods)
-        assert list(methods.keys()) == expectation
+        discovered_methods = client_wrapper._discover_methods(client)
+        assert list(discovered_methods) == expectation
 
     @pytest.mark.parametrize('result, json_dumps, expectation', [
         (b'{"firstname": "Name"}', Mock(side_effect=Exception), b'{"firstname": "Name"}'),
@@ -244,9 +251,8 @@ class TestClientCLIWrapper:
     ])
     @patch('hubspot3.__main__.ClientCLIWrapper._replace_stdin_token')
     @patch('hubspot3.__main__.ClientCLIWrapper._build_wrapper_doc')
-    def test_build_method_wrapper(self, mock_build_wrapper_doc,
-                                  mock_replace_stdin_token, client_wrapper,
-                                  result, json_dumps, expectation):
+    def test_build_method_wrapper(self, mock_build_wrapper_doc, mock_replace_stdin_token,
+                                  client_wrapper, result, json_dumps, expectation):
         def method():
             return result
 
