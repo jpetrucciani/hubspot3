@@ -18,7 +18,8 @@ def get_config_from_file(filename):
     with open(filename, 'r', encoding='utf-8') as fp:
         config = json.load(fp)
     if not isinstance(config, dict):
-        raise RuntimeError('Config file content must be an object, got "{}" instead.'.format(type(config).__name__))
+        raise RuntimeError('Config file content must be an object, got "{}" instead.'
+                           .format(type(config).__name__))
     return config
 
 
@@ -28,7 +29,8 @@ class Hubspot3CLIWrapper(object):
 
         To get a list of supported operations, call this CLI without the "--help" option.
 
-        The API client can be configured by providing options BEFORE specifying the operation to execute. KWARGS are:
+        The API client can be configured by providing options BEFORE specifying the operation to
+        execute. KWARGS are:
         [--config CONFIG_FILE_PATH] {}
     """.format(build_usage_string(Hubspot3).split('\n')[-1])
 
@@ -148,8 +150,8 @@ class ClientCLIWrapper(object):
             'Supported ARGS/KWARGS are:',
             build_usage_string(method),
             '',
-            'The token "{}" may be used as an argument value, which will cause JSON data to be read from stdin and '
-            'used as the actual value for the argument.'.format(self.STDIN_TOKEN),
+            'The token "{}" may be used as an argument value, which will cause JSON data to be '
+            'read from stdin and used as the actual argument value.'.format(self.STDIN_TOKEN),
         ))
 
     def _replace_stdin_token(self, *args, **kwargs) -> Tuple[List, Dict]:
