@@ -102,6 +102,23 @@ Passing Params
    deal_data = deals_client.get(deal_id, params=params)
    print(json.dumps(deal_data))
 
+Command-line interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+There is also a command-line tool available. Install the extra requirement for that tool via:
+
+.. code-block:: bash
+
+    pip install hubspot3[cli]
+
+and you can use it as a command:
+
+.. code-block:: bash
+
+    hubspot3 --help
+
+See the Sphinx documentation for more details and explanations.
+
 Rate Limiting
 -------------
 
