@@ -21,6 +21,7 @@ New to hubspot3? These may help:
 
    hubspot3/quickstart
    hubspot3/extending
+   hubspot3/command_line
 
 
 Note
