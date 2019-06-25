@@ -2,24 +2,26 @@
 import json
 import sys
 import types
-from functools import wraps
-from typing import Callable, Dict, List, Tuple
-
 from fire.core import Fire as fire, _Fire as fire_execute
 from fire.helputils import UsageString as build_usage_string
 from fire.parser import SeparateFlagArgs as separate_flag_args
+from functools import wraps
 from hubspot3 import Hubspot3
 from hubspot3.base import BaseClient
 from hubspot3.leads import LeadsClient
+from typing import Callable, Dict, List, Tuple
 
 
 def get_config_from_file(filename):
     """Return the content of a JSON config file as a dictionary."""
-    with open(filename, 'r', encoding='utf-8') as fp:
-        config = json.load(fp)
+    with open(filename, "r", encoding="utf-8") as file:
+        config = json.load(file)
     if not isinstance(config, dict):
-        raise RuntimeError('Config file content must be an object, got "{}" instead.'
-                           .format(type(config).__name__))
+        raise RuntimeError(
+            'Config file content must be an object, got "{}" instead.'.format(
+                type(config).__name__
+            )
+        )
     return config
 
 
@@ -32,14 +34,16 @@ class Hubspot3CLIWrapper(object):
         The API client can be configured by providing options BEFORE specifying the operation to
         execute. KWARGS are:
         [--config CONFIG_FILE_PATH] {}
-    """.format(build_usage_string(Hubspot3).split('\n')[-1])
+    """.format(
+        build_usage_string(Hubspot3).split("\n")[-1]
+    )
 
     # Properties to ignore during discovery. The "me" property must be ignored
     # as it would already perform an API request while being discovered and the
     # "usage_limits" property does not contain an API.
     # Extend this tuple if more properties that aren't API clients are added to
     # the Hubspot3 class.
-    IGNORED_PROPERTIES = ('me', 'usage_limits')
+    IGNORED_PROPERTIES = ("me", "usage_limits")
 
     def __init__(self, **kwargs):
         # If no arguments were supplied at all, the desired outcome is likely
@@ -47,11 +51,11 @@ class Hubspot3CLIWrapper(object):
         # stop the Hubspot3 initializer from raising an exception since there
         # is neither an API key nor an access token.
         if not kwargs:
-            kwargs['disable_auth'] = True
+            kwargs["disable_auth"] = True
 
         # If a config file was specified, read its settings and merge the CLI
         # options into them.
-        config_file = kwargs.pop('config', None)
+        config_file = kwargs.pop("config", None)
         if config_file is not None:
             config = get_config_from_file(config_file)
             kwargs = dict(config, **kwargs)
@@ -67,7 +71,7 @@ class Hubspot3CLIWrapper(object):
         return self._clients  # Let Fire only discover the client attributes.
 
     def __str__(self):
-        return 'Hubspot3 CLI'
+        return "Hubspot3 CLI"
 
     def _discover_clients(self, hubspot3: Hubspot3) -> Dict[str, BaseClient]:
         """Find all client instance properties on the given Hubspot3 object."""
@@ -75,8 +79,11 @@ class Hubspot3CLIWrapper(object):
         for attr in dir(hubspot3.__class__):
             # Find properties by searching the class first - that way, a call
             # to getattr doesn't run the properties code on the object.
-            if (attr.startswith('_') or attr in self.IGNORED_PROPERTIES or
-                    not isinstance(getattr(hubspot3.__class__, attr), property)):
+            if (
+                attr.startswith("_")
+                or attr in self.IGNORED_PROPERTIES
+                or not isinstance(getattr(hubspot3.__class__, attr), property)
+            ):
                 continue
             client = getattr(hubspot3, attr)
             if isinstance(client, BaseClient):
@@ -91,12 +98,10 @@ class ClientCLIWrapper(object):
     # be ignored during method discovery.
     # Extend this mapping if more methods that aren't API methods are added to
     # a client class.
-    IGNORED_METHODS = {
-        LeadsClient: ('camelcase_search_options',),
-    }
-    STDIN_TOKEN = '__stdin__'  # Argument value to trigger stdin parsing.
+    IGNORED_METHODS = {LeadsClient: ("camelcase_search_options",)}
+    STDIN_TOKEN = "__stdin__"  # Argument value to trigger stdin parsing.
 
-    def __init__(self, client: BaseClient):
+    def __init__(self, client: BaseClient) -> None:
         self._client_name = client.__class__.__name__
         # Discover all API methods and set them as attributes on this wrapper
         # so Fire can discover them.
@@ -108,13 +113,15 @@ class ClientCLIWrapper(object):
         return self._methods  # Let Fire only discover the API methods.
 
     def __str__(self):
-        return 'Hubspot3 {} CLI'.format(self._client_name)
+        return "Hubspot3 {} CLI".format(self._client_name)
 
     def _discover_methods(self, client: BaseClient) -> Dict[str, types.MethodType]:
         """Find all API methods on the given client object."""
         methods = {}
         for attr in dir(client):
-            if attr.startswith('_') or attr in self.IGNORED_METHODS.get(client.__class__, ()):
+            if attr.startswith("_") or attr in self.IGNORED_METHODS.get(
+                client.__class__, ()
+            ):
                 continue
             method = getattr(client, attr)
             if isinstance(method, types.MethodType):
@@ -123,6 +130,7 @@ class ClientCLIWrapper(object):
 
     def _build_method_wrapper(self, method: types.MethodType) -> Callable:
         """Build a wrapper function around the given API method."""
+
         @wraps(method)
         def wrapper(*args, **kwargs):
             # Replace the stdin token with the actual stdin value and call the
@@ -133,42 +141,49 @@ class ClientCLIWrapper(object):
             # Try to ensure to always write JSON to stdout, but don't hide any
             # result either if it can't be JSON-encoded.
             if isinstance(result, bytes):
-                result = result.decode('utf-8')
+                result = result.decode("utf-8")
             try:
                 result = json.dumps(result)
             except Exception:
                 pass
             print(result)
+
         wrapper.__doc__ = self._build_wrapper_doc(method)
         return wrapper
 
     def _build_wrapper_doc(self, method: types.MethodType) -> str:
         """Build a helpful docstring for a wrapped API method."""
-        return '\n'.join((
-            method.__doc__ or '',
-            '',
-            'Supported ARGS/KWARGS are:',
-            build_usage_string(method),
-            '',
-            'The token "{}" may be used as an argument value, which will cause JSON data to be '
-            'read from stdin and used as the actual argument value.'.format(self.STDIN_TOKEN),
-        ))
+        return "\n".join(
+            (
+                method.__doc__ or "",
+                "",
+                "Supported ARGS/KWARGS are:",
+                build_usage_string(method),
+                "",
+                'The token "{}" may be used as an argument value, which will cause JSON data to be '
+                "read from stdin and used as the actual argument value.".format(
+                    self.STDIN_TOKEN
+                ),
+            )
+        )
 
     def _replace_stdin_token(self, *args, **kwargs) -> Tuple[List, Dict]:
         """
         Replace the values of all given arguments with the JSON-parsed value
         from stdin if their current value is the STDIN_TOKEN.
         """
-        stdin_indices = [index for index, value in enumerate(args) if value == self.STDIN_TOKEN]
+        stdin_indices = [
+            index for index, value in enumerate(args) if value == self.STDIN_TOKEN
+        ]
         stdin_keys = [key for key, value in kwargs.items() if value == self.STDIN_TOKEN]
         if stdin_indices or stdin_keys:
             value = json.load(sys.stdin)
-            args = list(args)
+            new_args = list(args)
             for index in stdin_indices:
-                args[index] = value
+                new_args[index] = value
             for key in stdin_keys:
                 kwargs[key] = value
-        return args, kwargs
+        return new_args, kwargs
 
 
 def split_args() -> Tuple[List, List, List]:
@@ -180,7 +195,7 @@ def split_args() -> Tuple[List, List, List]:
     arguments.
     """
     args = sys.argv[1:]
-    if args == ['--help']:
+    if args == ["--help"]:
         # If the user only called the CLI with "--help", pass it through as an
         # argument for Fire to invoke its help functionality.
         return [], [], args
@@ -198,8 +213,8 @@ def split_args() -> Tuple[List, List, List]:
         # Named options can be passed as "--key=value" or "--key value", so the
         # next argument to look at is either the next argument or the one after
         # that, respectively.
-        if arg.startswith('--'):
-            if '=' not in arg:
+        if arg.startswith("--"):
+            if "=" not in arg:
                 api_index += 1
             api_index += 1
         else:
@@ -223,7 +238,7 @@ def main():
         # If there are arguments for an actual API method call, append the Fire
         # arguments to that second call. Otherwise, append them to the first
         # call as there won't be a second one.
-        (call_args or client_args).extend(['--'] + fire_args)
+        (call_args or client_args).extend(["--"] + fire_args)
     if call_args:
         # Use the non-printing Fire routine for the first call as only the
         # result of the second, actual API call should be printed.
@@ -234,5 +249,5 @@ def main():
         fire(Hubspot3CLIWrapper, client_args, __package__)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
