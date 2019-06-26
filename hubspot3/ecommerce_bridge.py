@@ -36,17 +36,17 @@ class EcommerceBridgeClient(BaseClient):
     class ErrorType:
         """error type enum"""
 
-        INACTIVE_PORTAL = 'INACTIVE_PORTAL'
-        NO_SYNC_SETTINGS = 'NO_SYNC_SETTINGS'
-        SETTINGS_NOT_ENABLED = 'SETTINGS_NOT_ENABLED'
-        NO_MAPPINGS_DEFINED = 'NO_MAPPINGS_DEFINED'
-        MISSING_REQUIRED_PROPERTY = 'MISSING_REQUIRED_PROPERTY'
-        NO_PROPERTIES_DEFINED = 'NO_PROPERTIES_DEFINED'
-        INVALID_ASSOCIATION_PROPERTY = 'INVALID_ASSOCIATION_PROPERTY'
-        INVALID_DEAL_STAGE = 'INVALID_DEAL_STAGE'
-        INVALID_EMAIL_ADDRESS = 'INVALID_EMAIL_ADDRESS'
-        INVALID_ENUM_PROPERTY = 'INVALID_ENUM_PROPERTY'
-        UNKNOWN_ERROR = 'UNKNOWN_ERROR'
+        INACTIVE_PORTAL = "INACTIVE_PORTAL"
+        NO_SYNC_SETTINGS = "NO_SYNC_SETTINGS"
+        SETTINGS_NOT_ENABLED = "SETTINGS_NOT_ENABLED"
+        NO_MAPPINGS_DEFINED = "NO_MAPPINGS_DEFINED"
+        MISSING_REQUIRED_PROPERTY = "MISSING_REQUIRED_PROPERTY"
+        NO_PROPERTIES_DEFINED = "NO_PROPERTIES_DEFINED"
+        INVALID_ASSOCIATION_PROPERTY = "INVALID_ASSOCIATION_PROPERTY"
+        INVALID_DEAL_STAGE = "INVALID_DEAL_STAGE"
+        INVALID_EMAIL_ADDRESS = "INVALID_EMAIL_ADDRESS"
+        INVALID_ENUM_PROPERTY = "INVALID_ENUM_PROPERTY"
+        UNKNOWN_ERROR = "UNKNOWN_ERROR"
 
     def __init__(self, *args, **kwargs):
         """initialize an ecommerce bridge client"""
@@ -56,8 +56,9 @@ class EcommerceBridgeClient(BaseClient):
     def _get_path(self, subpath):
         return "extensions/ecomm/v{}/{}".format(ECOMMERCE_BRIDGE_API_VERSION, subpath)
 
-    def send_sync_messages(self, object_type: str, messages: Sequence,
-                           store_id: str = 'default', **options) -> None:
+    def send_sync_messages(
+        self, object_type: str, messages: Sequence, store_id: str = "default", **options
+    ) -> None:
         """
         Send multiple ecommerce sync messages for the given object type and store ID.
         If the number of sync messages exceeds the maximum number of sync messages per request,
@@ -66,20 +67,13 @@ class EcommerceBridgeClient(BaseClient):
         """
         # Break the messages down into chunks that do not contain more than the maximum number
         # of allowed sync messages per request.
-        chunks = [list(messages[i:i + MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES]) for i
-                  in range(0, len(messages), MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES)]
+        chunks = [
+            list(messages[i : i + MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES])
+            for i in range(0, len(messages), MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES)
+        ]
         for chunk in chunks:
-            data = {
-                "objectType": object_type,
-                "storeId": store_id,
-                "messages": chunk,
-            }
-            self._call(
-                "sync/messages",
-                data=data,
-                method="PUT",
-                **options
-            )
+            data = {"objectType": object_type, "storeId": store_id, "messages": chunk}
+            self._call("sync/messages", data=data, method="PUT", **options)
 
     def _get_sync_errors(
         self,
@@ -92,8 +86,9 @@ class EcommerceBridgeClient(BaseClient):
     ) -> List:
         """Internal method to retrieve sync errors from an endpoint."""
         # Build the common parameters for all requests.
-        query_limit = min(limit or MAX_ECOMMERCE_BRIDGE_SYNC_ERRORS,
-                          MAX_ECOMMERCE_BRIDGE_SYNC_ERRORS)
+        query_limit = min(
+            limit or MAX_ECOMMERCE_BRIDGE_SYNC_ERRORS, MAX_ECOMMERCE_BRIDGE_SYNC_ERRORS
+        )
         common_params = {
             "includeResolved": str(include_resolved).lower(),
             "limit": query_limit,
@@ -110,14 +105,13 @@ class EcommerceBridgeClient(BaseClient):
         page = 1
         while not finished:
             batch = self._call(
-                subpath,
-                method="GET",
-                params=dict(common_params, page=page),
-                **options
+                subpath, method="GET", params=dict(common_params, page=page), **options
             )
             errors.extend(batch["results"])
             # The "paging" attribute is only present if there are more pages.
-            finished = "paging" not in batch or (limit is not None and len(errors) >= limit)
+            finished = "paging" not in batch or (
+                limit is not None and len(errors) >= limit
+            )
             # The endpoints use some weird kind of pagination where the page parameter is
             # essentially an offset: page 1 starts with record 1, page 2 with record 2, etc.
             # regardless of the limit parameter. Therefore, the next page must be determined by
