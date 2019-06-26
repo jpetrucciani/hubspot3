@@ -124,8 +124,8 @@ class EcommerceBridgeClient(BaseClient):
     def get_sync_errors_for_account(
         self,
         include_resolved: bool = False,
-        object_type: str = None,
         error_type: str = None,
+        object_type: str = None,
         limit: int = None,
         **options
     ) -> List:
@@ -147,8 +147,8 @@ class EcommerceBridgeClient(BaseClient):
         self,
         app_id: int,
         include_resolved: bool = False,
-        object_type: str = None,
         error_type: str = None,
+        object_type: str = None,
         limit: int = None,
         **options
     ) -> List:
