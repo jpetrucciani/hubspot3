@@ -178,12 +178,12 @@ class ClientCLIWrapper(object):
         stdin_keys = [key for key, value in kwargs.items() if value == self.STDIN_TOKEN]
         if stdin_indices or stdin_keys:
             value = json.load(sys.stdin)
-            new_args = list(args)
+            args = list(args)
             for index in stdin_indices:
-                new_args[index] = value
+                args[index] = value
             for key in stdin_keys:
                 kwargs[key] = value
-        return new_args, kwargs
+        return args, kwargs
 
 
 def split_args() -> Tuple[List, List, List]:
