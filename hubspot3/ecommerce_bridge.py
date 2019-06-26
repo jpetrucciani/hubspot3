@@ -9,8 +9,8 @@ from hubspot3.base import BaseClient
 
 
 ECOMMERCE_BRIDGE_API_VERSION = "2"
-MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES = 200
-MAX_ECOMMERCE_BRIDGE_SYNC_ERRORS = 200
+MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES = 200  # Maximum number of sync messages per request.
+MAX_ECOMMERCE_BRIDGE_SYNC_ERRORS = 200  # Maximum number of errors per response.
 
 
 class EcommerceBridgeClient(BaseClient):
