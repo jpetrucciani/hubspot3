@@ -32,8 +32,11 @@ class ContactsClient(BaseClient):
         return "contacts/v{}/{}".format(CONTACTS_API_VERSION, subpath)
 
     def create_or_update_a_contact(self, email, data=None, **options):
-        warnings.warn("ContactsClient.create_or_update_a_contact is deprecated in favor of "
-                      "ContactsClient.create_or_update_by_email", DeprecationWarning)
+        warnings.warn(
+            "ContactsClient.create_or_update_a_contact is deprecated in favor of "
+            "ContactsClient.create_or_update_by_email",
+            DeprecationWarning,
+        )
         return self.create_or_update_by_email(email, data, **options)
 
     def create_or_update_by_email(self, email, data=None, **options):
@@ -47,8 +50,11 @@ class ContactsClient(BaseClient):
         )
 
     def get_contact_by_email(self, email, **options):
-        warnings.warn("ContactsClient.get_contact_by_email is deprecated in favor of "
-                      "ContactsClient.get_by_email", DeprecationWarning)
+        warnings.warn(
+            "ContactsClient.get_contact_by_email is deprecated in favor of "
+            "ContactsClient.get_by_email",
+            DeprecationWarning,
+        )
         return self.get_by_email(email, **options)
 
     def get_by_email(self, email, **options):
@@ -58,8 +64,11 @@ class ContactsClient(BaseClient):
         )
 
     def get_contact_by_id(self, contact_id: str, **options):
-        warnings.warn("ContactsClient.get_contact_by_id is deprecated in favor of "
-                      "ContactsClient.get_by_id", DeprecationWarning)
+        warnings.warn(
+            "ContactsClient.get_contact_by_id is deprecated in favor of "
+            "ContactsClient.get_by_id",
+            DeprecationWarning,
+        )
         return self.get_by_id(contact_id, **options)
 
     def get_by_id(self, contact_id: str, **options):
@@ -69,8 +78,11 @@ class ContactsClient(BaseClient):
         )
 
     def update_a_contact(self, contact_id, data=None, **options):
-        warnings.warn("ContactsClient.update_a_contact is deprecated in favor of "
-                      "ContactsClient.update_by_id", DeprecationWarning)
+        warnings.warn(
+            "ContactsClient.update_a_contact is deprecated in favor of "
+            "ContactsClient.update_by_id",
+            DeprecationWarning,
+        )
         return self.update_by_id(contact_id, data, **options)
 
     def update_by_id(self, contact_id, data=None, **options):
@@ -84,8 +96,11 @@ class ContactsClient(BaseClient):
         )
 
     def delete_a_contact(self, contact_id: str, **options):
-        warnings.warn("ContactsClient.delete_a_contact is deprecated in favor of "
-                      "ContactsClient.delete_by_id", DeprecationWarning)
+        warnings.warn(
+            "ContactsClient.delete_a_contact is deprecated in favor of "
+            "ContactsClient.delete_by_id",
+            DeprecationWarning,
+        )
         return self.delete_by_id(contact_id, **options)
 
     def delete_by_id(self, contact_id: str, **options):
@@ -102,8 +117,11 @@ class ContactsClient(BaseClient):
         return self._call("contact", data=data, method="POST", **options)
 
     def update(self, contact_id: str, data=None, **options):
-        warnings.warn("ContactsClient.update is deprecated in favor of "
-                      "ContactsClient.update_by_id", DeprecationWarning)
+        warnings.warn(
+            "ContactsClient.update is deprecated in favor of "
+            "ContactsClient.update_by_id",
+            DeprecationWarning,
+        )
         return self.update_by_id(contact_id, data, **options)
 
     def update_by_email(self, email: str, data=None, **options):
