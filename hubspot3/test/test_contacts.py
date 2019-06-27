@@ -1,6 +1,9 @@
 """
 testing hubspot3.contacts
 """
+import warnings
+from unittest.mock import Mock
+
 import pytest
 from hubspot3.contacts import ContactsClient
 from hubspot3.error import HubspotConflict, HubspotNotFound, HubspotBadRequest
@@ -110,3 +113,56 @@ def test_get_recently_modified():
     assert modified_contacts
     assert len(modified_contacts) <= 20
     assert _is_contact(modified_contacts[0])
+
+
+class TestDeprecatedMethods(object):
+
+    contact_id = '1'
+    email = 'test@example.com'
+    options = dict(x='y')
+    data = dict(z='23')
+
+    @staticmethod
+    def _check_deprecation_warning(warning_instance, old_name, new_name):
+        assert len(warning_instance) == 1
+        assert issubclass(warning_instance[-1].category, DeprecationWarning)
+        message = str(warning_instance[-1].message)
+        assert "{old_name} is deprecated".format(old_name=old_name) in message
+        assert new_name in message
+
+    def test_create_or_update_contact_by_email(self):
+        create_or_update_contact_by_email_mock = Mock()
+        CONTACTS.create_or_update_contact_by_email = create_or_update_contact_by_email_mock
+        with warnings.catch_warnings(record=True) as w:
+            CONTACTS.create_or_update_a_contact(self.email, self.data, **self.options)
+        self._check_deprecation_warning(w, old_name='create_or_update_a_contact',
+                                        new_name='create_or_update_contact_by_email')
+        create_or_update_contact_by_email_mock.assert_called_once_with(self.email, self.data,
+                                                                       **self.options)
+
+    def test_delete_a_contact(self):
+        delete_by_id_mock = Mock()
+        CONTACTS.delete_by_id = delete_by_id_mock
+        with warnings.catch_warnings(record=True) as w:
+            CONTACTS.delete_a_contact(self.contact_id, **self.options)
+        self._check_deprecation_warning(w, old_name='delete_a_contact', new_name='delete_by_id')
+        delete_by_id_mock.assert_called_once_with(self.contact_id, **self.options)
+
+    def test_update_a_contact(self):
+        update_contact_by_id_mock = Mock()
+        CONTACTS.update_contact_by_id = update_contact_by_id_mock
+        with warnings.catch_warnings(record=True) as w:
+            CONTACTS.update_a_contact(self.contact_id, self.data, **self.options)
+        self._check_deprecation_warning(w, old_name='update_a_contact',
+                                        new_name='update_contact_by_id')
+        update_contact_by_id_mock.assert_called_once_with(self.contact_id, self.data,
+                                                          **self.options)
+
+    def test_update(self):
+        update_contact_by_id_mock = Mock()
+        CONTACTS.update_contact_by_id = update_contact_by_id_mock
+        with warnings.catch_warnings(record=True) as w:
+            CONTACTS.update(self.contact_id, self.data, **self.options)
+        self._check_deprecation_warning(w, old_name='update', new_name='update_contact_by_id')
+        update_contact_by_id_mock.assert_called_once_with(self.contact_id, self.data,
+                                                          **self.options)
