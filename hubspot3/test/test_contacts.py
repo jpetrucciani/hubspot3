@@ -132,13 +132,29 @@ class TestDeprecatedMethods(object):
 
     def test_create_or_update_contact_by_email(self):
         create_or_update_contact_by_email_mock = Mock()
-        CONTACTS.create_or_update_contact_by_email = create_or_update_contact_by_email_mock
+        CONTACTS.create_or_update_by_email = create_or_update_contact_by_email_mock
         with warnings.catch_warnings(record=True) as w:
             CONTACTS.create_or_update_a_contact(self.email, self.data, **self.options)
         self._check_deprecation_warning(w, old_name='create_or_update_a_contact',
-                                        new_name='create_or_update_contact_by_email')
+                                        new_name='create_or_update_by_email')
         create_or_update_contact_by_email_mock.assert_called_once_with(self.email, self.data,
                                                                        **self.options)
+
+    def test_get_contact_by_email(self):
+        get_by_email_mock = Mock()
+        CONTACTS.get_by_email = get_by_email_mock
+        with warnings.catch_warnings(record=True) as w:
+            CONTACTS.get_contact_by_email(self.email, **self.options)
+        self._check_deprecation_warning(w, old_name='get_contact_by_email', new_name='get_by_email')
+        get_by_email_mock.assert_called_once_with(self.email, **self.options)
+
+    def test_get_contact_by_id(self):
+        get_by_id_mock = Mock()
+        CONTACTS.get_by_id = get_by_id_mock
+        with warnings.catch_warnings(record=True) as w:
+            CONTACTS.get_contact_by_id(self.contact_id, **self.options)
+        self._check_deprecation_warning(w, old_name='get_contact_by_id', new_name='get_by_id')
+        get_by_id_mock.assert_called_once_with(self.contact_id, **self.options)
 
     def test_delete_a_contact(self):
         delete_by_id_mock = Mock()
@@ -150,19 +166,19 @@ class TestDeprecatedMethods(object):
 
     def test_update_a_contact(self):
         update_contact_by_id_mock = Mock()
-        CONTACTS.update_contact_by_id = update_contact_by_id_mock
+        CONTACTS.update_by_id = update_contact_by_id_mock
         with warnings.catch_warnings(record=True) as w:
             CONTACTS.update_a_contact(self.contact_id, self.data, **self.options)
         self._check_deprecation_warning(w, old_name='update_a_contact',
-                                        new_name='update_contact_by_id')
+                                        new_name='update_by_id')
         update_contact_by_id_mock.assert_called_once_with(self.contact_id, self.data,
                                                           **self.options)
 
     def test_update(self):
         update_contact_by_id_mock = Mock()
-        CONTACTS.update_contact_by_id = update_contact_by_id_mock
+        CONTACTS.update_by_id = update_contact_by_id_mock
         with warnings.catch_warnings(record=True) as w:
             CONTACTS.update(self.contact_id, self.data, **self.options)
-        self._check_deprecation_warning(w, old_name='update', new_name='update_contact_by_id')
+        self._check_deprecation_warning(w, old_name='update', new_name='update_by_id')
         update_contact_by_id_mock.assert_called_once_with(self.contact_id, self.data,
                                                           **self.options)
