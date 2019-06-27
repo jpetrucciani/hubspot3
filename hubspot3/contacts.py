@@ -121,7 +121,7 @@ class ContactsClient(BaseClient):
         """merge the data from the secondary_id into the data of the primary_id"""
         data = dict(vidToMerge=secondary_id)
 
-        return self._call(
+        self._call(
             "contact/merge-vids/{}/".format(primary_id),
             data=data,
             method="POST",
