@@ -87,6 +87,32 @@ class ContactsClient(BaseClient):
             **options
         )
 
+    def update_contact_by_email(self, email: str, data=None, **options):
+        """update the concat for the given email address with the given data"""
+        data = data or {}
+
+        return self._call(
+            "contact/email/{}/profile".format(email),
+            data=data,
+            method="POST",
+            **options
+        )
+
+    def merge_contacts(self, merge_into_contact_id: int, merge_from_contact_id: int,
+                       **options):
+        """
+        merge the data from the merge_from_contact_id into the data of the
+        merge_into_contact_id
+        """
+        data = dict(vidToMerge=merge_from_contact_id)
+
+        return self._call(
+            "contact/merge-vids/{}/".format(merge_into_contact_id),
+            data=data,
+            method="POST",
+            **options
+        )
+
     def get_batch(self, ids, extra_properties: Union[list, str] = None):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
