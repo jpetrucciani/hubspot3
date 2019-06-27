@@ -183,7 +183,16 @@ class TestContactsClient(object):
             [contact["vid"] for contact in response_body["contacts"]],
             extra_properties=extra_properties)
 
-    def test_get_batch(self, contacts_client, mock_connection):
+    @pytest.mark.parametrize('extra_properties_given, extra_properties_as_list', [
+        (None, []),
+        ('lead_source', ['lead_source']),
+        (
+            ['hs_analytics_last_url', 'hs_analytics_revenue'],
+            ['hs_analytics_last_url', 'hs_analytics_revenue']
+        )
+    ])
+    def test_get_batch(self, contacts_client, mock_connection, extra_properties_given,
+                       extra_properties_as_list):
         response_body = {
             "3234574": {
                 "vid": 3234574,
@@ -197,16 +206,15 @@ class TestContactsClient(object):
             },
         }
         ids = ['3234574', '3234575']
-        extra_properties = None
-        properties = contacts_client.default_batch_properties
-        properties.append(extra_properties)
+        properties = contacts_client.default_batch_properties.copy()
+        properties.extend(extra_properties_as_list)
         query_properties = ['property={}'.format(p) for p in properties]
         vids = ['vid={}'.format(vid) for vid in ids]
         params = vids
         params.extend(query_properties)
 
         mock_connection.set_response(200, response_body)
-        resp = contacts_client.get_batch(ids, extra_properties)
+        resp = contacts_client.get_batch(ids, extra_properties_given)
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
             "GET",
