@@ -68,7 +68,7 @@ class EcommerceBridgeClient(BaseClient):
         # Break the messages down into chunks that do not contain more than the maximum number
         # of allowed sync messages per request.
         chunks = [
-            list(messages[i : i + MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES])
+            list(messages[i:i + MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES])
             for i in range(0, len(messages), MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES)
         ]
         for chunk in chunks:
@@ -132,7 +132,7 @@ class EcommerceBridgeClient(BaseClient):
         """
         Retrieve a list of error dictionaries for the account that is associated with the
         credentials used for the connection, optionally filtered/limited and ordered by recency.
-        See: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-a-specific-account
+        See: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-a-specific-account  # noqa
         """
         return self._get_sync_errors(
             "sync/errors/portal",
