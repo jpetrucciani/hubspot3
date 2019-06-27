@@ -117,16 +117,12 @@ class ContactsClient(BaseClient):
             **options
         )
 
-    def merge(self, merge_into_contact_id: int, merge_from_contact_id: int,
-              **options):
-        """
-        merge the data from the merge_from_contact_id into the data of the
-        merge_into_contact_id
-        """
-        data = dict(vidToMerge=merge_from_contact_id)
+    def merge(self, primary_id: int, secondary_id: int, **options):
+        """merge the data from the secondary_id into the data of the primary_id"""
+        data = dict(vidToMerge=secondary_id)
 
         return self._call(
-            "contact/merge-vids/{}/".format(merge_into_contact_id),
+            "contact/merge-vids/{}/".format(primary_id),
             data=data,
             method="POST",
             **options
