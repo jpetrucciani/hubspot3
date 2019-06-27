@@ -128,22 +128,24 @@ class ContactsClient(BaseClient):
             **options
         )
 
+    default_batch_properties = [
+        "email",
+        "firstname",
+        "lastname",
+        "company",
+        "website",
+        "phone",
+        "address",
+        "city",
+        "state",
+        "zip",
+        "associatedcompanyid",
+    ]
+
     def get_batch(self, ids, extra_properties: Union[list, str] = None):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
-        properties = [
-            "email",
-            "firstname",
-            "lastname",
-            "company",
-            "website",
-            "phone",
-            "address",
-            "city",
-            "state",
-            "zip",
-            "associatedcompanyid",
-        ]
+        properties = self.default_batch_properties
 
         # append extras if they exist
         if extra_properties:
