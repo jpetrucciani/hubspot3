@@ -2,7 +2,7 @@
 testing hubspot3.contacts
 """
 import warnings
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -232,88 +232,53 @@ class TestContactsClient(object):
         )
         assert resp == [{"id": 3234574}, {"id": 3234575}]
 
-
-class TestDeprecatedMethods(object):
-
-    contact_id = "1"
-    email = "test@example.com"
-    options = dict(x="y")
-    data = dict(z="23")
-
-    @staticmethod
-    def _check_deprecation_warning(warning_instance, old_name, new_name):
-        assert len(warning_instance) == 1
-        assert issubclass(warning_instance[-1].category, DeprecationWarning)
-        message = str(warning_instance[-1].message)
-        assert "{old_name} is deprecated".format(old_name=old_name) in message
-        assert new_name in message
-
-    def test_create_or_update_contact_by_email(self, contacts_client):
-        create_or_update_contact_by_email_mock = Mock()
-        contacts_client.create_or_update_by_email = (
-            create_or_update_contact_by_email_mock
-        )
-        with warnings.catch_warnings(record=True) as w:
-            contacts_client.create_or_update_a_contact(
-                self.email, self.data, **self.options
-            )
-        self._check_deprecation_warning(
-            w,
-            old_name="create_or_update_a_contact",
-            new_name="create_or_update_by_email",
-        )
-        create_or_update_contact_by_email_mock.assert_called_once_with(
-            self.email, self.data, **self.options
-        )
-
-    def test_get_contact_by_email(self, contacts_client):
-        get_by_email_mock = Mock()
-        contacts_client.get_by_email = get_by_email_mock
-        with warnings.catch_warnings(record=True) as w:
-            contacts_client.get_contact_by_email(self.email, **self.options)
-        self._check_deprecation_warning(
-            w, old_name="get_contact_by_email", new_name="get_by_email"
-        )
-        get_by_email_mock.assert_called_once_with(self.email, **self.options)
-
-    def test_get_contact_by_id(self, contacts_client):
-        get_by_id_mock = Mock()
-        contacts_client.get_by_id = get_by_id_mock
-        with warnings.catch_warnings(record=True) as w:
-            contacts_client.get_contact_by_id(self.contact_id, **self.options)
-        self._check_deprecation_warning(
-            w, old_name="get_contact_by_id", new_name="get_by_id"
-        )
-        get_by_id_mock.assert_called_once_with(self.contact_id, **self.options)
-
-    def test_delete_a_contact(self, contacts_client):
-        delete_by_id_mock = Mock()
-        contacts_client.delete_by_id = delete_by_id_mock
-        with warnings.catch_warnings(record=True) as w:
-            contacts_client.delete_a_contact(self.contact_id, **self.options)
-        self._check_deprecation_warning(
-            w, old_name="delete_a_contact", new_name="delete_by_id"
-        )
-        delete_by_id_mock.assert_called_once_with(self.contact_id, **self.options)
-
-    def test_update_a_contact(self, contacts_client):
-        update_contact_by_id_mock = Mock()
-        contacts_client.update_by_id = update_contact_by_id_mock
-        with warnings.catch_warnings(record=True) as w:
-            contacts_client.update_a_contact(self.contact_id, self.data, **self.options)
-        self._check_deprecation_warning(
-            w, old_name="update_a_contact", new_name="update_by_id"
-        )
-        update_contact_by_id_mock.assert_called_once_with(
-            self.contact_id, self.data, **self.options
-        )
-
-    def test_update(self, contacts_client):
-        update_contact_by_id_mock = Mock()
-        contacts_client.update_by_id = update_contact_by_id_mock
-        with warnings.catch_warnings(record=True) as w:
-            contacts_client.update(self.contact_id, self.data, **self.options)
-        self._check_deprecation_warning(w, old_name="update", new_name="update_by_id")
-        update_contact_by_id_mock.assert_called_once_with(
-            self.contact_id, self.data, **self.options
-        )
+    @pytest.mark.parametrize('deprecated_name, new_name, args, kwargs', [
+        (
+            'get_contact_by_id',
+            'get_by_id',
+            ('123', ),
+            {'timeout': 5}
+        ),
+        (
+            'get_contact_by_email',
+            'get_by_email',
+            ('test@mail.com', ),
+            {'timeout': 5}
+        ),
+        (
+            'create_or_update_a_contact',
+            'create_or_update_by_email',
+            ('test@mail.com', {'properties': []}),
+            {'timeout': 5}
+        ),
+        (
+            'update',
+            'update_by_id',
+            ('123', {'properties': []}),
+            {'timeout': 5}
+        ),
+        (
+            'update_a_contact',
+            'update_by_id',
+            ('123', {'properties': []}),
+            {'timeout': 5}
+        ),
+        (
+            'delete_a_contact',
+            'delete_by_id',
+            ('123', ),
+            {'timeout': 5}
+        ),
+    ])
+    def test_deprecated_methods(self, contacts_client, deprecated_name, new_name, args, kwargs):
+        with patch.object(contacts_client, new_name) as new_method_mock:
+            deprecated_method = getattr(contacts_client, deprecated_name)
+            with warnings.catch_warnings(record=True) as warning_instance:
+                deprecated_method(*args, **kwargs)
+                new_method_mock.assert_called_once_with(*args, **kwargs)
+                assert len(warning_instance) == 1
+                assert issubclass(warning_instance[-1].category, DeprecationWarning)
+                message = str(warning_instance[-1].message)
+                assert "{old_name} is deprecated".format(old_name=deprecated_name) in message
+                new_name_part = message.find('favor of')
+                assert new_name in message[new_name_part:]
