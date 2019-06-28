@@ -1,7 +1,7 @@
 """
 hubspot ecommerce bridge api
 """
-from collections import Sequence
+from collections.abc import Sequence
 from typing import List
 
 from hubspot3 import logging_helper
@@ -131,8 +131,8 @@ class EcommerceBridgeClient(BaseClient):
     ) -> List:
         """
         Retrieve a list of error dictionaries for the account that is associated with the
-        credentials used for the connection, optionally filtered/limited and ordered by recency.
-        See: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-a-specific-account  # noqa
+        credentials used for the connection, optionally filtered/limited, and ordered by recency.
+        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-a-specific-account # noqa
         """
         return self._get_sync_errors(
             "sync/errors/portal",
@@ -154,8 +154,8 @@ class EcommerceBridgeClient(BaseClient):
     ) -> List:
         """
         Retrieve a list of error dictionaries for the app with the given ID, optionally
-        filtered/limited and ordered by recency.
-        See: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-an-app
+        filtered/limited, and ordered by recency.
+        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-an-app # noqa
         """
         return self._get_sync_errors(
             "sync/errors/app/{app_id}".format(app_id=app_id),
