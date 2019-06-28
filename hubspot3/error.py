@@ -72,9 +72,6 @@ class HubspotError(ValueError):
         self.err = err
 
     def __str__(self):
-        return force_utf8(self.__unicode__())
-
-    def __unicode__(self):
         params = {}
         request_keys = ("method", "host", "url", "data", "headers", "timeout", "body")
         result_attrs = ("status", "reason", "msg", "body", "headers")
@@ -82,7 +79,7 @@ class HubspotError(ValueError):
         params["error_message"] = "Hubspot Error"
         if self.result.body:
             try:
-                result_body = json.loads(self.result.body)
+                result_body = json.loads(force_utf8(self.result.body))
             except ValueError:
                 result_body = {}
             params["error_message"] = result_body.get("message", "Hubspot Error")
@@ -91,20 +88,20 @@ class HubspotError(ValueError):
         for attr in result_attrs:
             params["result_{}".format(attr)] = getattr(self.result, attr, "")
 
-        params = self._dict_vals_to_unicode(params)
+        params = self._dict_vals_to_str(params)
         return self.as_str_template.format(**params)
 
-    def _dict_vals_to_unicode(self, data):
+    def _dict_vals_to_str(self, data):
         unicode_data = {}
-        for key, val in list(data.items()):
+        for key, val in data.items():
             if not val:
                 unicode_data[key] = ""
             if isinstance(val, bytes):
                 unicode_data[key] = force_utf8(val)
             elif isinstance(val, str):
-                unicode_data[key] = force_utf8(val)
+                unicode_data[key] = val
             else:
-                unicode_data[key] = force_utf8(type(val))
+                unicode_data[key] = str(type(val))
         return unicode_data
 
 

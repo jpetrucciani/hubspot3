@@ -200,6 +200,13 @@ class Hubspot3:
         return DealsClient(**self.auth, **self.options)
 
     @property
+    def ecommerce_bridge(self):
+        """returns a hubspot3 ecommerce bridge client"""
+        from hubspot3.ecommerce_bridge import EcommerceBridgeClient
+
+        return EcommerceBridgeClient(**self.auth, **self.options)
+
+    @property
     def engagements(self):
         """returns a hubspot3 engagements client"""
         from hubspot3.engagements import EngagementsClient
