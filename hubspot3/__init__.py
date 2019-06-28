@@ -158,6 +158,20 @@ class Hubspot3:
         return BroadcastClient(**self.auth, **self.options)
 
     @property
+    def cms_layouts(self):
+        """returns a hubspot3 layouts client"""
+        from hubspot3.cms_layouts import CMSLayoutsClient
+
+        return CMSLayoutsClient(**self.auth, **self.options)
+
+    @property
+    def cms_templates(self):
+        """returns a hubspot3 templates client"""
+        from hubspot3.cms_templates import CMSTemplatesClient
+
+        return CMSTemplatesClient(**self.auth, **self.options)
+
+    @property
     def companies(self):
         """returns a hubspot3 companies client"""
         from hubspot3.companies import CompaniesClient
