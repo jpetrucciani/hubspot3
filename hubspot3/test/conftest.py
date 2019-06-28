@@ -20,6 +20,7 @@ def mock_connection():
     def assert_num_requests(number):
         """Assert that a certain number of requests were made."""
         assert connection.request.call_count == number
+
     connection.assert_num_requests = assert_num_requests
 
     def assert_has_request(method, url, data=None):
@@ -27,15 +28,16 @@ def mock_connection():
         Assert that at least one request with the exact combination of method, URL and body data
         was performed.
         """
-        if data:
-            data = json.dumps(data)
+        data = json.dumps(data) if data else None
         for args, kwargs in connection.request.call_args_list:
-            assert args[0] == method
-            assert args[1] == url
-            if data:
-                assert args[2] == data
-            else:
-                assert args[2] is None
+            if args[0] == method and args[1] == url and args[2] == data:
+                break
+        else:
+            raise AssertionError(
+                "No {method} request to URL '{url}' with data '{data}' was performed.'"
+                .format(method=method, url=url, data=data)
+            )
+
     connection.assert_has_request = assert_has_request
 
     def assert_query_parameters_in_request(**params):
@@ -47,7 +49,10 @@ def mock_connection():
             if all(urlencode({name: value}) in url for name, value in params.items()):
                 break
         else:
-            raise AssertionError('No request contains all given query parameters: {}'.format(params))
+            raise AssertionError(
+                "No request contains all given query parameters: {}".format(params)
+            )
+
     connection.assert_query_parameters_in_request = assert_query_parameters_in_request
 
     def set_response(status_code, body):
@@ -55,6 +60,7 @@ def mock_connection():
         response = MagicMock(status=status_code)
         response.read.return_value = body
         connection.getresponse.return_value = response
+
     connection.set_response = set_response
 
     def set_responses(response_tuples):
@@ -69,6 +75,7 @@ def mock_connection():
             response.read.return_value = body
             responses.append(response)
         connection.getresponse.side_effect = responses
+
     connection.set_responses = set_responses
 
     connection.set_response(200, "")
