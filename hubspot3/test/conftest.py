@@ -23,16 +23,20 @@ def mock_connection():
 
     connection.assert_num_requests = assert_num_requests
 
-    def assert_has_request(method, url, data):
+    def assert_has_request(method, url, data=None):
         """
         Assert that at least one request with the exact combination of method, URL and body data
         was performed.
         """
-        data = json.dumps(data)
-        assert any(
-            args[0] == method and args[1] == url and args[2] == data
-            for args, kwargs in connection.request.call_args_list
-        )
+        data = json.dumps(data) if data else None
+        for args, kwargs in connection.request.call_args_list:
+            if args[0] == method and args[1] == url and args[2] == data:
+                break
+        else:
+            raise AssertionError(
+                "No {method} request to URL '{url}' with data '{data}' was performed.'"
+                .format(method=method, url=url, data=data)
+            )
 
     connection.assert_has_request = assert_has_request
 
