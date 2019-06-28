@@ -47,7 +47,10 @@ def mock_connection():
         """
         for args, kwargs in connection.request.call_args_list:
             url = args[1]
-            if all(urlencode({name: value}) in url for name, value in params.items()):
+            if all(
+                urlencode({name: value}, doseq=True) in url
+                for name, value in params.items()
+            ):
                 break
         else:
             raise AssertionError(
