@@ -1,3 +1,5 @@
+import json
+
 from unittest.mock import Mock, patch
 import pytest
 
@@ -120,7 +122,9 @@ def test_get_sync_errors(
     ]
     for i, response in enumerate(responses[:-1], start=2):
         response["paging"] = {"next": {"page": str(i), "link": "dummy"}}
-    mock_connection.set_responses([(200, response) for response in responses])
+    mock_connection.set_responses(
+        [(200, json.dumps(response)) for response in responses]
+    )
 
     # Check that the correct number of requests was performed and that the results match the
     # expectation.
