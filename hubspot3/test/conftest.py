@@ -34,8 +34,9 @@ def mock_connection():
                 break
         else:
             raise AssertionError(
-                "No {method} request to URL '{url}' with data '{data}' was performed.'"
-                .format(method=method, url=url, data=data)
+                "No {method} request to URL '{url}' with data '{data}' was performed.'".format(
+                    method=method, url=url, data=data
+                )
             )
 
     connection.assert_has_request = assert_has_request
