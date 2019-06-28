@@ -27,9 +27,7 @@ def test_get_deal():
     with pytest.raises(HubspotNotFound):
         DEALS.get("-1")
 
-    deal = DEALS.get_recently_created(limit=1)[0]
-    deal_check = DEALS.get(deal["id"])
-    assert _is_deal(deal)
+    deal_check = DEALS.get("852832561")
     assert _is_deal(deal_check["properties"])
 
 

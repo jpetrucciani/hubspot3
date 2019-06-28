@@ -3,7 +3,6 @@ hubspot ecommerce bridge api
 """
 from collections.abc import Sequence
 from typing import List
-
 from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
 
@@ -68,7 +67,7 @@ class EcommerceBridgeClient(BaseClient):
         # Break the messages down into chunks that do not contain more than the maximum number
         # of allowed sync messages per request.
         chunks = [
-            list(messages[i:i + MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES])
+            list(messages[i : i + MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES])
             for i in range(0, len(messages), MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES)
         ]
         for chunk in chunks:
