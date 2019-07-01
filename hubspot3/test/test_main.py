@@ -171,7 +171,7 @@ class TestClientCLIWrapper:
     @pytest.mark.parametrize(
         "args, kwargs, expectation, stdin_value",
         [
-            ([], {}, ((), {}), None),
+            ([], {}, ([], {}), None),
             (
                 [],
                 {"data": "__stdin__"},
