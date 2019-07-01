@@ -23,14 +23,17 @@ def mock_connection():
 
     connection.assert_num_requests = assert_num_requests
 
-    def assert_has_request(method, url, data=None):
+    def assert_has_request(method, url, data=None, **params):
         """
-        Assert that at least one request with the exact combination of method, URL and body data
-        was performed.
+        Assert that at least one request with the exact combination of method, URL, body data, and
+        query parameters was performed.
         """
         data = json.dumps(data) if data else None
         for args, kwargs in connection.request.call_args_list:
-            if args[0] == method and args[1] == url and args[2] == data:
+            url_check = args[1] == url if not params else args[1].startswith(url)
+            params_check = all(urlencode({name: value}, doseq=True) in args[1] for name, value in
+                               params.items()) if params else True
+            if args[0] == method and url_check and args[2] == data and params_check:
                 break
         else:
             raise AssertionError(
@@ -40,24 +43,6 @@ def mock_connection():
             )
 
     connection.assert_has_request = assert_has_request
-
-    def assert_query_parameters_in_request(**params):
-        """
-        Assert that at least one request using all of the given query parameters was performed.
-        """
-        for args, kwargs in connection.request.call_args_list:
-            url = args[1]
-            if all(
-                urlencode({name: value}, doseq=True) in url
-                for name, value in params.items()
-            ):
-                break
-        else:
-            raise AssertionError(
-                "No request contains all given query parameters: {}".format(params)
-            )
-
-    connection.assert_query_parameters_in_request = assert_query_parameters_in_request
 
     def set_response(status_code, body):
         """Set the response status code and body for all mocked requests."""
