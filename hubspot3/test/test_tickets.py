@@ -22,7 +22,7 @@ def test_create_ticket():
     with pytest.raises(Exception):
         TICKETS.create("", "")
 
-    ticket = TICKETS.create("0", "1", properties={"subject": "test_hubspot3"})
+    ticket = TICKETS.create("688840", "688845", properties={"subject": "test_hubspot3"})
     assert ticket
     assert isinstance(ticket, dict)
 
