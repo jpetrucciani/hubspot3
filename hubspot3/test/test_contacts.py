@@ -3,7 +3,6 @@ testing hubspot3.contacts
 """
 import json
 import warnings
-from collections import OrderedDict
 from unittest.mock import Mock, patch
 
 import pytest
@@ -187,7 +186,8 @@ class TestContactsClient(object):
         mock_connection.assert_has_request(
             "GET",
             "/contacts/v1/lists/all/contacts/all",
-            **dict(count=query_limit, vidOffset=0)
+            count=query_limit,
+            vidOffset=0
         )
         assert resp == get_batch_return if not limit else get_batch_return[:limit]
         get_batch_mock.assert_called_once_with(
@@ -213,10 +213,10 @@ class TestContactsClient(object):
         extra_properties_given,
         extra_properties_as_list,
     ):
-        response_body = OrderedDict([
-            ("3234574", {"vid": 3234574, "canonical-vid": 3234574, "properties": {}}),
-            ("3234575", {"vid": 3234575, "canonical-vid": 3234575, "properties": {}}),
-        ])
+        response_body = {
+            "3234574": {"vid": 3234574, "canonical-vid": 3234574, "properties": {}},
+            "3234575": {"vid": 3234575, "canonical-vid": 3234575, "properties": {}},
+        }
         ids = ["3234574", "3234575"]
         properties = contacts_client.default_batch_properties.copy()
         properties.extend(extra_properties_as_list)
@@ -229,7 +229,9 @@ class TestContactsClient(object):
         mock_connection.assert_has_request(
             "GET", "/contacts/v1/contact/vids/batch", **params
         )
-        assert resp == [{"id": 3234574}, {"id": 3234575}]
+        assert len(resp) == 2
+        assert {"id": 3234574} in resp
+        assert {"id": 3234575} in resp
 
     @pytest.mark.parametrize('deprecated_name, new_name, args, kwargs', [
         (
