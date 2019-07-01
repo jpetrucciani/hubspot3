@@ -18,7 +18,7 @@ def mock_connection():
     connection = Mock(spec=HTTPSConnection, host="api.hubapi.com", timeout=10)
 
     def assert_num_requests(number):
-        """Assert that a certain number of requests were made."""
+        """Assert that a certain number of requests was made."""
         assert connection.request.call_count == number
 
     connection.assert_num_requests = assert_num_requests
@@ -37,9 +37,9 @@ def mock_connection():
                 break
         else:
             raise AssertionError(
-                "No {method} request to URL '{url}' with data '{data}' was performed.'".format(
-                    method=method, url=url, data=data
-                )
+                ("No {method} request to URL '{url}' with data '{data}' and with parameters "
+                 "'{params}' was performed.'").format(method=method, url=url, data=data,
+                                                      params=params)
             )
 
     connection.assert_has_request = assert_has_request
@@ -55,7 +55,7 @@ def mock_connection():
     def set_responses(response_tuples):
         """
         Set multiple responses for consecutive mocked requests via tuples of (status code, body).
-        The first request will result will result in the first response, the second request in the
+        The first request will result in the first response, the second request in the
         second response and so on.
         """
         responses = []
