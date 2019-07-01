@@ -184,10 +184,7 @@ class TestContactsClient(object):
         resp = contacts_client.get_all(limit=limit, extra_properties=extra_properties)
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            "GET",
-            "/contacts/v1/lists/all/contacts/all",
-            count=query_limit,
-            vidOffset=0
+            "GET", "/contacts/v1/lists/all/contacts/all", count=query_limit, vidOffset=0
         )
         assert resp == get_batch_return if not limit else get_batch_return[:limit]
         get_batch_mock.assert_called_once_with(
@@ -220,8 +217,8 @@ class TestContactsClient(object):
         ids = ["3234574", "3234575"]
         properties = contacts_client.default_batch_properties.copy()
         properties.extend(extra_properties_as_list)
-        params = {'property': p for p in properties}
-        params.update({'vid': vid for vid in ids})
+        params = {"property": p for p in properties}
+        params.update({"vid": vid for vid in ids})
 
         mock_connection.set_response(200, json.dumps(response_body))
         resp = contacts_client.get_batch(ids, extra_properties_given)
@@ -233,45 +230,35 @@ class TestContactsClient(object):
         assert {"id": 3234574} in resp
         assert {"id": 3234575} in resp
 
-    @pytest.mark.parametrize('deprecated_name, new_name, args, kwargs', [
-        (
-            'get_contact_by_id',
-            'get_by_id',
-            ('123', ),
-            {'timeout': 5}
-        ),
-        (
-            'get_contact_by_email',
-            'get_by_email',
-            ('test@mail.com', ),
-            {'timeout': 5}
-        ),
-        (
-            'create_or_update_a_contact',
-            'create_or_update_by_email',
-            ('test@mail.com', {'properties': []}),
-            {'timeout': 5}
-        ),
-        (
-            'update',
-            'update_by_id',
-            ('123', {'properties': []}),
-            {'timeout': 5}
-        ),
-        (
-            'update_a_contact',
-            'update_by_id',
-            ('123', {'properties': []}),
-            {'timeout': 5}
-        ),
-        (
-            'delete_a_contact',
-            'delete_by_id',
-            ('123', ),
-            {'timeout': 5}
-        ),
-    ])
-    def test_deprecated_methods(self, contacts_client, deprecated_name, new_name, args, kwargs):
+    @pytest.mark.parametrize(
+        "deprecated_name, new_name, args, kwargs",
+        [
+            ("get_contact_by_id", "get_by_id", ("123",), {"timeout": 5}),
+            (
+                "get_contact_by_email",
+                "get_by_email",
+                ("test@mail.com",),
+                {"timeout": 5},
+            ),
+            (
+                "create_or_update_a_contact",
+                "create_or_update_by_email",
+                ("test@mail.com", {"properties": []}),
+                {"timeout": 5},
+            ),
+            ("update", "update_by_id", ("123", {"properties": []}), {"timeout": 5}),
+            (
+                "update_a_contact",
+                "update_by_id",
+                ("123", {"properties": []}),
+                {"timeout": 5},
+            ),
+            ("delete_a_contact", "delete_by_id", ("123",), {"timeout": 5}),
+        ],
+    )
+    def test_deprecated_methods(
+        self, contacts_client, deprecated_name, new_name, args, kwargs
+    ):
         with patch.object(contacts_client, new_name) as new_method_mock:
             deprecated_method = getattr(contacts_client, deprecated_name)
             with warnings.catch_warnings(record=True) as warning_instance:
@@ -280,6 +267,9 @@ class TestContactsClient(object):
                 assert len(warning_instance) == 1
                 assert issubclass(warning_instance[-1].category, DeprecationWarning)
                 message = str(warning_instance[-1].message)
-                assert "{old_name} is deprecated".format(old_name=deprecated_name) in message
-                new_name_part = message.find('favor of')
+                assert (
+                    "{old_name} is deprecated".format(old_name=deprecated_name)
+                    in message
+                )
+                new_name_part = message.find("favor of")
                 assert new_name in message[new_name_part:]

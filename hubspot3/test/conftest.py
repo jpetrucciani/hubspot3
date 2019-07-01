@@ -31,15 +31,18 @@ def mock_connection():
         data = json.dumps(data) if data else None
         for args, kwargs in connection.request.call_args_list:
             url_check = args[1] == url if not params else args[1].startswith(url)
-            params_check = all(urlencode({name: value}, doseq=True) in args[1] for name, value in
-                               params.items()) if params else True
+            params_check = all(
+                urlencode({name: value}, doseq=True) in args[1]
+                for name, value in params.items()
+            )
             if args[0] == method and url_check and args[2] == data and params_check:
                 break
         else:
             raise AssertionError(
-                ("No {method} request to URL '{url}' with data '{data}' and with parameters "
-                 "'{params}' was performed.'").format(method=method, url=url, data=data,
-                                                      params=params)
+                (
+                    "No {method} request to URL '{url}' with data '{data}' and with parameters "
+                    "'{params}' was performed.'"
+                ).format(method=method, url=url, data=data, params=params)
             )
 
     connection.assert_has_request = assert_has_request
