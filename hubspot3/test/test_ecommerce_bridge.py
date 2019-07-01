@@ -145,7 +145,9 @@ def test_get_sync_errors(
     if object_type:
         common_params["objectType"] = object_type
     for page in expected_pages:
-        mock_connection.assert_query_parameters_in_request(
+        mock_connection.assert_has_request(
+            "GET",
+            "/extensions/ecomm/v2/{}".format(subpath),
             **dict(common_params, page=page)
         )
 
