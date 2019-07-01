@@ -186,9 +186,8 @@ class TestContactsClient(object):
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
             "GET",
-            "/contacts/v1/lists/all/contacts/all?count={}&vidOffset=0".format(
-                query_limit
-            ),
+            "/contacts/v1/lists/all/contacts/all",
+            **dict(count=query_limit, vidOffset=0)
         )
         assert resp == get_batch_return if not limit else get_batch_return[:limit]
         get_batch_mock.assert_called_once_with(
@@ -221,16 +220,14 @@ class TestContactsClient(object):
         ids = ["3234574", "3234575"]
         properties = contacts_client.default_batch_properties.copy()
         properties.extend(extra_properties_as_list)
-        query_properties = ["property={}".format(p) for p in properties]
-        vids = ["vid={}".format(vid) for vid in ids]
-        params = vids
-        params.extend(query_properties)
+        params = {'property': p for p in properties}
+        params.update({'vid': vid for vid in ids})
 
         mock_connection.set_response(200, json.dumps(response_body))
         resp = contacts_client.get_batch(ids, extra_properties_given)
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            "GET", "/contacts/v1/contact/vids/batch?{}".format("&".join(params))
+            "GET", "/contacts/v1/contact/vids/batch", **params
         )
         assert resp == [{"id": 3234574}, {"id": 3234575}]
 
