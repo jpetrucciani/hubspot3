@@ -27,7 +27,7 @@ class TestContactsClient(object):
     def test_create_or_update_by_email(self, contacts_client, mock_connection):
         email = "mail@email.com"
         data = {"properties": [{"property": "firstname", "value": "hub"}]}
-        response_body = OrderedDict({"isNew": False, "vid": 3234574})
+        response_body = {"isNew": False, "vid": 3234574}
         mock_connection.set_response(200, json.dumps(response_body))
         resp = contacts_client.create_or_update_by_email(email, data)
         mock_connection.assert_num_requests(1)
@@ -38,7 +38,7 @@ class TestContactsClient(object):
 
     def test_get_by_email(self, contacts_client, mock_connection):
         email = "mail@email.com"
-        response_body = OrderedDict({
+        response_body = {
             "vid": 3234574,
             "canonical-vid": 3234574,
             "merged-vids": [],
@@ -47,7 +47,7 @@ class TestContactsClient(object):
             "profile-token": "AO_T-m",
             "profile-url": "https://app.hubspot.com/contacts/62515/lists/public/contact/_AO_T-m/",
             "properties": {},
-        })
+        }
         mock_connection.set_response(200, json.dumps(response_body))
         resp = contacts_client.get_by_email(email)
         mock_connection.assert_num_requests(1)
@@ -58,7 +58,7 @@ class TestContactsClient(object):
 
     def test_get_by_id(self, contacts_client, mock_connection):
         vid = "234"
-        response_body = OrderedDict({
+        response_body = {
             "vid": 3234574,
             "canonical-vid": 3234574,
             "merged-vids": [],
@@ -67,7 +67,7 @@ class TestContactsClient(object):
             "profile-token": "AO_T-m",
             "profile-url": "https://app.hubspot.com/contacts/62515/lists/public/contact/_AO_T-m/",
             "properties": {},
-        })
+        }
         mock_connection.set_response(200, json.dumps(response_body))
         resp = contacts_client.get_by_id(vid)
         mock_connection.assert_num_requests(1)
@@ -90,7 +90,7 @@ class TestContactsClient(object):
 
     def test_delete_by_id(self, contacts_client, mock_connection):
         contact_id = "234"
-        response_body = OrderedDict({"vid": contact_id, "deleted": True, "reason": "OK"})
+        response_body = {"vid": contact_id, "deleted": True, "reason": "OK"}
         mock_connection.set_response(204, json.dumps(response_body))
         resp = contacts_client.delete_by_id(contact_id)
         mock_connection.assert_num_requests(1)
@@ -101,7 +101,7 @@ class TestContactsClient(object):
 
     def test_create(self, contacts_client, mock_connection):
         data = {"properties": [{"property": "email", "value": "hub@spot.com"}]}
-        response_body = OrderedDict({
+        response_body = {
             "identity-profiles": [
                 {
                     "identities": [
@@ -120,7 +120,7 @@ class TestContactsClient(object):
                 }
             ],
             "properties": {},
-        })
+        }
         mock_connection.set_response(200, json.dumps(response_body))
         resp = contacts_client.create(data)
         mock_connection.assert_num_requests(1)
@@ -165,7 +165,7 @@ class TestContactsClient(object):
     def test_get_all(
         self, contacts_client, mock_connection, limit, query_limit, extra_properties
     ):
-        response_body = OrderedDict({
+        response_body = {
             "contacts": [
                 {
                     "addedAt": 1390574181854,
@@ -177,7 +177,7 @@ class TestContactsClient(object):
             ],
             "has-more": False,
             "vid-offset": 204727,
-        })
+        }
         get_batch_return = [dict(id=204727 + i) for i in range(30)]
         get_batch_mock = Mock(return_value=get_batch_return)
         contacts_client.get_batch = get_batch_mock
@@ -213,10 +213,10 @@ class TestContactsClient(object):
         extra_properties_given,
         extra_properties_as_list,
     ):
-        response_body = OrderedDict({
-            "3234574": {"vid": 3234574, "canonical-vid": 3234574, "properties": {}},
-            "3234575": {"vid": 3234575, "canonical-vid": 3234575, "properties": {}},
-        })
+        response_body = OrderedDict([
+            ("3234574", {"vid": 3234574, "canonical-vid": 3234574, "properties": {}}),
+            ("3234575", {"vid": 3234575, "canonical-vid": 3234575, "properties": {}}),
+        ])
         ids = ["3234574", "3234575"]
         properties = contacts_client.default_batch_properties.copy()
         properties.extend(extra_properties_as_list)
