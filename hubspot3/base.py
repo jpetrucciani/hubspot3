@@ -174,13 +174,13 @@ class BaseClient(object):
 
     def _digest_result(self, data):
         if data:
+            if isinstance(data, bytes):
+                data = utils.force_utf8(data)
             if isinstance(data, str):
                 try:
                     data = json.loads(data)
                 except ValueError:
                     pass
-            elif isinstance(data, bytes):
-                data = json.loads(utils.force_utf8(data))
 
         return data
 
