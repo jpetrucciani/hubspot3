@@ -34,7 +34,7 @@ class OAuth2Client(BaseClient):
 
     def get_tokens(
         self,
-        code: str,
+        authorization_code: str,
         redirect_uri: str,
         client_id: str = None,
         client_secret: str = None,
@@ -54,7 +54,7 @@ class OAuth2Client(BaseClient):
             "client_id": client_id or self.client_id,
             "client_secret": client_secret or self.client_secret,
             "redirect_uri": redirect_uri,
-            "code": code,
+            "code": authorization_code,
         }
         result = self._call("token", method="POST", data=urlencode(data), **options)
 
