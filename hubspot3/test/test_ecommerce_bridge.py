@@ -66,7 +66,7 @@ def test_send_sync_messages(
     mock_connection.assert_num_requests(expected_request_count)
     for data in expected_requests:
         mock_connection.assert_has_request(
-            "PUT", "/extensions/ecomm/v2/sync/messages?", data
+            "PUT", "/extensions/ecomm/v2/sync/messages?", json.dumps(data)
         )
 
 
