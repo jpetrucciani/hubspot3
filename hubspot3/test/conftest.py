@@ -28,7 +28,6 @@ def mock_connection():
         Assert that at least one request with the exact combination of method, URL, body data, and
         query parameters was performed.
         """
-        data = json.dumps(data) if data else None
         for args, kwargs in connection.request.call_args_list:
             url_check = args[1] == url if not params else args[1].startswith(url)
             params_check = all(
