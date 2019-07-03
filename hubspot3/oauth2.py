@@ -70,7 +70,7 @@ class OAuth2Client(BaseClient):
         **options
     ):
         """
-        Request a new token pair using the provided access token and credentials.
+        Request a new token pair using the provided refresh token and credentials.
 
         If any of the optional parameters are not provided, their value will be read from the
         corresponding attributes on this client.
