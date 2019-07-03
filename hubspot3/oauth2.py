@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
 
-OAUTH2_API_VERSION = '1'
+OAUTH2_API_VERSION = "1"
 
 
 class OAuth2Client(BaseClient):
@@ -32,8 +32,14 @@ class OAuth2Client(BaseClient):
     def _get_path(self, subpath):
         return "oauth/v{}/{}".format(OAUTH2_API_VERSION, subpath)
 
-    def get_tokens(self, code: str, redirect_uri: str,
-                   client_id: str = None, client_secret: str = None, **options):
+    def get_tokens(
+        self,
+        code: str,
+        redirect_uri: str,
+        client_id: str = None,
+        client_secret: str = None,
+        **options
+    ):
         """
         Request an initial token pair using the provided credentials.
 
@@ -50,19 +56,19 @@ class OAuth2Client(BaseClient):
             "redirect_uri": redirect_uri,
             "code": code,
         }
-        result = self._call(
-            "token",
-            method="POST",
-            data=urlencode(data),
-            **options
-        )
+        result = self._call("token", method="POST", data=urlencode(data), **options)
 
         if not client_id and not client_secret:
             self.refresh_token = result["refresh_token"]
         return result
 
-    def refresh_tokens(self, client_id: str = None, client_secret: str = None,
-                       refresh_token: str = None, **options):
+    def refresh_tokens(
+        self,
+        client_id: str = None,
+        client_secret: str = None,
+        refresh_token: str = None,
+        **options
+    ):
         """
         Request a new token pair using the provided access token and credentials.
 
@@ -78,12 +84,7 @@ class OAuth2Client(BaseClient):
             "client_secret": client_secret or self.client_secret,
             "refresh_token": refresh_token or self.refresh_token,
         }
-        result = self._call(
-            "token",
-            method="POST",
-            data=urlencode(data),
-            **options
-        )
+        result = self._call("token", method="POST", data=urlencode(data), **options)
 
         if not client_id and not client_secret and not refresh_token:
             self.refresh_token = result["refresh_token"]
