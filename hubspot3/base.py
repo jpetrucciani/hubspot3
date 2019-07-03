@@ -1,14 +1,15 @@
 """
 base hubspot client class
 """
+import json
+import logging
+import time
 import urllib.request
 import urllib.parse
 import urllib.error
 import http.client
-import json
-import logging
-import time
 import traceback
+from typing import List, Union
 import zlib
 from hubspot3 import utils
 from hubspot3.utils import force_utf8
@@ -24,7 +25,6 @@ from hubspot3.error import (
     HubspotTimeout,
     HubspotUnauthorized,
 )
-from typing import Union
 
 
 class BaseClient(object):
@@ -36,15 +36,16 @@ class BaseClient(object):
 
     def __init__(
         self,
-        api_key=None,
-        access_token=None,
-        refresh_token=None,
-        client_id=None,
-        timeout=10,
-        mixins=None,
-        api_base="api.hubapi.com",
-        debug=False,
-        disable_auth=False,
+        api_key: str = None,
+        access_token: str = None,
+        refresh_token: str = None,
+        client_id: str = None,
+        client_secret: str = None,
+        timeout: int = 10,
+        mixins: List = None,
+        api_base: str = "api.hubapi.com",
+        debug: bool = False,
+        disable_auth: bool = False,
         **extra_options
     ):
         super(BaseClient, self).__init__()
@@ -56,10 +57,11 @@ class BaseClient(object):
             if mixin_class not in self.__class__.__bases__:
                 self.__class__.__bases__ = (mixin_class,) + self.__class__.__bases__
 
-        self.api_key = api_key or extra_options.get("api_key")
-        self.access_token = access_token or extra_options.get("access_token")
-        self.refresh_token = refresh_token or extra_options.get("refresh_token")
-        self.client_id = client_id or extra_options.get("client_id")
+        self.api_key = api_key
+        self.access_token = access_token
+        self.refresh_token = refresh_token
+        self.client_id = client_id
+        self.client_secret = client_secret
         self.log = utils.get_log("hubspot3")
         if not disable_auth:
             if self.api_key and self.access_token:
