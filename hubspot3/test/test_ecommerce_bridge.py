@@ -207,3 +207,38 @@ def test_get_sync_errors_for_app(ecommerce_bridge_client, app_id, kwargs):
         mock_get_sync_errors.assert_called_once_with(
             "sync/errors/app/{}".format(app_id), **kwargs
         )
+
+
+@pytest.mark.parametrize(
+    "store_id, label, admin_uri, expected_data",
+    [
+        ("test-store", "Test store", None, {"id": "test-store", "label": "Test store"}),
+        ("test-store", "Test store", "", {"id": "test-store", "label": "Test store"}),
+        (
+            "test-store",
+            "Test store",
+            "https://test.store",
+            {
+                "id": "test-store",
+                "label": "Test store",
+                "adminUri": "https://test.store",
+            },
+        ),
+    ],
+)
+def test_create_or_update_store(
+    ecommerce_bridge_client, mock_connection, store_id, label, admin_uri, expected_data
+):
+    response_data = {
+        "id": "test-store",
+        "label": "Test store",
+        "adminUri": "https://test.store",
+    }
+    mock_connection.set_response(200, json.dumps(response_data))
+
+    result = ecommerce_bridge_client.create_or_update_store(store_id, label, admin_uri)
+    mock_connection.assert_num_requests(1)
+    mock_connection.assert_has_request(
+        "PUT", "/extensions/ecomm/v2/stores?", json.dumps(expected_data)
+    )
+    assert result == response_data
