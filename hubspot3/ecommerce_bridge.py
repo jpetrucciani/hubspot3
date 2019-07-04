@@ -164,3 +164,15 @@ class EcommerceBridgeClient(BaseClient):
             limit=limit,
             **options
         )
+
+    def create_or_update_store(
+        self, store_id: str, label: str, admin_uri: str = None, **options
+    ):
+        """
+        Create or update the store with the given ID.
+        :see: https://developers.hubspot.com/docs/methods/ecomm-bridge/v2/create-or-update-store
+        """
+        data = {"id": store_id, "label": label}
+        if admin_uri:
+            data["adminUri"] = admin_uri
+        return self._call("stores", data=data, method="PUT", **options)
