@@ -48,6 +48,8 @@ class OAuth2Client(BaseClient):
         If the value for all optional parameters had to be read from the attributes, the refresh
         token returned from the API will be stored on this client to allow for further
         `refresh_token` calls without having to provide the refresh token.
+
+        :see: https://developers.hubspot.com/docs/methods/oauth2/get-access-and-refresh-tokens
         """
         data = {
             "grant_type": "authorization_code",
@@ -77,6 +79,8 @@ class OAuth2Client(BaseClient):
         If the value for all optional parameters had to be read from the attributes, the refresh
         token returned from the API will be stored on this client to allow for further
         `refresh_token` calls without having to provide the refresh token.
+
+        :see: https://developers.hubspot.com/docs/methods/oauth2/refresh-access-token
         """
         data = {
             "grant_type": "refresh_token",
