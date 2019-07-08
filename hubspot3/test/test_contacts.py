@@ -31,9 +31,7 @@ class TestContactsClient(object):
         resp = contacts_client.create_or_update_by_email(email, data)
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            "POST",
-            "/contacts/v1/contact/createOrUpdate/email/{}?".format(email),
-            json.dumps(data),
+            "POST", "/contacts/v1/contact/createOrUpdate/email/{}?".format(email), data
         )
         assert resp == response_body
 
@@ -85,9 +83,7 @@ class TestContactsClient(object):
         resp = contacts_client.update_by_id(contact_id, data)
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            "POST",
-            "/contacts/v1/contact/vid/{}/profile?".format(contact_id),
-            json.dumps(data),
+            "POST", "/contacts/v1/contact/vid/{}/profile?".format(contact_id), data
         )
         assert resp == response_body
 
@@ -127,9 +123,7 @@ class TestContactsClient(object):
         mock_connection.set_response(200, json.dumps(response_body))
         resp = contacts_client.create(data)
         mock_connection.assert_num_requests(1)
-        mock_connection.assert_has_request(
-            "POST", "/contacts/v1/contact?", json.dumps(data)
-        )
+        mock_connection.assert_has_request("POST", "/contacts/v1/contact?", data)
         assert resp == response_body
 
     def test_update_by_email(self, contacts_client, mock_connection):
@@ -140,9 +134,7 @@ class TestContactsClient(object):
         resp = contacts_client.update_by_email(email, data)
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            "POST",
-            "/contacts/v1/contact/email/{}/profile?".format(email),
-            json.dumps(data),
+            "POST", "/contacts/v1/contact/email/{}/profile?".format(email), data
         )
         assert resp == response_body
 
@@ -154,7 +146,7 @@ class TestContactsClient(object):
         mock_connection.assert_has_request(
             "POST",
             "/contacts/v1/contact/merge-vids/{}/?".format(primary_id),
-            json.dumps({"vidToMerge": secondary_id}),
+            dict(vidToMerge=secondary_id),
         )
         assert resp is None
 
