@@ -2,6 +2,7 @@
 configure pytest
 """
 from http.client import HTTPSConnection
+import json
 from urllib.parse import urlencode
 
 from unittest.mock import MagicMock, Mock
@@ -28,12 +29,15 @@ def mock_connection():
         query parameters was performed.
         """
         for args, kwargs in connection.request.call_args_list:
+            request_data = args[2]
+            if data is not None and not isinstance(data, str):
+                request_data = json.loads(request_data)
             url_check = args[1] == url if not params else args[1].startswith(url)
             params_check = all(
                 urlencode({name: value}, doseq=True) in args[1]
                 for name, value in params.items()
             )
-            if args[0] == method and url_check and args[2] == data and params_check:
+            if args[0] == method and url_check and request_data == data and params_check:
                 break
         else:
             raise AssertionError(
