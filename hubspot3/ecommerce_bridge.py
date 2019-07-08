@@ -1,7 +1,7 @@
 """
 hubspot ecommerce bridge api
 """
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import List
 from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
@@ -164,6 +164,29 @@ class EcommerceBridgeClient(BaseClient):
             limit=limit,
             **options
         )
+
+    def create_or_update_settings(
+        self,
+        mappings: Mapping,
+        webhook_uri: str = None,
+        enabled: bool = True,
+        app_id: int = None,
+        show_provided_mappings: bool = False,
+        **options
+    ):
+        """
+        Create or update the ecommerce settings for a portal or app.
+        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/upsert-settings
+        """
+        data = {"mappings": dict(mappings), "enabled": enabled}
+        if webhook_uri:
+            data["webhookUri"] = webhook_uri
+
+        params = {"showProvidedMappings": str(show_provided_mappings).lower()}
+        if app_id:
+            params["appId"] = app_id
+
+        return self._call("settings", data=data, params=params, method="PUT", **options)
 
     def create_or_update_store(
         self, store_id: str, label: str, admin_uri: str = None, **options
