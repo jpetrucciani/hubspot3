@@ -89,6 +89,7 @@ class Hubspot3:
         access_token: str = None,
         refresh_token: str = None,
         client_id: str = None,
+        client_secret: str = None,
         timeout: int = 10,
         api_base: str = "api.hubapi.com",
         debug: bool = False,
@@ -96,10 +97,11 @@ class Hubspot3:
         **extra_options: Any
     ) -> None:
         """full client constructor"""
-        self.api_key = api_key or extra_options.get("api_key")
-        self.access_token = access_token or extra_options.get("access_token")
-        self.refresh_token = refresh_token or extra_options.get("refresh_token")
-        self.client_id = client_id or extra_options.get("client_id")
+        self.api_key = api_key
+        self.access_token = access_token
+        self.refresh_token = refresh_token
+        self.client_id = client_id
+        self.client_secret = client_secret
         if not disable_auth:
             if self.api_key and self.access_token:
                 raise HubspotBadConfig("Cannot use both api_key and access_token.")
@@ -109,6 +111,7 @@ class Hubspot3:
             "access_token": self.access_token,
             "api_key": self.api_key,
             "client_id": self.client_id,
+            "client_secret": self.client_secret,
             "refresh_token": self.refresh_token,
         }
         self.options = {
@@ -254,6 +257,13 @@ class Hubspot3:
         from hubspot3.leads import LeadsClient
 
         return LeadsClient(**self.auth, **self.options)
+
+    @property
+    def oauth2(self):
+        """returns a hubspot3 OAuth2 client"""
+        from hubspot3.oauth2 import OAuth2Client
+
+        return OAuth2Client(**self.auth, **self.options)
 
     @property
     def owners(self):
