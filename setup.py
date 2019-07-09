@@ -43,7 +43,7 @@ setup(
     download_url="https://github.com/jpetrucciani/hubspot3.git",
     license="LICENSE",
     packages=["hubspot3"],
-    install_requires=["requests"],
+    install_requires=[],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
@@ -51,14 +51,6 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     zip_safe=False,
-    extras_require={
-        'cli': [
-            'fire==0.1.3'
-        ],
-    },
-    entry_points={
-        'console_scripts': [
-            'hubspot3=hubspot3.__main__:main'
-        ]
-    }
+    extras_require={"cli": ["fire==0.1.3"]},
+    entry_points={"console_scripts": ["hubspot3=hubspot3.__main__:main"]},
 )

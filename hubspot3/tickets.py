@@ -1,8 +1,8 @@
 """
 hubspot tickets api
 """
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
+from hubspot3.utils import get_log
 from typing import Dict
 
 
@@ -19,7 +19,7 @@ class TicketsClient(BaseClient):
     def __init__(self, *args, **kwargs):
         """initialize a tickets client"""
         super(TicketsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.tickets")
+        self.log = get_log("hubspot3.tickets")
 
     def _get_path(self, subpath):
         """tickets subpath generator"""

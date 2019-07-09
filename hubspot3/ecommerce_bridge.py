@@ -3,8 +3,8 @@ hubspot ecommerce bridge api
 """
 from collections.abc import Mapping, Sequence
 from typing import List
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
+from hubspot3.utils import get_log
 
 
 ECOMMERCE_BRIDGE_API_VERSION = "2"
@@ -50,7 +50,7 @@ class EcommerceBridgeClient(BaseClient):
     def __init__(self, *args, **kwargs):
         """initialize an ecommerce bridge client"""
         super(EcommerceBridgeClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.ecommerce_bridge")
+        self.log = get_log("hubspot3.ecommerce_bridge")
 
     def _get_path(self, subpath):
         return "extensions/ecomm/v{}/{}".format(ECOMMERCE_BRIDGE_API_VERSION, subpath)

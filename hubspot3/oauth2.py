@@ -2,9 +2,9 @@
 hubspot OAuth2 api
 """
 from urllib.parse import urlencode
-
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
+from hubspot3.utils import get_log
+
 
 OAUTH2_API_VERSION = "1"
 
@@ -21,7 +21,7 @@ class OAuth2Client(BaseClient):
         # authentication itself.
         kwargs["disable_auth"] = True
         super(OAuth2Client, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.oauth2")
+        self.log = get_log("hubspot3.oauth2")
         self.options["content_type"] = "application/x-www-form-urlencoded"
         # Make sure that certain credentials that wouldn't be used anyway are not set. Not having
         # an access token will also make sure that the `_call_raw` implementation does not try to
@@ -29,7 +29,7 @@ class OAuth2Client(BaseClient):
         self.api_key = None
         self.access_token = None
 
-    def _get_path(self, subpath):
+    def _get_path(self, subpath: str) -> str:
         return "oauth/v{}/{}".format(OAUTH2_API_VERSION, subpath)
 
     def get_tokens(

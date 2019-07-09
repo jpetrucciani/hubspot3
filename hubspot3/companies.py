@@ -1,9 +1,8 @@
 """
 hubspot companies api
 """
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify
+from hubspot3.utils import prettify, get_log
 from typing import List, Dict, Optional, Union
 
 
@@ -18,7 +17,7 @@ class CompaniesClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(CompaniesClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.companies")
+        self.log = get_log("hubspot3.companies")
 
     def _get_path(self, subpath: str) -> str:
         """get the full api url for the given subpath on this client"""

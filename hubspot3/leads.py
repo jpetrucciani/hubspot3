@@ -3,7 +3,7 @@ hubspot leads api
 """
 import time
 from hubspot3.base import BaseClient
-from hubspot3 import logging_helper
+from hubspot3.utils import get_log
 
 
 LEADS_API_VERSION = "1"
@@ -79,7 +79,7 @@ class LeadsClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(LeadsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.leads")
+        self.log = get_log("hubspot3.leads")
 
     def camelcase_search_options(self, options):
         """change all underscored variants back to what the API is expecting"""

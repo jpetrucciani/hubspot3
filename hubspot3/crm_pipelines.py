@@ -1,8 +1,8 @@
 """
 hubspot crm_pipelines api
 """
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
+from hubspot3.utils import get_log
 
 
 CRM_PIPELINES_API_VERSION = "1"
@@ -16,7 +16,7 @@ class PipelinesClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(PipelinesClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.crm-pipelines")
+        self.log = get_log("hubspot3.crm-pipelines")
 
     def _get_path(self, subpath):
         return "crm-pipelines/v{}/{}".format(

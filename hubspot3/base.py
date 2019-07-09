@@ -48,7 +48,7 @@ class BaseClient(object):
         debug: bool = False,
         disable_auth: bool = False,
         **extra_options
-    ):
+    ) -> None:
         super(BaseClient, self).__init__()
         # reverse so that the first one in the list because the first parent
         if not mixins:

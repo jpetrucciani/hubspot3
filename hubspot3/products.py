@@ -1,9 +1,8 @@
 """
 hubspot products api
 """
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify
+from hubspot3.utils import prettify, get_log
 from typing import List
 
 
@@ -20,7 +19,7 @@ class ProductsClient(BaseClient):
     def __init__(self, *args, **kwargs) -> None:
         """initialize a products client"""
         super(ProductsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.companies")
+        self.log = get_log("hubspot3.companies")
 
     def get_product(self, product_id: str, properties: List[str] = None, **options):
         """get single product based on product ID in the hubspot account"""

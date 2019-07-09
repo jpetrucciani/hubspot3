@@ -3,10 +3,6 @@ base utils for the hubspot3 library
 """
 import logging
 
-import requests
-
-from hubspot3.globals import BASE_URL
-
 
 class NullHandler(logging.Handler):
     def emit(self, record):
@@ -17,15 +13,6 @@ def get_log(name):
     logger = logging.getLogger(name)
     logger.addHandler(NullHandler())
     return logger
-
-
-def auth_checker(access_token: str) -> int:
-    """Do a simple api request using the access token"""
-    url = "{}/contacts/v1/lists/all/contacts/all?count=1&offset=0&access_token={}".format(
-        BASE_URL, access_token
-    )
-    result = requests.get(url)
-    return result.status_code
 
 
 def force_utf8(raw):
