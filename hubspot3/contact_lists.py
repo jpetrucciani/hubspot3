@@ -1,8 +1,8 @@
 """
 hubspot contact lists api
 """
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
+from hubspot3.utils import get_log
 
 
 CONTACT_LISTS_API_VERSION = "1"
@@ -16,7 +16,7 @@ class ContactListsClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(ContactListsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.contact_lists")
+        self.log = get_log("hubspot3.contact_lists")
 
     def _get_path(self, subpath):
         return "contacts/v{}/{}".format(

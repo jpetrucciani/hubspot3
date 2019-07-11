@@ -3,10 +3,8 @@ hubspot contacts api
 """
 import warnings
 from typing import Union
-
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify
+from hubspot3.utils import prettify, get_log
 
 CONTACTS_API_VERSION = "1"
 
@@ -26,7 +24,7 @@ class ContactsClient(BaseClient):
     def __init__(self, *args, **kwargs):
         """initialize a contacts client"""
         super(ContactsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.contacts")
+        self.log = get_log("hubspot3.contacts")
 
     def _get_path(self, subpath):
         return "contacts/v{}/{}".format(CONTACTS_API_VERSION, subpath)

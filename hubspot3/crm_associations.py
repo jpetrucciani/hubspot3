@@ -1,8 +1,8 @@
 """
 hubspot crm_associations api
 """
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
+from hubspot3.utils import get_log
 from enum import Enum
 
 
@@ -44,7 +44,7 @@ class CRMAssociationsClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(CRMAssociationsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.crm_associations")
+        self.log = get_log("hubspot3.crm_associations")
 
     def _get_path(self, subpath):
         return "crm-associations/v{}/{}".format(

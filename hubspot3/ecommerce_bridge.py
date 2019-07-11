@@ -1,10 +1,10 @@
 """
 hubspot ecommerce bridge api
 """
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import List
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
+from hubspot3.utils import get_log
 
 
 ECOMMERCE_BRIDGE_API_VERSION = "2"
@@ -50,7 +50,7 @@ class EcommerceBridgeClient(BaseClient):
     def __init__(self, *args, **kwargs):
         """initialize an ecommerce bridge client"""
         super(EcommerceBridgeClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.ecommerce_bridge")
+        self.log = get_log("hubspot3.ecommerce_bridge")
 
     def _get_path(self, subpath):
         return "extensions/ecomm/v{}/{}".format(ECOMMERCE_BRIDGE_API_VERSION, subpath)
@@ -164,3 +164,38 @@ class EcommerceBridgeClient(BaseClient):
             limit=limit,
             **options
         )
+
+    def create_or_update_settings(
+        self,
+        mappings: Mapping,
+        webhook_uri: str = None,
+        enabled: bool = True,
+        app_id: int = None,
+        show_provided_mappings: bool = False,
+        **options
+    ):
+        """
+        Create or update the ecommerce settings for a portal or app.
+        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/upsert-settings
+        """
+        data = {"mappings": dict(mappings), "enabled": enabled}
+        if webhook_uri:
+            data["webhookUri"] = webhook_uri
+
+        params = {"showProvidedMappings": str(show_provided_mappings).lower()}
+        if app_id:
+            params["appId"] = app_id
+
+        return self._call("settings", data=data, params=params, method="PUT", **options)
+
+    def create_or_update_store(
+        self, store_id: str, label: str, admin_uri: str = None, **options
+    ):
+        """
+        Create or update the store with the given ID.
+        :see: https://developers.hubspot.com/docs/methods/ecomm-bridge/v2/create-or-update-store
+        """
+        data = {"id": store_id, "label": label}
+        if admin_uri:
+            data["adminUri"] = admin_uri
+        return self._call("stores", data=data, method="PUT", **options)

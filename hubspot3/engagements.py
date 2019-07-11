@@ -1,8 +1,8 @@
 """
 hubspot engagements api
 """
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
+from hubspot3.utils import get_log
 
 
 ENGAGEMENTS_API_VERSION = "1"
@@ -16,7 +16,7 @@ class EngagementsClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(EngagementsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.engagements")
+        self.log = get_log("hubspot3.engagements")
 
     def _get_path(self, subpath):
         return "engagements/v{}/{}".format(

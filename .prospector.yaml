@@ -22,7 +22,7 @@ pylint:
     - wrong-import-order
 
   options:
-    max-args: 10
+    max-args: 12
     max-locals: 100
     max-returns: 6
     max-branches: 50

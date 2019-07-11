@@ -1,9 +1,7 @@
 """
 base utils for the hubspot3 library
 """
-import requests
 import logging
-from hubspot3.globals import BASE_URL
 
 
 class NullHandler(logging.Handler):
@@ -15,25 +13,6 @@ def get_log(name):
     logger = logging.getLogger(name)
     logger.addHandler(NullHandler())
     return logger
-
-
-def auth_checker(access_token: str) -> int:
-    """Do a simple api request using the access token"""
-    url = "{}/contacts/v1/lists/all/contacts/all?count=1&offset=0&access_token={}".format(
-        BASE_URL, access_token
-    )
-    result = requests.get(url)
-    return result.status_code
-
-
-def refresh_access_token(refresh_token: str, client_id: str) -> str:
-    """Refreshes an OAuth access token"""
-    payload = "refresh_token={}&client_id={}&grant_type=refresh_token".format(
-        refresh_token, client_id
-    )
-    url = "{}/oauth/v1/token".format(BASE_URL)
-    result = requests.post(url, data=payload)
-    return result.text
 
 
 def force_utf8(raw):

@@ -5,6 +5,29 @@ import pytest
 
 from hubspot3 import ecommerce_bridge
 
+DUMMY_PROPERTY_MAPPINGS = {
+    "CONTACT": {
+        "properties": [
+            {
+                "externalPropertyName": "customer_email",
+                "hubspotPropertyName": "email",
+                "dataType": "STRING",
+            }
+        ]
+    },
+    "DEAL": {
+        "properties": [
+            {
+                "externalPropertyName": "stage",
+                "hubspotPropertyName": "dealstage",
+                "dataType": "STRING",
+            }
+        ]
+    },
+    "PRODUCT": {"properties": []},
+    "LINE_ITEM": {"properties": []},
+}
+
 
 @pytest.fixture
 def ecommerce_bridge_client(mock_connection):
@@ -207,3 +230,83 @@ def test_get_sync_errors_for_app(ecommerce_bridge_client, app_id, kwargs):
         mock_get_sync_errors.assert_called_once_with(
             "sync/errors/app/{}".format(app_id), **kwargs
         )
+
+
+@pytest.mark.parametrize(
+    "kwargs, expected_params, expected_data",
+    [
+        (
+            dict(mappings=DUMMY_PROPERTY_MAPPINGS),
+            {"showProvidedMappings": "false"},
+            {"mappings": DUMMY_PROPERTY_MAPPINGS, "enabled": True},
+        ),
+        (
+            dict(
+                mappings=DUMMY_PROPERTY_MAPPINGS,
+                webhook_uri="http://webhook.uri",
+                app_id=1337,
+            ),
+            {"showProvidedMappings": "false", "appId": 1337},
+            {
+                "mappings": DUMMY_PROPERTY_MAPPINGS,
+                "enabled": True,
+                "webhookUri": "http://webhook.uri",
+            },
+        ),
+        (
+            dict(
+                mappings=DUMMY_PROPERTY_MAPPINGS,
+                enabled=False,
+                show_provided_mappings=True,
+            ),
+            {"showProvidedMappings": "true"},
+            {"mappings": DUMMY_PROPERTY_MAPPINGS, "enabled": False},
+        ),
+    ],
+)
+def test_create_or_update_settings(
+    ecommerce_bridge_client, mock_connection, kwargs, expected_params, expected_data
+):
+    mock_connection.set_response(200, json.dumps(DUMMY_PROPERTY_MAPPINGS))
+
+    result = ecommerce_bridge_client.create_or_update_settings(**kwargs)
+    mock_connection.assert_num_requests(1)
+    mock_connection.assert_has_request(
+        "PUT", "/extensions/ecomm/v2/settings", expected_data, **expected_params
+    )
+    assert result == DUMMY_PROPERTY_MAPPINGS
+
+
+@pytest.mark.parametrize(
+    "store_id, label, admin_uri, expected_data",
+    [
+        ("test-store", "Test store", None, {"id": "test-store", "label": "Test store"}),
+        ("test-store", "Test store", "", {"id": "test-store", "label": "Test store"}),
+        (
+            "test-store",
+            "Test store",
+            "https://test.store",
+            {
+                "id": "test-store",
+                "label": "Test store",
+                "adminUri": "https://test.store",
+            },
+        ),
+    ],
+)
+def test_create_or_update_store(
+    ecommerce_bridge_client, mock_connection, store_id, label, admin_uri, expected_data
+):
+    response_data = {
+        "id": "test-store",
+        "label": "Test store",
+        "adminUri": "https://test.store",
+    }
+    mock_connection.set_response(200, json.dumps(response_data))
+
+    result = ecommerce_bridge_client.create_or_update_store(store_id, label, admin_uri)
+    mock_connection.assert_num_requests(1)
+    mock_connection.assert_has_request(
+        "PUT", "/extensions/ecomm/v2/stores?", expected_data
+    )
+    assert result == response_data

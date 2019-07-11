@@ -2,9 +2,8 @@
 hubspot deals api
 """
 import urllib.parse
-from hubspot3 import logging_helper
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify
+from hubspot3.utils import prettify, get_log
 from typing import Union
 
 
@@ -25,7 +24,7 @@ class DealsClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         super(DealsClient, self).__init__(*args, **kwargs)
-        self.log = logging_helper.get_log("hubspot3.deals")
+        self.log = get_log("hubspot3.deals")
 
     def _get_path(self, subpath):
         return "deals/v{}/{}".format(
