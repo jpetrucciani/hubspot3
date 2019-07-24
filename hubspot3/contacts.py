@@ -132,7 +132,11 @@ class ContactsClient(BaseClient):
         return [prettify(batch[contact], id_key="vid") for contact in batch]
 
     def get_all(
-        self, extra_properties: Union[list, str] = None, limit: int = -1, **options
+        self,
+        extra_properties: Union[list, str] = None,
+        limit: int = -1,
+        list_id: str = 'all',
+        **options
     ) -> list:
         """
         get all contacts in hubspot, fetching additional properties if passed in
@@ -149,7 +153,7 @@ class ContactsClient(BaseClient):
             query_limit = limit
         while not finished:
             batch = self._call(
-                "lists/all/contacts/all",
+                "lists/{}/contacts/all".format(list_id),
                 method="GET",
                 params={"count": query_limit, "vidOffset": offset},
                 **options
