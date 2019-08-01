@@ -89,9 +89,9 @@ class BaseClient(object):
             ```
         """
         return {
-            'api_key': self.api_key,
-            'access_token': self.access_token,
-            'refresh_token': self.refresh_token,
+            "api_key": self.api_key,
+            "access_token": self.access_token,
+            "refresh_token": self.refresh_token,
         }
 
     def _prepare_connection_type(self):
@@ -126,7 +126,7 @@ class BaseClient(object):
         if query and not query.startswith("&"):
             query = "&" + query
         url = opts.get("url") or "/{}?{}{}".format(
-            self._get_path(subpath), urllib.parse.urlencode(params, doseq), query,
+            self._get_path(subpath), urllib.parse.urlencode(params, doseq), query
         )
         headers = opts.get("headers") or {}
         headers.update(

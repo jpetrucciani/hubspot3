@@ -46,7 +46,7 @@ class CompaniesClient(BaseClient):
         Delete all the companies. Please use it carefully.
         """
         for company in self.get_all(**options):
-            self.delete(company['id'])
+            self.delete(company["id"])
 
     def get(self, company_id: str, **options) -> Dict:
         """get a single company by it's ID"""

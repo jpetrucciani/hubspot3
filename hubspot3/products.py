@@ -74,24 +74,15 @@ class ProductsClient(BaseClient):
         data = data or {}
 
         # See: https://developers.hubspot.com/docs/methods/products/create-product
-        data = [
-            {'name': name, 'value': value}
-            for name, value in data.items()
-        ]
+        data = [{"name": name, "value": value} for name, value in data.items()]
 
-        return self._call(
-            "", data=data, method="POST", **options
-        )
+        return self._call("", data=data, method="POST", **options)
 
     def update(self, product_id, data=None, **options):
         """Update a product based on its product ID."""
         data = data or {}
-        return self._call(
-             "{}".format(product_id), data=data, method="POST", **options
-        )
+        return self._call("{}".format(product_id), data=data, method="POST", **options)
 
     def delete(self, product_id, **options):
         """Delete a product based on its product ID."""
-        return self._call(
-            "{}".format(product_id), method="DELETE", **options
-        )
+        return self._call("{}".format(product_id), method="DELETE", **options)

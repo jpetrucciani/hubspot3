@@ -14,18 +14,18 @@ from hubspot3.globals import (
 from hubspot3.utils import get_log
 
 PROPERTIES_API_VERSION = {
-    OBJECT_TYPE_COMPANIES: '1',
-    OBJECT_TYPE_CONTACTS: '1',
-    OBJECT_TYPE_DEALS: '1',
-    OBJECT_TYPE_LINE_ITEMS: '2',
-    OBJECT_TYPE_PRODUCTS: '2',
+    OBJECT_TYPE_COMPANIES: "1",
+    OBJECT_TYPE_CONTACTS: "1",
+    OBJECT_TYPE_DEALS: "1",
+    OBJECT_TYPE_LINE_ITEMS: "2",
+    OBJECT_TYPE_PRODUCTS: "2",
 }
 
 
 class PropertiesClient(BaseClient):
     """
     The hubspot3 Properties client uses the _make_request method to call the
-    API for data.  It returns a python object translated from the json return
+    API for data.  It returns a python object translated from the json returned
     """
 
     # Used to store a current object_type. This will be used in `_get_path` to generate the
@@ -38,9 +38,7 @@ class PropertiesClient(BaseClient):
 
     def _get_path(self, subpath):
         return "properties/v{}/{}/properties/{}".format(
-            PROPERTIES_API_VERSION[self._object_type],
-            self._object_type,
-            subpath,
+            PROPERTIES_API_VERSION[self._object_type], self._object_type, subpath
         )
 
     def create(
@@ -52,7 +50,7 @@ class PropertiesClient(BaseClient):
         group_code,
         data_type,
         widget_type,
-        extra_params=None
+        extra_params=None,
     ):
         """
         Create a new custom property on hubspot.
@@ -78,15 +76,17 @@ class PropertiesClient(BaseClient):
         self._object_type = object_type
 
         return self._call(
-            "", method="POST", data={
+            "",
+            method="POST",
+            data={
                 "name": code,
                 "label": label,
                 "description": description,
                 "groupName": group_code,
                 "type": data_type,
                 "fieldType": widget_type,
-                **extra_params
-            }
+                **extra_params,
+            },
         )
 
     def get_all(self, object_type):
@@ -96,15 +96,7 @@ class PropertiesClient(BaseClient):
         self._object_type = object_type
 
         return self._call(
-            "",
-            method="GET",
-            params={
-                "properties": [
-                    "name",
-                    "label",
-                    "description",
-                ]
-            }
+            "", method="GET", params={"properties": ["name", "label", "description"]}
         )
 
     def delete(self, object_type, code):
@@ -113,15 +105,12 @@ class PropertiesClient(BaseClient):
         # Save the current object type.
         self._object_type = object_type
 
-        return self._call(
-            "named/%s" % code,
-            method="DELETE",
-        )
+        return self._call("named/{}".format(code), method="DELETE")
 
     def delete_all(self, object_type):
         """Delete all the custom properties. Please use it carefully."""
         props_data = self.get_all(object_type)
 
         for prop_data in props_data:
-            if not prop_data['hubspotDefined']:
-                self.delete(object_type, prop_data['name'])
+            if not prop_data["hubspotDefined"]:
+                self.delete(object_type, prop_data["name"])

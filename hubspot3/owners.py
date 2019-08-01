@@ -51,13 +51,7 @@ class OwnersClient(BaseClient):
         """
         Retrieve an owner by its email.
         """
-        owners = self.get_owners(
-            method='GET',
-            params={
-                'email': owner_email,
-            },
-            **options,
-        )
+        owners = self.get_owners(method="GET", params={"email": owner_email}, **options)
         if owners:
             return owners[0]
         return None

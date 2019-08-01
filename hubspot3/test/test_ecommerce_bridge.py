@@ -77,7 +77,7 @@ def test_send_sync_messages(
         {
             "objectType": object_type,
             "storeId": store_id,
-            "messages": messages[i:i + max_messages],
+            "messages": messages[i : i + max_messages],
         }
         for i in range(0, num_messages, max_messages)
     ]
@@ -140,7 +140,7 @@ def test_get_sync_errors(
     # Always return as many results as possible even if a limit was set to test that the return
     # value will still be limited, even if more results than expected were received.
     responses = [
-        {"results": errors[i:i + max_errors]}
+        {"results": errors[i : i + max_errors]}
         for i in range(0, num_errors, max_errors)
     ]
     for i, response in enumerate(responses[:-1], start=2):

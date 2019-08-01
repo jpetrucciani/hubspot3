@@ -68,6 +68,6 @@ class PipelinesClient(BaseClient):
         """
         pipelines = self.get_all()
         for pipeline in pipelines:
-            if pipeline.get('pipelineId') == pipeline_id:
+            if pipeline.get("pipelineId") == pipeline_id:
                 return pipeline
         return None

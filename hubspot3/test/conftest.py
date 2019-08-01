@@ -37,7 +37,12 @@ def mock_connection():
                 urlencode({name: value}, doseq=True) in args[1]
                 for name, value in params.items()
             )
-            if args[0] == method and url_check and request_data == data and params_check:
+            if (
+                args[0] == method
+                and url_check
+                and request_data == data
+                and params_check
+            ):
                 break
         else:
             raise AssertionError(
