@@ -49,3 +49,25 @@ class PipelinesClient(BaseClient):
         output = self._call("pipelines/{}".format(object_type), method="GET", **options)
 
         return output["results"]
+
+    def get_deals_pipeline_by_id(self, pipeline_id: str):
+        """
+        Retrieve a deals pipeline by its id.
+
+        Notes: At the moment, it is impossible to retrieve a pipeline by id directly through the
+        hubspot API. We have to fetch all the pipelines of type 'DEAL' and then looks for a
+        pipeline with the given `pipeline_id`.
+
+        Returns
+        -------
+        dict
+            The pipeline as returned by the Hubspot API.
+            See the docstring of the `get_all_for_deals` method below to see an output example.
+
+            None could be returned if no pipeline is matching with the given `pipeline_id`.
+        """
+        pipelines = self.get_all()
+        for pipeline in pipelines:
+            if pipeline.get('pipelineId') == pipeline_id:
+                return pipeline
+        return None
