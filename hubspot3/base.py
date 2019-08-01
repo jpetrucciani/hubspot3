@@ -78,6 +78,22 @@ class BaseClient(object):
         self.options.update(extra_options)
         self._prepare_connection_type()
 
+    @property
+    def credentials(self):
+        """
+        Credentials to be used when a client needs to instantiate another one.
+
+        Example:
+            ```
+            association_client = AssociationsClient(**self.credentials)
+            ```
+        """
+        return {
+            'api_key': self.api_key,
+            'access_token': self.access_token,
+            'refresh_token': self.refresh_token,
+        }
+
     def _prepare_connection_type(self):
         connection_types = {
             "http": http.client.HTTPConnection,
@@ -110,7 +126,7 @@ class BaseClient(object):
         if query and not query.startswith("&"):
             query = "&" + query
         url = opts.get("url") or "/{}?{}{}".format(
-            self._get_path(subpath), urllib.parse.urlencode(params, doseq), query
+            self._get_path(subpath), urllib.parse.urlencode(params, doseq), query,
         )
         headers = opts.get("headers") or {}
         headers.update(
@@ -135,8 +151,8 @@ class BaseClient(object):
             "data": data,
             "headers": headers,
             "host": conn.host,
+            "timeout": conn.timeout,
         }
-        params["timeout"] = conn.timeout
         return params
 
     def _gunzip_body(self, body):
@@ -172,7 +188,7 @@ class BaseClient(object):
             raise HubspotConflict(result, request)
         elif result.status == 429:
             raise HubspotRateLimited(result, request)
-        elif result.status >= 400 and result.status < 500 or result.status == 501:
+        elif 400 <= result.status < 500 or result.status == 501:
             raise HubspotBadRequest(result, request)
         elif result.status >= 500:
             raise HubspotServerError(result, request)
@@ -227,8 +243,7 @@ class BaseClient(object):
                 )
             )
 
-        kwargs = {}
-        kwargs["timeout"] = opts["timeout"]
+        kwargs = {"timeout": opts["timeout"]}
 
         num_retries = opts.get("number_retries", 2)
 

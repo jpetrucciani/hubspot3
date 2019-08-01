@@ -19,7 +19,7 @@ class ProductsClient(BaseClient):
     def __init__(self, *args, **kwargs) -> None:
         """initialize a products client"""
         super(ProductsClient, self).__init__(*args, **kwargs)
-        self.log = get_log("hubspot3.companies")
+        self.log = get_log("hubspot3.products")
 
     def get_product(self, product_id: str, properties: List[str] = None, **options):
         """get single product based on product ID in the hubspot account"""
@@ -67,4 +67,31 @@ class ProductsClient(BaseClient):
     def _get_path(self, subpath: str):
         return "crm-objects/v{}/{}".format(
             self.options.get("version") or PRODUCTS_API_VERSION, subpath
+        )
+
+    def create(self, data=None, **options):
+        """Create a new product."""
+        data = data or {}
+
+        # See: https://developers.hubspot.com/docs/methods/products/create-product
+        data = [
+            {'name': name, 'value': value}
+            for name, value in data.items()
+        ]
+
+        return self._call(
+            "", data=data, method="POST", **options
+        )
+
+    def update(self, product_id, data=None, **options):
+        """Update a product based on its product ID."""
+        data = data or {}
+        return self._call(
+             "{}".format(product_id), data=data, method="POST", **options
+        )
+
+    def delete(self, product_id, **options):
+        """Delete a product based on its product ID."""
+        return self._call(
+            "{}".format(product_id), method="DELETE", **options
         )
