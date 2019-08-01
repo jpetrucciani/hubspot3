@@ -54,7 +54,7 @@ class ContactsClient(BaseClient):
             "contact/createOrUpdate/email/{email}".format(email=email),
             data=data,
             method="POST",
-            **options,
+            **options
         )
 
     def update_by_id(self, contact_id, data=None, **options):
@@ -64,7 +64,7 @@ class ContactsClient(BaseClient):
             "contact/vid/{contact_id}/profile".format(contact_id=contact_id),
             data=data,
             method="POST",
-            **options,
+            **options
         )
 
     def update_by_email(self, email: str, data=None, **options):
@@ -75,7 +75,7 @@ class ContactsClient(BaseClient):
             "contact/email/{}/profile".format(email),
             data=data,
             method="POST",
-            **options,
+            **options
         )
 
     def delete_by_id(self, contact_id: str, **options):
@@ -83,7 +83,7 @@ class ContactsClient(BaseClient):
         return self._call(
             "contact/vid/{contact_id}".format(contact_id=contact_id),
             method="DELETE",
-            **options,
+            **options
         )
 
     def merge(self, primary_id: int, secondary_id: int, **options):
@@ -94,7 +94,7 @@ class ContactsClient(BaseClient):
             "contact/merge-vids/{}/".format(primary_id),
             data=data,
             method="POST",
-            **options,
+            **options
         )
 
     default_batch_properties = [
@@ -141,7 +141,7 @@ class ContactsClient(BaseClient):
         extra_properties: Union[list, str] = None,
         limit: int = -1,
         list_id: str = "all",
-        **options,
+        **options
     ) -> list:
         """
         get all contacts in hubspot, fetching additional properties if passed in
@@ -161,7 +161,7 @@ class ContactsClient(BaseClient):
                 "lists/{}/contacts/all".format(list_id),
                 method="GET",
                 params={"count": query_limit, "vidOffset": offset},
-                **options,
+                **options
             )
             output.extend(
                 self.get_batch(
@@ -180,7 +180,7 @@ class ContactsClient(BaseClient):
         limit: int = 100,
         vid_offset: int = 0,
         time_offset: int = 0,
-        **options,
+        **options
     ):
         """
         return a list of either recently created or recently modified/created contacts
@@ -207,7 +207,7 @@ class ContactsClient(BaseClient):
                 method="GET",
                 params=params,
                 doseq=True,
-                **options,
+                **options
             )
             output.extend([contact for contact in batch["contacts"]])
             finished = not batch["has-more"] or len(output) >= limit
@@ -304,7 +304,7 @@ class ContactsClient(BaseClient):
                 "search/query",
                 method="GET",
                 params={"count": query_limit, "offset": offset, "q": search_query},
-                **options,
+                **options
             )
 
             output += batch["contacts"]

@@ -76,7 +76,7 @@ class CompaniesClient(BaseClient):
             "domains/{}/companies".format(domain),
             method="POST",
             data={"limit": limit, "requestOptions": {"properties": properties}},
-            **options,
+            **options
         )
 
     def get_all(
@@ -117,7 +117,7 @@ class CompaniesClient(BaseClient):
                     "offset": offset,
                     "properties": properties,
                 },
-                **options,
+                **options
             )
             output.extend(
                 [
@@ -151,7 +151,7 @@ class CompaniesClient(BaseClient):
                 method="GET",
                 doseq=True,
                 params={"count": query_limit, "offset": offset},
-                **options,
+                **options
             )
             output.extend(
                 [
