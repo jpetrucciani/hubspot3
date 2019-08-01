@@ -1,7 +1,7 @@
 """
 hubspot owners api
 """
-from hubspot3.associations import AssociationsClient
+from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
 
 
@@ -66,5 +66,5 @@ class OwnersClient(BaseClient):
         """
         Link an owner to a company by using their ids.
         """
-        associations_client = AssociationsClient(**self.credentials)
+        associations_client = CRMAssociationsClient(**self.credentials)
         return associations_client.link_owner_to_company(owner_id, company_id)

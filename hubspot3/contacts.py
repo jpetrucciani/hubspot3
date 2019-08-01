@@ -3,7 +3,7 @@ hubspot contacts api
 """
 import warnings
 from typing import Union
-from hubspot3.associations import AssociationsClient
+from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
 
@@ -133,7 +133,7 @@ class ContactsClient(BaseClient):
         return [prettify(batch[contact], id_key="vid") for contact in batch]
 
     def link_contact_to_company(self, contact_id, company_id):
-        associations_client = AssociationsClient(**self.credentials)
+        associations_client = CRMAssociationsClient(**self.credentials)
         return associations_client.link_contact_to_company(contact_id, company_id)
 
     def get_all(
