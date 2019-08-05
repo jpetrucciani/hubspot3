@@ -10,6 +10,10 @@ ASSOCIATIONS_API_VERSION = "1"
 
 
 class Definitions(Enum):
+    """
+    :see: https://developers.hubspot.com/docs/methods/crm-associations/crm-associations-overview
+    """
+
     CONTACT_TO_COMPANY = 1
     COMPANY_TO_CONTACT = 2
     DEAL_TO_CONTACT = 3
@@ -34,6 +38,7 @@ class Definitions(Enum):
     TICKET_TO_COMPANY = 26
     DEAL_TO_TICKET = 27
     TICKET_TO_DEAL = 28
+    OWNER_TO_COMPANY = 41
 
 
 class CRMAssociationsClient(BaseClient):
@@ -137,4 +142,40 @@ class CRMAssociationsClient(BaseClient):
                 "definitionId": definition.value,
             },
             **options
+        )
+
+    def get_deal_to_lines_items(self, deal_id):
+        """Get the lines related to a deal."""
+        return self.get(object_id=deal_id, definition=Definitions.DEAL_TO_LINE_ITEM)
+
+    def get_company_to_contacts(self, company_id):
+        """Get the contacts related to a company."""
+        return self.get(object_id=company_id, definition=Definitions.COMPANY_TO_CONTACT)
+
+    def get_company_to_deals(self, company_id):
+        """Get the deals related to a company."""
+        return self.get(object_id=company_id, definition=Definitions.COMPANY_TO_DEAL)
+
+    def link_line_item_to_deal(self, line_item_id, deal_id):
+        """Create a new association between a line item and a deal."""
+        return self.create(
+            from_object=line_item_id,
+            to_object=deal_id,
+            definition=Definitions.LINE_ITEM_TO_DEAL,
+        )
+
+    def link_contact_to_company(self, contact_id, company_id):
+        """Create a new association between a contact and a company."""
+        return self.create(
+            from_object=contact_id,
+            to_object=company_id,
+            definition=Definitions.CONTACT_TO_COMPANY,
+        )
+
+    def link_owner_to_company(self, owner_id, company_id):
+        """Create a new association between an owner and a company."""
+        return self.create(
+            from_object=owner_id,
+            to_object=company_id,
+            definition=Definitions.OWNER_TO_COMPANY,
         )

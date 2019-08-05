@@ -259,6 +259,13 @@ class Hubspot3:
         return LeadsClient(**self.auth, **self.options)
 
     @property
+    def lines(self):
+        """returns a hubspot3 lines client"""
+        from hubspot3.lines import LinesClient
+
+        return LinesClient(**self.auth, **self.options)
+
+    @property
     def oauth2(self):
         """returns a hubspot3 OAuth2 client"""
         from hubspot3.oauth2 import OAuth2Client
@@ -278,6 +285,20 @@ class Hubspot3:
         from hubspot3.products import ProductsClient
 
         return ProductsClient(**self.auth, **self.options)
+
+    @property
+    def properties(self):
+        """returns a hubspot3 deal properties client"""
+        from hubspot3.properties import PropertiesClient
+
+        return PropertiesClient(**self.auth, **self.options)
+
+    @property
+    def property_groups(self):
+        """returns a hubspot3 property_groups client"""
+        from hubspot3.property_groups import PropertyGroupsClient
+
+        return PropertyGroupsClient(**self.auth, **self.options)
 
     @property
     def prospects(self):

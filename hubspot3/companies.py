@@ -41,6 +41,13 @@ class CompaniesClient(BaseClient):
         """delete a company"""
         return self._call("companies/{}".format(company_id), method="DELETE", **options)
 
+    def delete_all(self, **options):
+        """
+        Delete all the companies. Please use it carefully.
+        """
+        for company in self.get_all(**options):
+            self.delete(company["id"])
+
     def get(self, company_id: str, **options) -> Dict:
         """get a single company by it's ID"""
         return self._call("companies/{}".format(company_id), method="GET", **options)
@@ -69,7 +76,7 @@ class CompaniesClient(BaseClient):
             "domains/{}/companies".format(domain),
             method="POST",
             data={"limit": limit, "requestOptions": {"properties": properties}},
-            **options,
+            **options
         )
 
     def get_all(
@@ -110,7 +117,7 @@ class CompaniesClient(BaseClient):
                     "offset": offset,
                     "properties": properties,
                 },
-                **options,
+                **options
             )
             output.extend(
                 [
@@ -144,7 +151,7 @@ class CompaniesClient(BaseClient):
                 method="GET",
                 doseq=True,
                 params={"count": query_limit, "offset": offset},
-                **options,
+                **options
             )
             output.extend(
                 [

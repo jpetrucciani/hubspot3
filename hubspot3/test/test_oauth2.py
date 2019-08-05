@@ -69,7 +69,9 @@ def test_initializer(access_token, api_key, disable_auth):
         (
             dict(client_id="id123"),
             dict(
-                authorization_code="code123", redirect_uri="redirect.com", client_secret="secret123"
+                authorization_code="code123",
+                redirect_uri="redirect.com",
+                client_secret="secret123",
             ),
             [
                 "code=code123",
@@ -83,7 +85,9 @@ def test_initializer(access_token, api_key, disable_auth):
         (
             dict(client_id="id456", refresh_token="token456"),
             dict(
-                authorization_code="code123", redirect_uri="redirect.com", client_secret="secret456"
+                authorization_code="code123",
+                redirect_uri="redirect.com",
+                client_secret="secret456",
             ),
             [
                 "code=code123",

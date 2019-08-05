@@ -3,6 +3,7 @@ hubspot contacts api
 """
 import warnings
 from typing import Union
+from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
 
@@ -131,8 +132,16 @@ class ContactsClient(BaseClient):
         # It returns a dict with IDs as keys
         return [prettify(batch[contact], id_key="vid") for contact in batch]
 
+    def link_contact_to_company(self, contact_id, company_id):
+        associations_client = CRMAssociationsClient(**self.credentials)
+        return associations_client.link_contact_to_company(contact_id, company_id)
+
     def get_all(
-        self, extra_properties: Union[list, str] = None, limit: int = -1, **options
+        self,
+        extra_properties: Union[list, str] = None,
+        limit: int = -1,
+        list_id: str = "all",
+        **options
     ) -> list:
         """
         get all contacts in hubspot, fetching additional properties if passed in
@@ -149,7 +158,7 @@ class ContactsClient(BaseClient):
             query_limit = limit
         while not finished:
             batch = self._call(
-                "lists/all/contacts/all",
+                "lists/{}/contacts/all".format(list_id),
                 method="GET",
                 params={"count": query_limit, "vidOffset": offset},
                 **options
@@ -268,3 +277,46 @@ class ContactsClient(BaseClient):
             DeprecationWarning,
         )
         return self.delete_by_id(contact_id, **options)
+
+    def search(self, search_query, **options):
+        """
+        Search among contacts for matches with the given `search_query`.
+
+        Cf: https://developers.hubspot.com/docs/methods/contacts/search_contacts
+
+        Parameters
+        ----------
+        search_query: str
+
+        Returns
+        -------
+        list of dict
+            The result of the search as a list of contacts.
+        """
+        finished = False
+        offset = 0
+        query_limit = 100  # Max value according to docs
+
+        output = []
+
+        while not finished:
+            batch = self._call(
+                "search/query",
+                method="GET",
+                params={"count": query_limit, "offset": offset, "q": search_query},
+                **options
+            )
+
+            output += batch["contacts"]
+
+            finished = not batch["has-more"]
+            offset = batch["offset"]
+
+        return output
+
+    def delete_all(self):
+        """
+        Delete all the contacts. Please use it carefully.
+        """
+        for contact in self.get_all():
+            self.delete_a_contact(contact["vid"])
