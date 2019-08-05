@@ -113,7 +113,9 @@ class BaseClient(object):
         if self.api_key:
             params["hapikey"] = params.get("hapikey") or self.api_key
 
-    def _prepare_request(self, subpath, params, data, opts, doseq=False, query="", retried=False):
+    def _prepare_request(
+        self, subpath, params, data, opts, doseq=False, query="", retried=False
+    ):
         params = params or {}
         self._prepare_request_auth(subpath, params, data, opts)
 
@@ -231,7 +233,7 @@ class BaseClient(object):
         debug = opts.get("debug")
 
         url, headers, data = self._prepare_request(
-            subpath, params, data, opts, doseq=doseq, query=query, retried=retried,
+            subpath, params, data, opts, doseq=doseq, query=query, retried=retried
         )
 
         if debug:
