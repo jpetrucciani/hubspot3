@@ -32,7 +32,7 @@ class EmailSubscriptionClient(BaseClient):
         PERFORMANCE_OF_CONTRACT = "PERFORMANCE_OF_CONTRACT"
 
     def __init__(self, *args, **kwargs):
-        """initialize an ecommerce bridge client"""
+        """initialize an email subscription client"""
         super(EmailSubscriptionClient, self).__init__(*args, **kwargs)
         self.log = get_log("hubspot3.email_subscription")
 
@@ -59,8 +59,7 @@ class EmailSubscriptionClient(BaseClient):
     def update_subscriptions(self, email: str, subscriptions: Iterable, portal_legal_basis: str = None,
                              portal_legal_basis_explanation: str = None, **options) -> None:
         """
-        Convenience method to update the email subscriptions for a given email address while taking
-        care of the correct request format aside from the actual subscription status values.
+        Convenience method to update the individual email subscriptions for a given email address.
         :see: https://developers.hubspot.com/docs/methods/email/update_status
         """
         data = {"subscriptionStatuses": list(subscriptions)}
