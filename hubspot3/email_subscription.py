@@ -37,7 +37,9 @@ class EmailSubscriptionClient(BaseClient):
         self.log = get_log("hubspot3.email_subscription")
 
     def _get_path(self, subpath):
-        return "email/public/v{}/subscriptions/{}".format(EMAIL_SUBSCRIPTION_API_VERSION, subpath)
+        return "email/public/v{}/subscriptions/{}".format(
+            EMAIL_SUBSCRIPTION_API_VERSION, subpath
+        )
 
     def get_status(self, email: str, portal_id: int = None, **options) -> Dict:
         """
@@ -56,8 +58,14 @@ class EmailSubscriptionClient(BaseClient):
         """
         self._call(email, method="PUT", data=dict(data), **options)
 
-    def update_subscriptions(self, email: str, subscriptions: Iterable, portal_legal_basis: str = None,
-                             portal_legal_basis_explanation: str = None, **options) -> None:
+    def update_subscriptions(
+        self,
+        email: str,
+        subscriptions: Iterable,
+        portal_legal_basis: str = None,
+        portal_legal_basis_explanation: str = None,
+        **options
+    ) -> None:
         """
         Convenience method to update the individual email subscriptions for a given email address.
         :see: https://developers.hubspot.com/docs/methods/email/update_status
@@ -66,7 +74,9 @@ class EmailSubscriptionClient(BaseClient):
         if portal_legal_basis:
             data["portalSubscriptionLegalBasis"] = portal_legal_basis
         if portal_legal_basis_explanation:
-            data["portalSubscriptionLegalBasisExplanation"] = portal_legal_basis_explanation
+            data[
+                "portalSubscriptionLegalBasisExplanation"
+            ] = portal_legal_basis_explanation
         self.update_status(email, data, **options)
 
     def unsubscribe_permanently(self, email: str, **options) -> None:

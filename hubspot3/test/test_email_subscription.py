@@ -13,7 +13,7 @@ def email_subscription_client(mock_connection):
     return client
 
 
-@pytest.mark.parametrize('portal_id', [None, 62515])
+@pytest.mark.parametrize("portal_id", [None, 62515])
 def test_get_status(email_subscription_client, mock_connection, portal_id):
     dummy_response = {
         "subscribed": False,
@@ -22,7 +22,7 @@ def test_get_status(email_subscription_client, mock_connection, portal_id):
         "bounced": False,
         "email": "jerry@example.org",
         "subscriptionStatuses": [],
-        "status": "unsubscribed"
+        "status": "unsubscribed",
     }
     mock_connection.set_response(200, json.dumps(dummy_response))
     expected_params = {}
@@ -45,12 +45,12 @@ def test_update_status(email_subscription_client, mock_connection):
                 "subscribed": True,
                 "optState": email_subscription_client.OptState.OPT_IN,
                 "legalBasis": email_subscription_client.LegalBasis.PERFORMANCE_OF_CONTRACT,
-                "legalBasisExplanation": "We need to send them these emails as part of our agreement with them."
+                "legalBasisExplanation": "We need to send them these emails as part of our agreement with them.",
             }
         ],
         "portalSubscriptionLegalBasis": email_subscription_client.LegalBasis.LEGITIMATE_INTEREST_CLIENT,
         "portalSubscriptionLegalBasisExplanation": "They told us at a conference that they're "
-                                                   "interested in receiving communications."
+        "interested in receiving communications.",
     }
     assert email_subscription_client.update_status("jerry@example.org", data) is None
     mock_connection.assert_num_requests(1)
@@ -59,28 +59,38 @@ def test_update_status(email_subscription_client, mock_connection):
     )
 
 
-@pytest.mark.parametrize('legal_basis, explanation', [
-    (None, None),
-    (EmailSubscriptionClient.LegalBasis.LEGITIMATE_INTEREST_CLIENT, None),
-    (None, "They told us at a conference that they're interested in receiving communications."),
-    (EmailSubscriptionClient.LegalBasis.LEGITIMATE_INTEREST_CLIENT,
-     "They told us at a conference that they're interested in receiving communications."),
-])
-def test_update_subscriptions(email_subscription_client, mock_connection, legal_basis, explanation):
+@pytest.mark.parametrize(
+    "legal_basis, explanation",
+    [
+        (None, None),
+        (EmailSubscriptionClient.LegalBasis.LEGITIMATE_INTEREST_CLIENT, None),
+        (
+            None,
+            "They told us at a conference that they're interested in receiving communications.",
+        ),
+        (
+            EmailSubscriptionClient.LegalBasis.LEGITIMATE_INTEREST_CLIENT,
+            "They told us at a conference that they're interested in receiving communications.",
+        ),
+    ],
+)
+def test_update_subscriptions(
+    email_subscription_client, mock_connection, legal_basis, explanation
+):
     subscriptions = [
         {
             "id": 7,
             "subscribed": True,
             "optState": email_subscription_client.OptState.OPT_IN,
             "legalBasis": email_subscription_client.LegalBasis.PERFORMANCE_OF_CONTRACT,
-            "legalBasisExplanation": "We need to send them these emails as part of our agreement with them."
+            "legalBasisExplanation": "We need to send them these emails as part of our agreement with them.",
         },
         {
             "id": 8,
             "subscribed": True,
             "optState": email_subscription_client.OptState.OPT_IN,
             "legalBasis": email_subscription_client.LegalBasis.PERFORMANCE_OF_CONTRACT,
-            "legalBasisExplanation": "We need to send them these emails as part of our agreement with them."
+            "legalBasisExplanation": "We need to send them these emails as part of our agreement with them.",
         },
     ]
     expected_data = {"subscriptionStatuses": subscriptions}
@@ -89,7 +99,9 @@ def test_update_subscriptions(email_subscription_client, mock_connection, legal_
     if explanation:
         expected_data["portalSubscriptionLegalBasisExplanation"] = explanation
 
-    email_subscription_client.update_subscriptions("jerry@example.org", subscriptions, legal_basis, explanation)
+    email_subscription_client.update_subscriptions(
+        "jerry@example.org", subscriptions, legal_basis, explanation
+    )
     mock_connection.assert_num_requests(1)
     mock_connection.assert_has_request(
         "PUT", "/email/public/v1/subscriptions/jerry@example.org?", expected_data
@@ -97,8 +109,12 @@ def test_update_subscriptions(email_subscription_client, mock_connection, legal_
 
 
 def test_unsubscribe_permanently(email_subscription_client, mock_connection):
-    assert email_subscription_client.unsubscribe_permanently("jerry@example.org") is None
+    assert (
+        email_subscription_client.unsubscribe_permanently("jerry@example.org") is None
+    )
     mock_connection.assert_num_requests(1)
     mock_connection.assert_has_request(
-        "PUT", "/email/public/v1/subscriptions/jerry@example.org?", {"unsubscribeFromAll": True}
+        "PUT",
+        "/email/public/v1/subscriptions/jerry@example.org?",
+        {"unsubscribeFromAll": True},
     )
