@@ -114,20 +114,20 @@ class ContactsClient(BaseClient):
     def get_batch(self, ids, extra_properties: Union[list, str] = None):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
-        properties = self.default_batch_properties
+        properties = set(self.default_batch_properties)
 
         # append extras if they exist
         if extra_properties:
             if isinstance(extra_properties, list):
-                properties += extra_properties
+                properties.update(extra_properties)
             if isinstance(extra_properties, str):
-                properties.append(extra_properties)
+                properties.add(extra_properties)
 
         batch = self._call(
             "contact/vids/batch",
             method="GET",
             doseq=True,
-            params={"vid": ids, "property": properties},
+            params={"vid": ids, "property": list(properties)},
         )
         # It returns a dict with IDs as keys
         return [prettify(batch[contact], id_key="vid") for contact in batch]
