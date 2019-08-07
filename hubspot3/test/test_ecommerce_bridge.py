@@ -4,6 +4,8 @@ from unittest.mock import Mock, patch
 import pytest
 
 from hubspot3 import ecommerce_bridge
+from hubspot3.error import HubspotBadConfig
+
 
 DUMMY_PROPERTY_MAPPINGS = {
     "CONTACT": {
@@ -190,6 +192,7 @@ def test_get_sync_errors(
     ],
 )
 def test_get_sync_errors_for_account(ecommerce_bridge_client, kwargs):
+    ecommerce_bridge_client.api_key = "70892bbb-ae06-4931-8130-66906bd2f347"
     with patch.object(
         ecommerce_bridge_client, "_get_sync_errors"
     ) as mock_get_sync_errors:
@@ -199,6 +202,11 @@ def test_get_sync_errors_for_account(ecommerce_bridge_client, kwargs):
         kwargs.setdefault("object_type", None)
         kwargs.setdefault("limit", None)
         mock_get_sync_errors.assert_called_once_with("sync/errors/portal", **kwargs)
+
+
+def test_get_sync_errors_for_account_missing_api_key(ecommerce_bridge_client):
+    with pytest.raises(HubspotBadConfig):
+        ecommerce_bridge_client.get_sync_errors_for_account()
 
 
 @pytest.mark.parametrize(
@@ -219,6 +227,7 @@ def test_get_sync_errors_for_account(ecommerce_bridge_client, kwargs):
     ],
 )
 def test_get_sync_errors_for_app(ecommerce_bridge_client, app_id, kwargs):
+    ecommerce_bridge_client.api_key = "70892bbb-ae06-4931-8130-66906bd2f347"
     with patch.object(
         ecommerce_bridge_client, "_get_sync_errors"
     ) as mock_get_sync_errors:
@@ -230,6 +239,43 @@ def test_get_sync_errors_for_app(ecommerce_bridge_client, app_id, kwargs):
         mock_get_sync_errors.assert_called_once_with(
             "sync/errors/app/{}".format(app_id), **kwargs
         )
+
+
+def test_get_sync_errors_for_app_missing_api_key(ecommerce_bridge_client):
+    with pytest.raises(HubspotBadConfig):
+        ecommerce_bridge_client.get_sync_errors_for_app(1337)
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        dict(),
+        dict(limit=10),
+        dict(include_resolved=True, object_type="CONTACT"),
+        dict(
+            include_resolved=True,
+            object_type="CONTACT",
+            error_type="MISSING_REQUIRED_PROPERTY",
+            timeout=30,
+        ),
+    ],
+)
+def test_get_sync_errors_for_app_and_account(ecommerce_bridge_client, kwargs):
+    ecommerce_bridge_client.access_token = "70892bbb-ae06-4931-8130-66906bd2f347"
+    with patch.object(
+        ecommerce_bridge_client, "_get_sync_errors"
+    ) as mock_get_sync_errors:
+        ecommerce_bridge_client.get_sync_errors_for_app_and_account(**kwargs)
+        kwargs.setdefault("include_resolved", False)
+        kwargs.setdefault("error_type", None)
+        kwargs.setdefault("object_type", None)
+        kwargs.setdefault("limit", None)
+        mock_get_sync_errors.assert_called_once_with("sync/errors", **kwargs)
+
+
+def test_get_sync_errors_for_app_and_account_missing_access_token(ecommerce_bridge_client):
+    with pytest.raises(HubspotBadConfig):
+        ecommerce_bridge_client.get_sync_errors_for_app_and_account()
 
 
 @pytest.mark.parametrize(
