@@ -273,7 +273,9 @@ def test_get_sync_errors_for_app_and_account(ecommerce_bridge_client, kwargs):
         mock_get_sync_errors.assert_called_once_with("sync/errors", **kwargs)
 
 
-def test_get_sync_errors_for_app_and_account_missing_access_token(ecommerce_bridge_client):
+def test_get_sync_errors_for_app_and_account_missing_access_token(
+    ecommerce_bridge_client
+):
     with pytest.raises(HubspotBadConfig):
         ecommerce_bridge_client.get_sync_errors_for_app_and_account()
 

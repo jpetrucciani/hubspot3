@@ -141,8 +141,10 @@ class EcommerceBridgeClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-a-specific-account # noqa
         """
         if not self.api_key:
-            raise HubspotBadConfig("The app-independent sync errors for a specific account can "
-                                   "only be retrieved using the corresponding portal API key.")
+            raise HubspotBadConfig(
+                "The app-independent sync errors for a specific account can "
+                "only be retrieved using the corresponding portal API key."
+            )
         return self._get_sync_errors(
             "sync/errors/portal",
             include_resolved=include_resolved,
@@ -171,8 +173,10 @@ class EcommerceBridgeClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-an-app # noqa
         """
         if not self.api_key:
-            raise HubspotBadConfig("The portal-independent sync errors for an app can only be "
-                                   "retrieved using the corresponding developer API key.")
+            raise HubspotBadConfig(
+                "The portal-independent sync errors for an app can only be "
+                "retrieved using the corresponding developer API key."
+            )
         return self._get_sync_errors(
             "sync/errors/app/{app_id}".format(app_id=app_id),
             include_resolved=include_resolved,
@@ -200,8 +204,10 @@ class EcommerceBridgeClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-an-app-and-account # noqa
         """
         if not self.access_token:
-            raise HubspotBadConfig("The sync errors for a specific account from a specific app "
-                                   "can only be retrieved using an access token.")
+            raise HubspotBadConfig(
+                "The sync errors for a specific account from a specific app "
+                "can only be retrieved using an access token."
+            )
         return self._get_sync_errors(
             "sync/errors",
             include_resolved=include_resolved,
