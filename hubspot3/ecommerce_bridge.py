@@ -199,3 +199,15 @@ class EcommerceBridgeClient(BaseClient):
         if admin_uri:
             data["adminUri"] = admin_uri
         return self._call("stores", data=data, method="PUT", **options)
+
+    def check_sync_status_for_object(
+        self,
+        store_id: str = "default",
+        object_type: str = None,
+        external_object_id: int = None
+    ):
+        """
+        Get the synchronization status of a object by its external ID.
+        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/check-sync-status
+        """
+        return self._call("sync/status/{}/{}/{}".format(store_id, object_type, external_object_id))
