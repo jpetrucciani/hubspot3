@@ -5,6 +5,7 @@ from collections.abc import Mapping, Sequence
 from typing import Dict, List
 
 from hubspot3.base import BaseClient
+from hubspot3.error import HubspotBadConfig
 from hubspot3.utils import get_log
 
 ECOMMERCE_BRIDGE_API_VERSION = "2"
@@ -60,9 +61,11 @@ class EcommerceBridgeClient(BaseClient):
     ) -> None:
         """
         Send multiple ecommerce sync messages for the given object type and store ID.
+
         If the number of sync messages exceeds the maximum number of sync messages per request,
         the messages will automatically be split up into appropriately sized requests.
-        See: https://developers.hubspot.com/docs/methods/ecommerce/v2/send-sync-messages
+
+        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/send-sync-messages
         """
         # Break the messages down into chunks that do not contain more than the maximum number
         # of allowed sync messages per request.
@@ -129,10 +132,19 @@ class EcommerceBridgeClient(BaseClient):
         **options
     ) -> List:
         """
-        Retrieve a list of error dictionaries for the account that is associated with the
-        credentials used for the connection, optionally filtered/limited, and ordered by recency.
+        Retrieve a list of error dictionaries for an account, optionally filtered/limited, and
+        ordered by recency.
+
+        This method and the endpoint it calls can only be used with a portal API key and the portal
+        is determined from that key.
+
         :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-a-specific-account # noqa
         """
+        if not self.api_key:
+            raise HubspotBadConfig(
+                "The app-independent sync errors for a specific account can "
+                "only be retrieved using the corresponding portal API key."
+            )
         return self._get_sync_errors(
             "sync/errors/portal",
             include_resolved=include_resolved,
@@ -154,10 +166,50 @@ class EcommerceBridgeClient(BaseClient):
         """
         Retrieve a list of error dictionaries for the app with the given ID, optionally
         filtered/limited, and ordered by recency.
+
+        This method and the endpoint it calls can only be used with the developer API key of the
+        developer portal that created the app.
+
         :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-an-app # noqa
         """
+        if not self.api_key:
+            raise HubspotBadConfig(
+                "The portal-independent sync errors for an app can only be "
+                "retrieved using the corresponding developer API key."
+            )
         return self._get_sync_errors(
             "sync/errors/app/{app_id}".format(app_id=app_id),
+            include_resolved=include_resolved,
+            error_type=error_type,
+            object_type=object_type,
+            limit=limit,
+            **options
+        )
+
+    def get_sync_errors_for_app_and_account(
+        self,
+        include_resolved: bool = False,
+        error_type: str = None,
+        object_type: str = None,
+        limit: int = None,
+        **options
+    ):
+        """
+        Retrieve a list of error dictionaries for an app in specific portal, optionally
+        filtered/limited, and ordered by recency.
+
+        This method and the endpoint it calls can only be used with OAuth tokens and both the app
+        and the portal are determined from the tokens used.
+
+        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-an-app-and-account # noqa
+        """
+        if not self.access_token:
+            raise HubspotBadConfig(
+                "The sync errors for a specific account from a specific app "
+                "can only be retrieved using an access token."
+            )
+        return self._get_sync_errors(
+            "sync/errors",
             include_resolved=include_resolved,
             error_type=error_type,
             object_type=object_type,
