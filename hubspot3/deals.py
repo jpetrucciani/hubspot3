@@ -2,9 +2,10 @@
 hubspot deals api
 """
 import urllib.parse
+from typing import Union, Dict
+
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
-from typing import Union
 
 
 DEALS_API_VERSION = "1"
@@ -45,6 +46,13 @@ class DealsClient(BaseClient):
     def update(self, deal_id: str, data: dict = None, **options):
         data = data or {}
         return self._call("deal/{}".format(deal_id), data=data, method="PUT", **options)
+
+    def delete(self, deal_id: str, **options) -> Dict:
+        """
+        Delete a deal.
+        :see: https://developers.hubspot.com/docs/methods/deals/delete_deal
+        """
+        return self._call("deal/{}".format(deal_id), method="DELETE", **options)
 
     def associate(self, deal_id, object_type, object_ids, **options):
         # Encoding the query string here since HubSpot is expecting the "id" parameter to be

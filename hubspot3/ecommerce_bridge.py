@@ -2,7 +2,8 @@
 hubspot ecommerce bridge api
 """
 from collections.abc import Mapping, Sequence
-from typing import List
+from typing import List, Dict
+
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
 
@@ -205,7 +206,7 @@ class EcommerceBridgeClient(BaseClient):
         store_id: str = "default",
         object_type: str = None,
         external_object_id: int = None
-    ):
+    ) -> Dict:
         """
         Get the synchronization status of a object by its external ID.
         :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/check-sync-status

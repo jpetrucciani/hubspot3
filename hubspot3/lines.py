@@ -35,7 +35,7 @@ class LinesClient(BaseClient):
         Delete a line item by its ID.
         :see: https://developers.hubspot.com/docs/methods/line-items/delete-line-item
         """
-        return self._call("{}".format(line_id), method="DELETE",**options)
+        return self._call("{}".format(line_id), method="DELETE", **options)
 
     def get(self, line_id: int, **options) -> Dict:
         """Retrieve a line by its ID."""
@@ -45,5 +45,3 @@ class LinesClient(BaseClient):
         """Link a line item to a deal."""
         associations_client = CRMAssociationsClient(**self.credentials)
         return associations_client.link_line_item_to_deal(line_item_id, deal_id)
-
-    
