@@ -118,3 +118,36 @@ def test_unsubscribe_permanently(email_subscription_client, mock_connection):
         "/email/public/v1/subscriptions/jerry@example.org?",
         {"unsubscribeFromAll": True},
     )
+
+
+@pytest.mark.parametrize("portal_id", [None, 445715])
+def test_get_topics(email_subscription_client, mock_connection, portal_id):
+    dummy_response = {
+        "subscriptionDefinitions": [
+            {
+                "active": True,
+                "portalId": 12345,
+                "description": "The default unsubscribe list that all emails in your hub will use",
+                "id": 7,
+                "name": "Default",
+            },
+            {
+                "active": True,
+                "portalId": 12345,
+                "description": "Our weekly newsletter informing you about our new happenings",
+                "id": 146,
+                "name": "Weekly Newsletter",
+            },
+        ]
+    }
+    mock_connection.set_response(200, json.dumps(dummy_response))
+    expected_params = {}
+    if portal_id:
+        expected_params["portalId"] = portal_id
+
+    result = email_subscription_client.get_topics(portal_id)
+    assert result == dummy_response
+    mock_connection.assert_num_requests(1)
+    mock_connection.assert_has_request(
+        "GET", "/email/public/v1/subscriptions/?", **expected_params
+    )
