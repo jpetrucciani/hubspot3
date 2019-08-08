@@ -2,11 +2,10 @@
 hubspot ecommerce bridge api
 """
 from collections.abc import Mapping, Sequence
-from typing import List, Dict
+from typing import Dict, List
 
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
-
 
 ECOMMERCE_BRIDGE_API_VERSION = "2"
 MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES = 200  # Maximum number of sync messages per request.
