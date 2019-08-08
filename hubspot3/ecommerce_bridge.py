@@ -211,4 +211,5 @@ class EcommerceBridgeClient(BaseClient):
         Get the synchronization status of a object by its external ID.
         :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/check-sync-status
         """
-        return self._call("sync/status/{}/{}/{}".format(store_id, object_type, external_object_id))
+        return self._call("sync/status/{}/{}/{}".format(store_id, object_type, external_object_id),
+                          method="GET")

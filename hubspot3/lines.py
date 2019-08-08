@@ -28,6 +28,10 @@ class LinesClient(BaseClient):
         )
 
     def create(self, data=None, **options) -> Dict:
+        """
+        Create a line item.
+        :see: https://developers.hubspot.com/docs/methods/line-items/create-line-item
+        """
         return self._call("", data=data, method="POST", **options)
 
     def delete(self, line_id: int, **options) -> Dict:
@@ -38,7 +42,10 @@ class LinesClient(BaseClient):
         return self._call("{}".format(line_id), method="DELETE", **options)
 
     def get(self, line_id: int, **options) -> Dict:
-        """Retrieve a line by its ID."""
+        """
+        Retrieve a line by its ID.
+        :see: https://developers.hubspot.com/docs/methods/line-items/get_line_item_by_id
+        """
         return self._call("{}".format(line_id), **options)
 
     def link_line_item_to_deal(self, line_item_id, deal_id) -> Dict:
