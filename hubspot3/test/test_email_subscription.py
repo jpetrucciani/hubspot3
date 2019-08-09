@@ -145,7 +145,7 @@ def test_get_topics(email_subscription_client, mock_connection, portal_id):
     if portal_id:
         expected_params["portalId"] = portal_id
 
-    result = email_subscription_client.get_topics(portal_id)
+    result = email_subscription_client.get_subscription_types(portal_id)
     assert result == dummy_response
     mock_connection.assert_num_requests(1)
     mock_connection.assert_has_request(
