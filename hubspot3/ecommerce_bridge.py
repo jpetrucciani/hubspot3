@@ -2,11 +2,11 @@
 hubspot ecommerce bridge api
 """
 from collections.abc import Mapping, Sequence
-from typing import List
+from typing import Dict, List
+
 from hubspot3.base import BaseClient
 from hubspot3.error import HubspotBadConfig
 from hubspot3.utils import get_log
-
 
 ECOMMERCE_BRIDGE_API_VERSION = "2"
 MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES = 200  # Maximum number of sync messages per request.
@@ -251,3 +251,17 @@ class EcommerceBridgeClient(BaseClient):
         if admin_uri:
             data["adminUri"] = admin_uri
         return self._call("stores", data=data, method="PUT", **options)
+
+    def check_sync_status_for_object(
+        self,
+        object_type: str,
+        external_object_id: str,
+        store_id: str = "default",
+        **options
+    ) -> Dict:
+        """
+        Get the synchronization status of a object by its external ID.
+        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/check-sync-status
+        """
+        return self._call("sync/status/{}/{}/{}".format(store_id, object_type, external_object_id),
+                          method="GET", **options)
