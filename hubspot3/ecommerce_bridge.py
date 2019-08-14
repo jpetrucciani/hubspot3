@@ -255,7 +255,7 @@ class EcommerceBridgeClient(BaseClient):
     def check_sync_status_for_object(
         self,
         object_type: str,
-        external_object_id: int,
+        external_object_id: str,
         store_id: str = "default",
         **options
     ) -> Dict:
