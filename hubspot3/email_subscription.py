@@ -87,3 +87,13 @@ class EmailSubscriptionClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/email/update_status
         """
         self.update_status(email, {"unsubscribeFromAll": True}, **options)
+
+    def get_subscription_types(self, portal_id: int = None, **options) -> Dict:
+        """
+        Retrieve all newsletter subscription types.
+        :see: https://developers.hubspot.com/docs/methods/email/get_subscriptions
+        """
+        params = {}
+        if portal_id is not None:
+            params["portalId"] = portal_id
+        return self._call("", method="GET", params=params, **options)
