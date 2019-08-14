@@ -14,9 +14,9 @@ test_all:
 	@$(base_command) $(coverage) $(reports) -s --pyargs $(repo)
 
 check_format:
-	@black $(target) --check hubspot3/
+	@black $(target) --check $(repo)/
 
 format:
-	@black $(target) hubspot3/
+	@black $(target) $(repo)/
 
-.PHONY: test_all
+.PHONY: test_all check_format format
