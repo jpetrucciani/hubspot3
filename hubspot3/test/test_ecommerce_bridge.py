@@ -389,7 +389,7 @@ def test_check_sync_status_for_object(ecommerce_bridge_client, mock_connection, 
         "externalObjectId": object_id,
     }
     mock_connection.set_response(200, json.dumps(response_data))
-    result = ecommerce_bridge_client.check_sync_status_for_object(store_id, object_type, object_id)
+    result = ecommerce_bridge_client.check_sync_status_for_object(object_type, object_id, store_id)
     mock_connection.assert_num_requests(1)
     mock_connection.assert_has_request(
         "GET",
