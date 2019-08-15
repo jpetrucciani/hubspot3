@@ -224,6 +224,13 @@ class Hubspot3:
         return EcommerceBridgeClient(**self.auth, **self.options)
 
     @property
+    def email_subscription(self):
+        """returns a hubspot3 email subscription client"""
+        from hubspot3.email_subscription import EmailSubscriptionClient
+
+        return EmailSubscriptionClient(**self.auth, **self.options)
+
+    @property
     def engagements(self):
         """returns a hubspot3 engagements client"""
         from hubspot3.engagements import EngagementsClient

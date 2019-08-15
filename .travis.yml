@@ -11,8 +11,9 @@ matrix:
 install:
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
-script:
-  - tox
+script: tox
+after_script: cd ~
+after_success: coveralls --verbose
 deploy:
   provider: pypi
   user: jacobi
