@@ -358,3 +358,41 @@ def test_create_or_update_store(
         "PUT", "/extensions/ecomm/v2/stores?", expected_data
     )
     assert result == response_data
+
+
+@pytest.mark.parametrize("store_id, object_type, object_id, expected_data", [
+    (
+        "test-store",
+        "CONTACT",
+        "1234",
+        {
+            "storeId": "test-store",
+            "objectType": "CONTACT",
+            "externalObjectId": "1234"
+        }
+    ),
+    (
+        "test-store",
+        "DEAL",
+        "5678",
+        {
+            "storeId": "test-store",
+            "objectType": "DEAL",
+            "externalObjectId": "5678"
+        }
+    )
+])
+def test_check_sync_status_for_object(ecommerce_bridge_client, mock_connection, store_id, object_type, object_id, expected_data):
+    response_data = {
+        "storeId": store_id,
+        "objectType": object_type,
+        "externalObjectId": object_id,
+    }
+    mock_connection.set_response(200, json.dumps(response_data))
+    result = ecommerce_bridge_client.check_sync_status_for_object(object_type, object_id, store_id)
+    mock_connection.assert_num_requests(1)
+    mock_connection.assert_has_request(
+        "GET",
+        "/extensions/ecomm/v2/sync/status/{}/{}/{}?".format(store_id, object_type, object_id)
+    )
+    assert result == response_data

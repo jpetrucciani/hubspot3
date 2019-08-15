@@ -40,6 +40,24 @@ def test_create_deal():
         DEALS.create()
 
 
+def test_delete_deal():
+    """
+    Test the deletion of a deal.
+    :see: https://developers.hubspot.com/docs/methods/deals/delete_deal
+    """
+    data = {
+        "properties": [
+            {"value": "Test deal", "name": "dealname"},
+            {"value": None, "name": "createdate"},
+        ]
+    }
+    response_data = DEALS.create(data)
+    deal_id = response_data['dealId']
+    DEALS.delete(deal_id)
+    with pytest.raises(HubspotNotFound):
+        DEALS.get(deal_id)
+
+
 def test_get_recently_created():
     """
     gets recently created deals
