@@ -52,7 +52,7 @@ def test_delete_deal():
         ]
     }
     response_data = DEALS.create(data)
-    deal_id = response_data['dealId']
+    deal_id = response_data["dealId"]
     DEALS.delete(deal_id)
     with pytest.raises(HubspotNotFound):
         DEALS.get(deal_id)

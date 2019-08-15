@@ -15,12 +15,14 @@ def lines_client(mock_connection):
 
 
 class TestLinesClient(object):
-
-    @pytest.mark.parametrize("subpath, expected_value", [
-        ("", "crm-objects/v1/objects/line_items/"),
-        ("batch-create", "crm-objects/v1/objects/line_items/batch-create"),
-        ("batch-read", "crm-objects/v1/objects/line_items/batch-read"),
-    ])
+    @pytest.mark.parametrize(
+        "subpath, expected_value",
+        [
+            ("", "crm-objects/v1/objects/line_items/"),
+            ("batch-create", "crm-objects/v1/objects/line_items/batch-create"),
+            ("batch-read", "crm-objects/v1/objects/line_items/batch-read"),
+        ],
+    )
     def test_get_path(self, lines_client, subpath, expected_value):
         assert lines_client._get_path(subpath) == expected_value
 
@@ -32,10 +34,7 @@ class TestLinesClient(object):
                 {"name": "name", "value": "Custom name for the line item"},
             ]
         }
-        response_body = {
-            "objectType": "LINE_ITEM",
-            "objectId": "123456789",
-        }
+        response_body = {"objectType": "LINE_ITEM", "objectId": "123456789"}
         mock_connection.set_response(200, json.dumps(response_body))
         resp = lines_client.create(data)
         mock_connection.assert_num_requests(1)
@@ -57,10 +56,7 @@ class TestLinesClient(object):
 
     def test_get(self, lines_client, mock_connection):
         line_item_id = "1234"
-        response_body = {
-            "objectType": "LINE_ITEM",
-            "objectId": "1234",
-        }
+        response_body = {"objectType": "LINE_ITEM", "objectId": "1234"}
         mock_connection.set_response(200, json.dumps(response_body))
         resp = lines_client.get(line_item_id)
         mock_connection.assert_num_requests(1)
@@ -73,5 +69,7 @@ class TestLinesClient(object):
     def test_link_line_item_to_deal(self, mock_associations_client, lines_client):
         mock_instance = mock_associations_client.return_value
         lines_client.link_line_item_to_deal(1, 1)
-        mock_associations_client.assert_called_with(access_token=None, api_key=None, refresh_token=None)
+        mock_associations_client.assert_called_with(
+            access_token=None, api_key=None, refresh_token=None
+        )
         mock_instance.link_line_item_to_deal.assert_called_with(1, 1)
