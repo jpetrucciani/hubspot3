@@ -89,6 +89,53 @@ class PropertiesClient(BaseClient):
             },
         )
 
+    def update(
+        self,
+        object_type,
+        code,
+        label,
+        description,
+        group_code,
+        data_type,
+        widget_type,
+        extra_params=None,
+    ):
+        """
+        Update a custom property on hubspot.
+        """
+
+        if data_type not in VALID_PROPERTY_DATA_TYPES:
+            raise ValueError(
+                "Invalid data type for property. Valid data types are: {}".format(
+                    VALID_PROPERTY_DATA_TYPES
+                )
+            )
+
+        if 'fieldType' in extra_params and extra_params['fieldType'] not in VALID_PROPERTY_WIDGET_TYPES:
+            raise ValueError(
+                "Invalid field type for property. Valid field types are: {}".format(
+                    VALID_PROPERTY_WIDGET_TYPES
+                )
+            )
+
+        extra_params = extra_params or {}
+
+        # Save the current object type.
+        self._object_type = object_type
+
+        return self._call(
+            "named/{}".format(code),
+            method="PUT",
+            data={
+                "label": label,
+                "description": description,
+                "groupName": group_code,
+                "type": data_type,
+                "fieldType": widget_type,
+                **extra_params,
+            },
+        )
+
     def get_all(self, object_type):
         """Retrieve all the custom properties."""
 
