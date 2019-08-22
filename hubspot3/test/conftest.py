@@ -29,16 +29,22 @@ def mock_connection():
         query parameters was performed.
         """
         for args, kwargs in connection.request.call_args_list:
+            request_method = args[0]
+            request_url = args[1]
             request_data = args[2]
+
             if data is not None and not isinstance(data, str):
                 request_data = json.loads(request_data)
-            url_check = args[1] == url if not params else args[1].startswith(url)
+
+            url_check = (
+                request_url == url if not params else request_url.startswith(url)
+            )
             params_check = all(
-                urlencode({name: value}, doseq=True) in args[1]
+                urlencode({name: value}, doseq=True) in request_url
                 for name, value in params.items()
             )
             if (
-                args[0] == method
+                request_method == method
                 and url_check
                 and request_data == data
                 and params_check
