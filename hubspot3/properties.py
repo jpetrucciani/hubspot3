@@ -1,6 +1,8 @@
 """
 hubspot properties api
 """
+from typing import Dict
+
 from hubspot3.base import BaseClient
 from hubspot3.globals import (
     OBJECT_TYPE_COMPANIES,
@@ -43,7 +45,7 @@ class PropertiesClient(BaseClient):
         )
 
     @staticmethod
-    def _validate(data_type, widget_type, extra_params):
+    def _validate(data_type: str, widget_type: str, extra_params: dict) -> None:
         if data_type:
             if data_type not in VALID_PROPERTY_DATA_TYPES:
                 raise ValueError(
@@ -68,15 +70,15 @@ class PropertiesClient(BaseClient):
 
     def create(
         self,
-        object_type,
-        code,
-        label,
-        description,
-        group_code,
-        data_type,
-        widget_type,
-        extra_params=None,
-    ):
+        object_type: str,
+        code: str,
+        label: str,
+        description: str,
+        group_code: str,
+        data_type: str,
+        widget_type: str,
+        extra_params: dict = None,
+    ) -> Dict:
         """
         Create a new custom property on hubspot.
         """
@@ -103,15 +105,15 @@ class PropertiesClient(BaseClient):
 
     def update(
         self,
-        object_type,
-        code,
-        label=None,
-        description=None,
-        group_code=None,
-        data_type=None,
-        widget_type=None,
-        extra_params=None,
-    ):
+        object_type: str,
+        code: str,
+        label: str = None,
+        description: str = None,
+        group_code: str = None,
+        data_type: str = None,
+        widget_type: str = None,
+        extra_params: dict = None,
+    ) -> Dict:
         """
         Update a custom property on hubspot.
         """
