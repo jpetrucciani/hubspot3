@@ -1,11 +1,11 @@
 """
 configure pytest
 """
-from http.client import HTTPSConnection
 import json
+from http.client import HTTPSConnection
+from unittest.mock import MagicMock, Mock
 from urllib.parse import urlencode
 
-from unittest.mock import MagicMock, Mock
 import pytest
 
 
