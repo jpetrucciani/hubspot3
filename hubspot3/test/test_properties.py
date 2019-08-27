@@ -26,6 +26,17 @@ def properties_client(mock_connection):
     return client
 
 
+@pytest.fixture
+def properties_input_data():
+    return dict(
+        code="my_field",
+        label="My Label",
+        description="My Description",
+        data_type=DATA_TYPE_BOOL,
+        widget_type=WIDGET_TYPE_BOOLEAN_CHECKBOX,
+    )
+
+
 class TestContactsClient(object):
     @pytest.mark.parametrize(
         "object_type, api_version",
@@ -69,16 +80,12 @@ class TestContactsClient(object):
         assert "Invalid data for updating an enumeration type" in str(value_error)
 
     @pytest.mark.parametrize("extra_params", [None, {"extra": 1}])
-    def test_create(self, properties_client, mock_connection, extra_params):
-        input_data = dict(
-            code="my_field",
-            label="My Label",
-            description="My Description",
-            group_code="custom",
-            data_type=DATA_TYPE_BOOL,
-            widget_type=WIDGET_TYPE_BOOLEAN_CHECKBOX,
-        )
+    def test_create(
+        self, properties_client, mock_connection, properties_input_data, extra_params
+    ):
+        input_data = properties_input_data
         input_data.update({"extra_params": extra_params}) if extra_params else None
+        input_data.update(dict(group_code="custom"))
         response_body = {
             "name": input_data["code"],
             "label": input_data["label"],
@@ -111,14 +118,10 @@ class TestContactsClient(object):
         assert resp == response_body
 
     @pytest.mark.parametrize("extra_params", [None, {"displayOrder": 3}])
-    def test_update(self, properties_client, mock_connection, extra_params):
-        input_data = dict(
-            code="my_field",
-            label="My Label",
-            description="My Description",
-            data_type=DATA_TYPE_BOOL,
-            widget_type=WIDGET_TYPE_BOOLEAN_CHECKBOX,
-        )
+    def test_update(
+        self, properties_client, mock_connection, properties_input_data, extra_params
+    ):
+        input_data = properties_input_data
         input_data.update({"extra_params": extra_params}) or None
         response_body = {
             "name": input_data["code"],
