@@ -49,10 +49,13 @@ class TicketsClient(BaseClient):
         TODO: add properties support
         :see: https://developers.hubspot.com/docs/methods/tickets/get_ticket_by_id
         """
-        params = {"includeDeletes": include_deleted}
+
+        params = options.pop("params", {})
+        params.update({"includeDeletes": include_deleted})
+        options.update({"params": params})
 
         return self._call(
-            "objects/tickets/{}".format(ticket_id), params=params, **options
+            "objects/tickets/{}".format(ticket_id), method="GET", **options
         )
 
     def get_all(self, limit: int = -1, **options) -> list:
