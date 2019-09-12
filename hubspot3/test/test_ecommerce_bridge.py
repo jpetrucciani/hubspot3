@@ -94,15 +94,16 @@ def test_send_sync_messages(
 
 
 @pytest.mark.parametrize(
-    "subpath, include_resolved, error_type, object_type, limit, num_errors, max_errors, "
+    "subpath, include_resolved, error_type, object_type, starting_page, limit, num_errors, max_errors, "
     "expected_pages",
     [
-        ("sync/errors/portal", False, None, None, None, 10, 200, [1]),
-        ("sync/errors/portal", True, None, None, 10, 10, 200, [1]),
-        ("sync/errors/portal", True, None, None, 5, 10, 200, [1]),
-        ("sync/errors/app/1337", True, None, None, 10, 10, 5, [1, 6]),
-        ("sync/errors/app/1337", False, "CONTACT", None, None, 42, 20, [1, 21, 41]),
-        ("sync/errors/app/1337", True, None, "SETTINGS_NOT_ENABLED", 10, 5, 200, [1]),
+        ("sync/errors/portal", False, None, None, None, None, 10, 200, [1]),
+        ("sync/errors/portal", True, None, None, None, 10, 10, 200, [1]),
+        ("sync/errors/portal", True, None, None, None, 5, 10, 200, [1]),
+        ("sync/errors/app/1337", True, None, None, None, 10, 10, 5, [1, 6]),
+        ("sync/errors/app/1337", True, None, None, 2, 10, 10, 5, [2, 7]),
+        ("sync/errors/app/1337", False, "CONTACT", None, None, None, 42, 20, [1, 21, 41]),
+        ("sync/errors/app/1337", True, None, "SETTINGS_NOT_ENABLED", None, 10, 5, 200, [1]),
     ],
 )
 def test_get_sync_errors(
@@ -113,6 +114,7 @@ def test_get_sync_errors(
     include_resolved,
     error_type,
     object_type,
+    starting_page,
     limit,
     num_errors,
     max_errors,
@@ -152,7 +154,7 @@ def test_get_sync_errors(
     # Check that the correct number of requests was performed and that the results match the
     # expectation.
     result = ecommerce_bridge_client._get_sync_errors(
-        subpath, include_resolved, error_type, object_type, limit
+        subpath, include_resolved, error_type, object_type, limit, starting_page
     )
     assert len(result) == min(limit or num_errors, num_errors)
     assert result == errors[:limit]
@@ -199,6 +201,7 @@ def test_get_sync_errors_for_account(ecommerce_bridge_client, kwargs):
         kwargs.setdefault("error_type", None)
         kwargs.setdefault("object_type", None)
         kwargs.setdefault("limit", None)
+        kwargs.setdefault("starting_page", None)
         mock_get_sync_errors.assert_called_once_with("sync/errors/portal", **kwargs)
 
 
@@ -234,6 +237,7 @@ def test_get_sync_errors_for_app(ecommerce_bridge_client, app_id, kwargs):
         kwargs.setdefault("error_type", None)
         kwargs.setdefault("object_type", None)
         kwargs.setdefault("limit", None)
+        kwargs.setdefault("starting_page", None)
         mock_get_sync_errors.assert_called_once_with(
             "sync/errors/app/{}".format(app_id), **kwargs
         )
@@ -268,6 +272,7 @@ def test_get_sync_errors_for_app_and_account(ecommerce_bridge_client, kwargs):
         kwargs.setdefault("error_type", None)
         kwargs.setdefault("object_type", None)
         kwargs.setdefault("limit", None)
+        kwargs.setdefault("starting_page", None)
         mock_get_sync_errors.assert_called_once_with("sync/errors", **kwargs)
 
 

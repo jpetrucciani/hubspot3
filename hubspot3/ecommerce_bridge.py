@@ -84,6 +84,7 @@ class EcommerceBridgeClient(BaseClient):
         error_type: str = None,
         object_type: str = None,
         limit: int = None,
+        starting_page: int = None,
         **options
     ) -> List:
         """Internal method to retrieve sync errors from an endpoint."""
@@ -104,7 +105,7 @@ class EcommerceBridgeClient(BaseClient):
         # errors have been retrieved.
         errors = []
         finished = False
-        page = 1
+        page = starting_page or 1
         while not finished:
             batch = self._call(
                 subpath, method="GET", params=dict(common_params, page=page), **options
@@ -129,6 +130,7 @@ class EcommerceBridgeClient(BaseClient):
         error_type: str = None,
         object_type: str = None,
         limit: int = None,
+        starting_page: int = None,
         **options
     ) -> List:
         """
@@ -151,6 +153,7 @@ class EcommerceBridgeClient(BaseClient):
             error_type=error_type,
             object_type=object_type,
             limit=limit,
+            starting_page=starting_page,
             **options
         )
 
@@ -161,6 +164,7 @@ class EcommerceBridgeClient(BaseClient):
         error_type: str = None,
         object_type: str = None,
         limit: int = None,
+        starting_page: int = None,
         **options
     ) -> List:
         """
@@ -183,6 +187,7 @@ class EcommerceBridgeClient(BaseClient):
             error_type=error_type,
             object_type=object_type,
             limit=limit,
+            starting_page=starting_page,
             **options
         )
 
@@ -192,6 +197,7 @@ class EcommerceBridgeClient(BaseClient):
         error_type: str = None,
         object_type: str = None,
         limit: int = None,
+        starting_page: int = None,
         **options
     ):
         """
@@ -214,6 +220,7 @@ class EcommerceBridgeClient(BaseClient):
             error_type=error_type,
             object_type=object_type,
             limit=limit,
+            starting_page=starting_page,
             **options
         )
 
