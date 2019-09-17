@@ -97,3 +97,10 @@ class EmailSubscriptionClient(BaseClient):
         if portal_id is not None:
             params["portalId"] = portal_id
         return self._call("", method="GET", params=params, **options)
+
+    def get_timeline(self, **options):
+        """
+        Retrieve a time-ordered list of subscription changes.
+        :see: https://developers.hubspot.com/docs/methods/email/get_subscriptions_timeline
+        """
+        return self._call("timeline")

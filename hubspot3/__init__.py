@@ -224,6 +224,13 @@ class Hubspot3:
         return EcommerceBridgeClient(**self.auth, **self.options)
 
     @property
+    def email_events(self):
+        """returns a hubspot3 email events client"""
+        from hubspot3.email_events import EmailEventsClient
+
+        return EmailEventsClient(**self.auth, **self.options)
+
+    @property
     def email_subscription(self):
         """returns a hubspot3 email subscription client"""
         from hubspot3.email_subscription import EmailSubscriptionClient
@@ -327,6 +334,13 @@ class Hubspot3:
         from hubspot3.tickets import TicketsClient
 
         return TicketsClient(**self.auth, **self.options)
+
+    @property
+    def workflows(self):
+        """returns a hubspot3 workflows client"""
+        from hubspot3.workflows import WorkflowsClient
+
+        return WorkflowsClient(**self.auth, **self.options)
 
     @property
     def usage_limits(self):
