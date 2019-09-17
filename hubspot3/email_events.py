@@ -20,18 +20,14 @@ class EmailEventsClient(BaseClient):
         self.log = get_log("hubspot3.email_events")
 
     def _get_path(self, subpath):
-        return "email/public/v{}/campaigns/{}".format(
-            EMAIL_EVENTS_API_VERSION, subpath
-        )
+        return "email/public/v{}/campaigns/{}".format(EMAIL_EVENTS_API_VERSION, subpath)
 
     def get_all_campaigns_ids(self, **options):
         """
         Retrieve all email campaign IDs associated with the portal.
         :see: https://developers.hubspot.com/docs/methods/email/get_campaigns_by_id
         """
-        return self._call(
-            "by-id".format(EMAIL_EVENTS_API_VERSION), **options
-        )
+        return self._call("by-id".format(EMAIL_EVENTS_API_VERSION), **options)
 
     def get_campaign_data(self, campaign_id: int = None, **options):
         """
