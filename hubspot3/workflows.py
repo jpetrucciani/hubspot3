@@ -2,7 +2,7 @@
 hubspot workflows api
 """
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify, get_log
+from hubspot3.utils import get_log
 
 WORKFLOWS_API_VERSION = "3"
 

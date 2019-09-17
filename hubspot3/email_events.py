@@ -29,7 +29,6 @@ class EmailEventsClient(BaseClient):
         Retrieve all email campaign IDs associated with the portal.
         :see: https://developers.hubspot.com/docs/methods/email/get_campaigns_by_id
         """
-        subpath = "by-id"
         return self._call(
             "by-id".format(EMAIL_EVENTS_API_VERSION), **options
         )
