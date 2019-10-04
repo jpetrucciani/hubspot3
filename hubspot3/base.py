@@ -28,7 +28,7 @@ from hubspot3.error import (
 )
 
 
-class BaseClient(object):
+class BaseClient:
     """Base abstract object for interacting with the HubSpot APIs"""
 
     # Controls how long we sleep for during retries, overridden by unittests
@@ -82,11 +82,8 @@ class BaseClient(object):
     def credentials(self):
         """
         Credentials to be used when a client needs to instantiate another one.
-
         Example:
-            ```
-            association_client = AssociationsClient(**self.credentials)
-            ```
+        association_client = AssociationsClient(**self.credentials)
         """
         return {
             "api_key": self.api_key,
@@ -184,15 +181,15 @@ class BaseClient(object):
         conn.close()
         if result.status in (404, 410):
             raise HubspotNotFound(result, request)
-        elif result.status == 401:
+        if result.status == 401:
             raise HubspotUnauthorized(result, request)
-        elif result.status == 409:
+        if result.status == 409:
             raise HubspotConflict(result, request)
-        elif result.status == 429:
+        if result.status == 429:
             raise HubspotRateLimited(result, request)
-        elif 400 <= result.status < 500 or result.status == 501:
+        if 400 <= result.status < 500 or result.status == 501:
             raise HubspotBadRequest(result, request)
-        elif result.status >= 500:
+        if result.status >= 500:
             raise HubspotServerError(result, request)
 
         return result
@@ -315,7 +312,7 @@ class BaseClient(object):
                         retried=True,
                         **options
                     )
-                elif self.access_token:
+                if self.access_token:
                     self.log.warning(
                         "In order to enable automated refreshing of your access token, please "
                         "provide a client ID, client secret and refresh token in addition to the "
