@@ -357,7 +357,7 @@ class Hubspot3:
         return self._usage_limits
 
     @property
-    def me(self):
+    def me(self):  # pylint: disable=invalid-name
         """
         returns info about your hubspot account
         :see: https://developers.hubspot.com/docs/methods/get-account-details

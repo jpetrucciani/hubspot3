@@ -7,7 +7,7 @@ from hubspot3.base import BaseClient
 HUBSPOT_BROADCAST_API_VERSION = "1"
 
 
-class BaseSocialObject(object):
+class BaseSocialObject:
     """base social object"""
 
     def _camel_case_to_underscores(self, text):

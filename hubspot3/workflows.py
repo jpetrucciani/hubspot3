@@ -35,3 +35,4 @@ class WorkflowsClient(BaseClient):
         """
         if workflow_id is not None:
             return self._call("workflows/{}".format(workflow_id))
+        return None

@@ -58,7 +58,8 @@ class PropertiesClient(BaseClient):
                 not extra_params or not extra_params.get("options")
             ):
                 raise ValueError(
-                    "Invalid data for updating an enumeration type. Its 'options' have to be specified."
+                    "Invalid data for updating an enumeration type. "
+                    "Its 'options' have to be specified."
                 )
 
         if widget_type and widget_type not in VALID_PROPERTY_WIDGET_TYPES:
