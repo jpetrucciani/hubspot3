@@ -182,6 +182,13 @@ class Hubspot3:
         return CompaniesClient(**self.auth, **self.options)
 
     @property
+    def companies_properties(self):
+        """returns a hubspot3 companies properties client"""
+        from hubspot3.companies_properties import CompaniesPropertiesClient
+
+        return CompaniesPropertiesClient(**self.auth, **self.options)
+
+    @property
     def contact_lists(self):
         """returns a hubspot3 contact_lists client"""
         from hubspot3.contact_lists import ContactListsClient
@@ -344,7 +351,7 @@ class Hubspot3:
 
     @property
     def usage_limits(self):
-        """fetches and returns a nice usage liimitation object"""
+        """fetches and returns a nice usage limitation object"""
         if self._usage_limits.need_update:
             limits = self._base._call("integrations/v1/limit/daily")[0]
             self._usage_limits = Hubspot3UsageLimits(
