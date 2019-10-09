@@ -72,9 +72,9 @@ class EmailSubscriptionClient(BaseClient):
         """
         data = {"subscriptionStatuses": list(subscriptions)}
         if portal_legal_basis:
-            data["portalSubscriptionLegalBasis"] = portal_legal_basis
+            data["portalSubscriptionLegalBasis"] = portal_legal_basis  # type: ignore
         if portal_legal_basis_explanation:
-            data[
+            data[  # type: ignore
                 "portalSubscriptionLegalBasisExplanation"
             ] = portal_legal_basis_explanation
         self.update_status(email, data, **options)
