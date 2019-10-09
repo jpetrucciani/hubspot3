@@ -20,12 +20,14 @@ class CompaniesPropertiesClient(BaseClient):
         super(CompaniesPropertiesClient, self).__init__(*args, **kwargs)
         self.log = get_log("hubspot3.companies_properties")
 
-    def _get_path(self, subpath):
+    def _get_path(self, subpath: str) -> str:
         return "properties/v{}/companies/{}".format(
             COMPANIES_PROPERTIES_API_VERSION, subpath
         )
 
-    def get_all_companies_properties(self, extra_properties: Union[str, List] = None, **options) -> Optional[List]:
+    def get_all_companies_properties(
+        self, extra_properties: Union[str, List] = None, **options
+    ) -> Optional[List]:
         """
         Retrieve all of the company properties, including their definition, for a given account.
         :see: https://developers.hubspot.com/docs/methods/companies/get_company_properties

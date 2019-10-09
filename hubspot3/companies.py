@@ -80,7 +80,10 @@ class CompaniesClient(BaseClient):
         )
 
     def get_all(
-        self, prettify_output=True, extra_properties: Union[str, List] = None, **options
+        self,
+        prettify_output: bool = True,
+        extra_properties: Union[str, List] = None,
+        **options
     ) -> Optional[List]:
         """get all companies, including extra properties if they are passed in"""
         finished = False
@@ -116,13 +119,15 @@ class CompaniesClient(BaseClient):
                     "limit": query_limit,
                     "offset": offset,
                     "propertiesWithHistory": properties,
-                    "includeMergeAudits": "true"
+                    "includeMergeAudits": "true",
                 },
                 **options
             )
             output.extend(
                 [
-                    prettify(company, id_key="companyId") if prettify_output else company
+                    prettify(company, id_key="companyId")
+                    if prettify_output
+                    else company
                     for company in batch["companies"]
                     if not company["isDeleted"]
                 ]
