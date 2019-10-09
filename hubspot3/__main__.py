@@ -119,7 +119,7 @@ class ClientCLIWrapper:
         """Find all API methods on the given client object."""
         methods = {}
         for attr in dir(client):
-            if attr.startswith("_") or attr in self.IGNORED_METHODS.get(
+            if attr.startswith("_") or attr in self.IGNORED_METHODS.get(  # type: ignore
                 client.__class__, ()
             ):
                 continue
@@ -167,12 +167,12 @@ class ClientCLIWrapper:
             )
         )
 
-    def _replace_stdin_token(self, *args, **kwargs) -> Tuple[List, Dict]:
+    def _replace_stdin_token(self, *args_tuple, **kwargs) -> Tuple[List, Dict]:
         """
         Replace the values of all given arguments with the JSON-parsed value
         from stdin if their current value is the STDIN_TOKEN.
         """
-        args = list(args)
+        args = list(args_tuple)
         stdin_indices = [
             index for index, value in enumerate(args) if value == self.STDIN_TOKEN
         ]

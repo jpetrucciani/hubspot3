@@ -103,7 +103,7 @@ class EcommerceBridgeClient(BaseClient):
 
         # Potentially perform multiple requests until the given limit is reached or until all
         # errors have been retrieved.
-        errors = []
+        errors = []  # type: List
         finished = False
         page = starting_page or 1
         while not finished:
