@@ -98,7 +98,7 @@ class ClientCLIWrapper:
     # be ignored during method discovery.
     # Extend this mapping if more methods that aren't API methods are added to
     # a client class.
-    IGNORED_METHODS = {LeadsClient: ("camelcase_search_options",)}
+    IGNORED_METHODS = {LeadsClient: ("camelcase_search_options",)}  # type: Dict
     STDIN_TOKEN = "__stdin__"  # Argument value to trigger stdin parsing.
 
     def __init__(self, client: BaseClient) -> None:
