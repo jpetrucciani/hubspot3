@@ -28,6 +28,7 @@ class ContactsClient(BaseClient):
         self.log = get_log("hubspot3.contacts")
 
     def _get_path(self, subpath):
+        """get path"""
         return "contacts/v{}/{}".format(CONTACTS_API_VERSION, subpath)
 
     def get_by_id(self, contact_id: str, **options):

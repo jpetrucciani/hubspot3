@@ -6,7 +6,7 @@ import json
 from hubspot3.utils import force_utf8
 
 
-class EmptyResult(object):
+class EmptyResult:
     """
     Null Object pattern to prevent Null reference errors
     when there is no result

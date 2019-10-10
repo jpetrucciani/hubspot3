@@ -32,6 +32,4 @@ class CompaniesPropertiesClient(BaseClient):
         Retrieve all of the company properties, including their definition, for a given account.
         :see: https://developers.hubspot.com/docs/methods/companies/get_company_properties
         """
-        return self._call(
-            "properties".format(COMPANIES_PROPERTIES_API_VERSION), **options
-        )
+        return self._call("properties", **options)

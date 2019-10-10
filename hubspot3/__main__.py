@@ -25,7 +25,7 @@ def get_config_from_file(filename):
     return config
 
 
-class Hubspot3CLIWrapper(object):
+class Hubspot3CLIWrapper:
     __doc__ = """
         Hubspot3 CLI
 
@@ -91,14 +91,14 @@ class Hubspot3CLIWrapper(object):
         return clients
 
 
-class ClientCLIWrapper(object):
+class ClientCLIWrapper:
     __doc__ = Hubspot3CLIWrapper.__doc__
 
     # Mapping (client class to attribute names) to define methods that should
     # be ignored during method discovery.
     # Extend this mapping if more methods that aren't API methods are added to
     # a client class.
-    IGNORED_METHODS = {LeadsClient: ("camelcase_search_options",)}
+    IGNORED_METHODS = {LeadsClient: ("camelcase_search_options",)}  # type: Dict
     STDIN_TOKEN = "__stdin__"  # Argument value to trigger stdin parsing.
 
     def __init__(self, client: BaseClient) -> None:
@@ -167,12 +167,12 @@ class ClientCLIWrapper(object):
             )
         )
 
-    def _replace_stdin_token(self, *args, **kwargs) -> Tuple[List, Dict]:
+    def _replace_stdin_token(self, *args_tuple, **kwargs) -> Tuple[List, Dict]:
         """
         Replace the values of all given arguments with the JSON-parsed value
         from stdin if their current value is the STDIN_TOKEN.
         """
-        args = list(args)
+        args = list(args_tuple)
         stdin_indices = [
             index for index, value in enumerate(args) if value == self.STDIN_TOKEN
         ]
