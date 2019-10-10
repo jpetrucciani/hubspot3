@@ -70,11 +70,12 @@ class EmailSubscriptionClient(BaseClient):
         Convenience method to update the individual email subscriptions for a given email address.
         :see: https://developers.hubspot.com/docs/methods/email/update_status
         """
-        data = {"subscriptionStatuses": list(subscriptions)}
+        data = {}  # type: Dict
+        data["subscriptionStatuses"] = list(subscriptions)
         if portal_legal_basis:
-            data["portalSubscriptionLegalBasis"] = portal_legal_basis  # type: ignore
+            data["portalSubscriptionLegalBasis"] = portal_legal_basis
         if portal_legal_basis_explanation:
-            data[  # type: ignore
+            data[
                 "portalSubscriptionLegalBasisExplanation"
             ] = portal_legal_basis_explanation
         self.update_status(email, data, **options)

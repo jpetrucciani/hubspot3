@@ -241,7 +241,8 @@ class EcommerceBridgeClient(BaseClient):
         if webhook_uri:
             data["webhookUri"] = webhook_uri
 
-        params = {"showProvidedMappings": str(show_provided_mappings).lower()}
+        params = {}  # type: Dict
+        params["showProvidedMappings"] = str(show_provided_mappings).lower()
         if app_id:
             params["appId"] = app_id
 
