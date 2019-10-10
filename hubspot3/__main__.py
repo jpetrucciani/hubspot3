@@ -119,7 +119,7 @@ class ClientCLIWrapper:
         """Find all API methods on the given client object."""
         methods = {}
         for attr in dir(client):
-            if attr.startswith("_") or attr in self.IGNORED_METHODS.get(  # type: ignore
+            if attr.startswith("_") or attr in self.IGNORED_METHODS.get(
                 client.__class__, ()
             ):
                 continue
