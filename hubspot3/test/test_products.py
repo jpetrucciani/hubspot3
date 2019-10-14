@@ -54,7 +54,8 @@ class TestProductsClient(object):
         """
         Test to retrieve a product from Hubspot by using the ProductsClient.
 
-        By default, only `name` and `description` properties will be returned if no `properties` is given to the method.
+        By default, only `name` and `description`
+        properties will be returned if no `properties` is given to the method.
         In this test, we will ask for both 'price' and 'duration' extra properties.
         """
         response_body = {"objectType": "PRODUCT", "objectId": HUBSPOT_PRODUCT_ID}

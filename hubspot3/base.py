@@ -9,9 +9,8 @@ import traceback
 import urllib.request
 import urllib.parse
 import urllib.error
-from typing import List, Union
 import zlib
-
+from typing import List, Union
 from hubspot3 import utils
 from hubspot3.utils import force_utf8
 from hubspot3.error import (

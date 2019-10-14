@@ -51,6 +51,8 @@ def mock_connection():
             ):
                 break
         else:
+            print("failed", method, url, data, params)
+            print("failed", url, request_url)
             raise AssertionError(
                 (
                     "No {method} request to URL '{url}' with data '{data}' and with parameters "

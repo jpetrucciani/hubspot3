@@ -2,7 +2,7 @@
 hubspot products api
 """
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify, get_log
+from hubspot3.utils import prettify, get_log, ordered_dict
 from typing import List
 
 
@@ -43,11 +43,13 @@ class ProductsClient(BaseClient):
             batch = self._call(
                 "objects/products/paged",
                 method="GET",
-                params={
-                    "limit": querylimit,
-                    "offset": offset,
-                    "properties": ["name", "description", *properties],
-                },
+                params=ordered_dict(
+                    {
+                        "limit": querylimit,
+                        "offset": offset,
+                        "properties": ["name", "description", *properties],
+                    }
+                ),
                 doseq=True,
                 **options
             )
