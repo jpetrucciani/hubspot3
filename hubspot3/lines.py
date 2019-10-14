@@ -2,10 +2,9 @@
 hubspot lines api
 """
 from typing import Dict, Union
-
 from hubspot3.base import BaseClient
 from hubspot3.crm_associations import CRMAssociationsClient
-from hubspot3.utils import get_log, prettify
+from hubspot3.utils import get_log, prettify, ordered_dict
 
 
 LINES_API_VERSION = "1"
@@ -85,7 +84,7 @@ class LinesClient(BaseClient):
             batch = self._call(
                 "paged",
                 method="GET",
-                params={"offset": offset, "properties": properties},
+                params=ordered_dict({"offset": offset, "properties": properties}),
                 doseq=True,
                 **options
             )
