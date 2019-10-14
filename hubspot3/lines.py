@@ -46,6 +46,13 @@ class LinesClient(BaseClient):
         """
         return self._call("{}".format(line_id), **options)
 
+    def update(self, line_id: int, data=None, **options) -> Dict:
+        """
+        Update an existing line by its ID.
+        :see: https://developers.hubspot.com/docs/methods/line-items/update-line-item
+        """
+        return self._call("{}".format(line_id), data=data, method="PUT", **options)
+
     def get_all(
         self,
         offset: int = 0,
