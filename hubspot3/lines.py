@@ -60,10 +60,12 @@ class LinesClient(BaseClient):
         Cf: https://developers.hubspot.com/docs/methods/line-items/get-all-line-items
 
         :param offset Used to get the next set of results.
-        :param extra_properties By default, only the ID, the hubspot product id (`hs_product_id`)a few other system
-        fields are returned for the line items. This method with also ask for basic properties such as the 'name', the
-        'price' and the 'quantity'. More could be retrieved by using 'extra_properties'.
-        :param limit: could be used to prevent to fetch the entire results. Default value is `-1`, meaning unlimited.
+        :param extra_properties By default, only the ID, the hubspot product id (`hs_product_id`)
+        a few other system fields are returned for the line items. This method with also ask for
+        basic properties such as the 'name', the 'price' and the 'quantity'. More could be
+        retrieved by using 'extra_properties'.
+        :param limit: could be used to prevent to fetch the entire results. Default value is `-1`,
+        meaning unlimited.
         """
         finished = False
         output = []
