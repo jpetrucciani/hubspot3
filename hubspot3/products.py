@@ -12,7 +12,6 @@ PRODUCTS_API_VERSION = "1"
 class ProductsClient(BaseClient):
     """
     Products extension for products API endpoint
-    THIS API ENDPOINT IS ONLY A PREVIEW AND IS SUBJECT TO CHANGE
     :see: https://developers.hubspot.com/docs/methods/products/products-overview
     """
 
@@ -29,7 +28,7 @@ class ProductsClient(BaseClient):
             method="GET",
             params={"properties": ["name", "description", *properties]},
             doseq=True,
-            **options
+            **options,
         )
 
     def get_all_products(
@@ -50,7 +49,7 @@ class ProductsClient(BaseClient):
                     "properties": ["name", "description", *properties],
                 },
                 doseq=True,
-                **options
+                **options,
             )
             output.extend(
                 [
@@ -72,17 +71,22 @@ class ProductsClient(BaseClient):
     def create(self, data=None, **options):
         """Create a new product."""
         data = data or {}
-
-        # See: https://developers.hubspot.com/docs/methods/products/create-product
-        data = [{"name": name, "value": value} for name, value in data.items()]
-
-        return self._call("", data=data, method="POST", **options)
+        return self._call("objects/products", data=data, method="POST", **options)
 
     def update(self, product_id, data=None, **options):
         """Update a product based on its product ID."""
         data = data or {}
-        return self._call("{}".format(product_id), data=data, method="POST", **options)
+        return self._call(
+            "objects/products/{product_id}".format(product_id=product_id),
+            data=data,
+            method="PUT",
+            **options,
+        )
 
     def delete(self, product_id, **options):
         """Delete a product based on its product ID."""
-        return self._call("{}".format(product_id), method="DELETE", **options)
+        return self._call(
+            "objects/products/{product_id}".format(product_id=product_id),
+            method="DELETE",
+            **options,
+        )
