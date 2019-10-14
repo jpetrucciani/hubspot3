@@ -28,7 +28,7 @@ class ProductsClient(BaseClient):
             method="GET",
             params={"properties": ["name", "description", *properties]},
             doseq=True,
-            **options,
+            **options
         )
 
     def get_all_products(
@@ -49,7 +49,7 @@ class ProductsClient(BaseClient):
                     "properties": ["name", "description", *properties],
                 },
                 doseq=True,
-                **options,
+                **options
             )
             output.extend(
                 [
@@ -80,7 +80,7 @@ class ProductsClient(BaseClient):
             "objects/products/{product_id}".format(product_id=product_id),
             data=data,
             method="PUT",
-            **options,
+            **options
         )
 
     def delete(self, product_id, **options):
@@ -88,5 +88,5 @@ class ProductsClient(BaseClient):
         return self._call(
             "objects/products/{product_id}".format(product_id=product_id),
             method="DELETE",
-            **options,
+            **options
         )
