@@ -14,7 +14,6 @@ LINES_API_VERSION = "1"
 class LinesClient(BaseClient):
     """
     Line Items API endpoint
-    THIS API ENDPOINT IS ONLY A PREVIEW AND IS SUBJECT TO CHANGE
     :see: https://developers.hubspot.com/docs/methods/line-items/line-items-overview
     """
 

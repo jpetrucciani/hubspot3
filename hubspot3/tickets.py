@@ -12,7 +12,6 @@ TICKETS_API_VERSION = "1"
 class TicketsClient(BaseClient):
     """
     hubspot3 Tickets client
-    this client is still in developer preview, and is subject to change.
     :see: https://developers.hubspot.com/docs/methods/tickets/tickets-overview
     """
 
