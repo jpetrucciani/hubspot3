@@ -2,8 +2,7 @@
 testing hubspot3.products
 """
 import json
-import warnings
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 
@@ -13,7 +12,7 @@ from hubspot3 import products
 @pytest.fixture
 def products_client(mock_connection):
     client = products.ProductsClient(disable_auth=True)
-    client.options['connection_type'] = Mock(return_value=mock_connection)
+    client.options["connection_type"] = Mock(return_value=mock_connection)
     return client
 
 
@@ -26,8 +25,14 @@ class TestProductsClient(object):
 
     def test_get_path(self):
         client = products.ProductsClient(disable_auth=True)
-        assert client._get_path("objects/products/42") == "crm-objects/v1/objects/products/42"
-        assert client._get_path("objects/products/paged") == "crm-objects/v1/objects/products/paged"
+        assert (
+            client._get_path("objects/products/42")
+            == "crm-objects/v1/objects/products/42"
+        )
+        assert (
+            client._get_path("objects/products/paged")
+            == "crm-objects/v1/objects/products/paged"
+        )
 
     def test_get_product(self, products_client, mock_connection):
         """Test to retrieve a product from Hubspot by using the ProductsClient."""
@@ -38,9 +43,9 @@ class TestProductsClient(object):
 
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            method='GET',
+            method="GET",
             # Notes: name and description properties as the one returned by default.
-            url='/crm-objects/v1/objects/products/1642767?properties=name&properties=description',
+            url="/crm-objects/v1/objects/products/1642767?properties=name&properties=description",
             data=None,
         )
         assert response == response_body
@@ -56,14 +61,13 @@ class TestProductsClient(object):
 
         mock_connection.set_response(200, json.dumps(response_body))
         response = products_client.get_product(
-            str(HUBSPOT_PRODUCT_ID),
-            ['price', 'duration'],
+            str(HUBSPOT_PRODUCT_ID), ["price", "duration"]
         )
 
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            method='GET',
-            url='/crm-objects/v1/objects/products/1642767?properties=name&properties=description&properties=price&properties=duration',  # noqa: E501
+            method="GET",
+            url="/crm-objects/v1/objects/products/1642767?properties=name&properties=description&properties=price&properties=duration",  # noqa: E501
             data=None,
         )
         assert response == response_body
@@ -103,7 +107,7 @@ class TestProductsClient(object):
                             "timestamp": 1525287810508,
                             "source": "API",
                             "sourceId": None,
-                        },
+                        }
                     },
                     "version": 1,
                     "isDeleted": False,
@@ -126,20 +130,19 @@ class TestProductsClient(object):
 
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            method='GET',
-            url='/crm-objects/v1/objects/products/paged?limit=100&offset=0&properties=name&properties=description',
+            method="GET",
+            url="/crm-objects/v1/objects/products/paged?limit=100&offset=0&properties=name&properties=description",
             data=None,
         )
-        assert response == [{
-            'id': 1642736,
-            'name': 'An updated product',
-            'description': "This product has a name.",
-        }, {
-            'id': 1642767,
-            'description': "This product don't have a name.",
-        }, {
-            'id': 1642796,
-        }]
+        assert response == [
+            {
+                "id": 1642736,
+                "name": "An updated product",
+                "description": "This product has a name.",
+            },
+            {"id": 1642767, "description": "This product don't have a name."},
+            {"id": 1642796},
+        ]
 
     def test_create_product(self, products_client, mock_connection):
         """Test to create a new product on Hubspot."""
@@ -155,7 +158,7 @@ class TestProductsClient(object):
                     "timestamp": 1525287096980,
                     "source": "API",
                     "sourceId": None,
-                },
+                }
             },
             "description": {
                 "value": product_description,
@@ -166,25 +169,21 @@ class TestProductsClient(object):
         }
 
         mock_connection.set_response(200, json.dumps(response_body))
-        response = products_client.create(data=[{
-            'name': "name",
-            'value': product_name,
-        }, {
-            'name': "description",
-            'value': product_description,
-        }])
+        response = products_client.create(
+            data=[
+                {"name": "name", "value": product_name},
+                {"name": "description", "value": product_description},
+            ]
+        )
 
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            method='POST',
-            url='/crm-objects/v1/objects/products?',
-            data=[{
-                'name': "name",
-                'value': product_name,
-            }, {
-                'name': "description",
-                'value': product_description,
-            }],
+            method="POST",
+            url="/crm-objects/v1/objects/products?",
+            data=[
+                {"name": "name", "value": product_name},
+                {"name": "description", "value": product_description},
+            ],
         )
         assert response == response_body
 
@@ -202,7 +201,7 @@ class TestProductsClient(object):
                     "timestamp": 1525287096980,
                     "source": "API",
                     "sourceId": None,
-                },
+                }
             },
             "description": {
                 "value": product_description,
@@ -215,25 +214,21 @@ class TestProductsClient(object):
         mock_connection.set_response(200, json.dumps(response_body))
         response = products_client.update(
             str(HUBSPOT_PRODUCT_ID),
-            data=[{
-                'name': "name",
-                'value': product_name,
-            }, {
-                'name': "description",
-                'value': product_description,
-            }]
+            data=[
+                {"name": "name", "value": product_name},
+                {"name": "description", "value": product_description},
+            ],
         )
 
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            method='PUT',
-            url='/crm-objects/v1/objects/products/{product_id}?'.format(product_id=HUBSPOT_PRODUCT_ID),
-            data=[{
-                'name': "name",
-                'value': product_name,
-            }, {
-                'name': "description",
-                'value': product_description,
-            }],
+            method="PUT",
+            url="/crm-objects/v1/objects/products/{product_id}?".format(
+                product_id=HUBSPOT_PRODUCT_ID
+            ),
+            data=[
+                {"name": "name", "value": product_name},
+                {"name": "description", "value": product_description},
+            ],
         )
         assert response == response_body

@@ -28,7 +28,7 @@ class ProductsClient(BaseClient):
             method="GET",
             params={"properties": ["name", "description", *properties]},
             doseq=True,
-            **options
+            **options,
         )
 
     def get_all_products(
@@ -49,7 +49,7 @@ class ProductsClient(BaseClient):
                     "properties": ["name", "description", *properties],
                 },
                 doseq=True,
-                **options
+                **options,
             )
             output.extend(
                 [
