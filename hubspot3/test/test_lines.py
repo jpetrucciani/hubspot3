@@ -65,6 +65,22 @@ class TestLinesClient(object):
         )
         assert resp == response_body
 
+    def test_update(self, lines_client, mock_connection):
+        line_item_id = "1234"
+        data = {
+            "properties": [{"name": "name", "value": "Custom name for the line item"}]
+        }
+        response_body = {"objectType": "LINE_ITEM", "objectId": "1234"}
+        mock_connection.set_response(200, json.dumps(response_body))
+        response = lines_client.update(line_item_id, data)
+        mock_connection.assert_num_requests(1)
+        mock_connection.assert_has_request(
+            method="PUT",
+            url="/crm-objects/v1/objects/line_items/{}?".format(line_item_id),
+            data=data,
+        )
+        assert response == response_body
+
     def test_get_all(self, lines_client, mock_connection):
         response_body = {
             "objects": [
