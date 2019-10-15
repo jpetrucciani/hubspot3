@@ -51,6 +51,7 @@ class LinesClient(BaseClient):
         Update an existing line by its ID.
         :see: https://developers.hubspot.com/docs/methods/line-items/update-line-item
         """
+        data = data or {}
         return self._call("{}".format(line_id), data=data, method="PUT", **options)
 
     def get_all(
