@@ -320,4 +320,4 @@ class ContactsClient(BaseClient):
         Delete all the contacts. Please use it carefully.
         """
         for contact in self.get_all():
-            self.delete_a_contact(contact["vid"])
+            self.delete_by_id(contact["vid"])
