@@ -160,13 +160,18 @@ class TicketsClient(BaseClient):
                     output_par += self.get_batch(ids_set, extra_properties=list(properties))
                 yield output_par
 
-    def get_recently_modified(self, limit: int = -1, time_offset: int = 0, return_yielded=False):
+    def get_recently_modified_as_generator(self, limit: int = -1, time_offset: int = 0):
         """
         get recently modified and created contacts
         :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
         """
-        generator = self._get_recent(TicketsClient.Recency.MODIFIED, limit=limit, time_offset=time_offset)
-        if return_yielded:
-            return generator
-        else:
-            return list(itertools.chain.from_iterable(generator))
+        return self._get_recent(TicketsClient.Recency.MODIFIED, limit=limit,
+                                time_offset=time_offset)
+
+    def get_recently_modified(self, limit: int = -1, time_offset: int = 0):
+        """
+        get recently modified and created contacts
+        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+        """
+        generator = self.get_recently_modified_as_generator(limit=limit, time_offset=time_offset)
+        return list(itertools.chain.from_iterable(generator))
