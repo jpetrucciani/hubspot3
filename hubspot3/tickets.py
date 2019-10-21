@@ -1,9 +1,13 @@
 """
 hubspot tickets api
 """
+import itertools
+
 from hubspot3.base import BaseClient
-from hubspot3.utils import get_log
+from hubspot3.utils import prettify, get_log
+
 from typing import Dict
+from typing import Union
 
 
 TICKETS_API_VERSION = "1"
@@ -14,6 +18,12 @@ class TicketsClient(BaseClient):
     hubspot3 Tickets client
     :see: https://developers.hubspot.com/docs/methods/tickets/tickets-overview
     """
+
+    class Recency:
+        """recency type enum"""
+
+        CREATED = "CREATED"
+        MODIFIED = "CHANGED"
 
     def __init__(self, *args, **kwargs):
         """initialize a tickets client"""
@@ -78,3 +88,85 @@ class TicketsClient(BaseClient):
             offset = batch["offset"]
 
         return output if not limited else output[:limit]
+
+    def get_batch(self, ids, extra_properties: Union[list, str] = None):
+        """given a batch of vids, get more of their info"""
+        # default properties to fetch
+        properties = set([])
+
+        # append extras if they exist
+        if extra_properties:
+            if isinstance(extra_properties, list):
+                properties.update(extra_properties)
+            if isinstance(extra_properties, str):
+                properties.add(extra_properties)
+        batch = self._call(
+            "objects/tickets/batch-read",
+            method="POST",
+            doseq=True,
+            params={"properties": list(properties)},
+            data={'ids': ids}
+        )
+        # It returns a dict with IDs as keys
+        return [prettify(batch[contact], id_key="objectId") for contact in batch]
+
+    def _get_recent(
+        self,
+        recency_type: str,
+        limit: int = -1,
+        vid_offset: int = 0,
+        time_offset: int = 0,
+        **options
+    ):
+        finished = False
+        query_limit = 100  # max according to the docs
+        recency_string = (
+            "all"
+            if recency_type == TicketsClient.Recency.CREATED
+            else "recently_updated"
+        )
+        limited = limit > 0
+        if limited and limit < query_limit:
+            query_limit = limit
+        total_tickets = 0
+        while not finished:
+            params = {"count": query_limit}
+            if vid_offset:
+                params["objectId"] = vid_offset
+            if time_offset:
+                params["timestamp"] = int(time_offset)
+            params['changeType'] = recency_type
+            batch = self._call(
+                "change-log/tickets".format(recency_string),
+                method="GET",
+                params=params,
+                doseq=True,
+                **options
+            )
+            ids = [ticket["objectId"] for ticket in batch]
+            properties = set([change for ticket in batch for change in
+                              ticket['changes']['changedProperties']])
+            total_tickets += len(batch)
+            finished = len(batch) == 0 or (limited and total_tickets >= limit)
+            if len(batch) > 0:
+                vid_offset = batch[-1]['objectId']
+                time_offset = batch[-1]['timestamp']
+                # Rearenge ids in set of 100 (limit of the batch API)
+                ids = [[ticket_id for ticket_id in ids[index * query_limit:(index + 1)
+                                                       * query_limit]] for index in
+                       range(int(len(ids) / query_limit) + 1)]
+                output_par = []
+                for ids_set in ids:
+                    output_par += self.get_batch(ids_set, extra_properties=list(properties))
+                yield output_par
+
+    def get_recently_modified(self, limit: int = -1, time_offset: int = 0, return_yielded=False):
+        """
+        get recently modified and created contacts
+        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+        """
+        generator = self._get_recent(TicketsClient.Recency.MODIFIED, limit=limit, time_offset=time_offset)
+        if return_yielded:
+            return generator
+        else:
+            return list(itertools.chain.from_iterable(generator))
