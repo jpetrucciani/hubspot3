@@ -90,7 +90,7 @@ class TicketsClient(BaseClient):
 
         return output if not limited else output[:limit]
 
-    def get_batch(self, ids, extra_properties: Union[list, str] = None):
+    def get_batch(self, ids, extra_properties: Union[list, str] = None, with_history: bool = False):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
         properties = set([])
@@ -101,11 +101,15 @@ class TicketsClient(BaseClient):
                 properties.update(extra_properties)
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
+        if with_history:
+            property_name = 'propertiesWithHistory'
+        else:
+            property_name = 'properties'
         batch = self._call(
             "objects/tickets/batch-read",
             method="POST",
             doseq=True,
-            params={"propertiesWithHistory": list(properties)},
+            params={property_name: list(properties)},
             data={'ids': ids}
         )
         # It returns a dict with IDs as keys
