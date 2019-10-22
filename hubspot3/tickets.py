@@ -121,10 +121,12 @@ class TicketsClient(BaseClient):
         limit: int = -1,
         vid_offset: int = 0,
         time_offset: int = 0,
-        max_time_diff_ms: int = 60000,  # Needs a better name,
-        # default value waiting for https://community.hubspot.com/t5/APIs-Integrations/Time-difference-between-ticket-s-quot-get-log-of-changes-quot/m-p/297909#M27982
+        max_time_diff_ms: int = 60000,
+        # Correct default value waiting for
+        # https://community.hubspot.com/t5/APIs-Integrations/Time-difference-between-ticket-s-quot-get-log-of-changes-quot/m-p/297909#M27982
         **options
     ):
+
         finished = False
         query_limit = 100  # max according to the docs
         recency_string = (
@@ -199,32 +201,40 @@ class TicketsClient(BaseClient):
 
     def get_recently_modified_as_generator(self, limit: int = -1, time_offset: int = 0):
         """
-        get recently modified and created contacts
-        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+        get recently modified and created tickets, adding a field in changes-changedValue with
+        the value of each change
+        the returned value is done with yield at each page (max 1000 changes)
+        :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
         return self._get_recent(TicketsClient.Recency.MODIFIED, limit=limit,
                                 time_offset=time_offset)
 
     def get_recently_modified(self, limit: int = -1, time_offset: int = 0):
         """
-        get recently modified and created contacts
-        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+        get recently modified and created tickets, adding a field in changes-changedValue with
+        the value of each change
+        returned as a list of all changes
+        :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
         generator = self.get_recently_modified_as_generator(limit=limit, time_offset=time_offset)
         return list(itertools.chain.from_iterable(generator))
 
     def get_recently_created_as_generator(self, limit: int = -1, time_offset: int = 0):
         """
-        get recently modified and created contacts
-        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+        get recently created tickets, adding a field in changes-changedValue with
+        the value of each change
+        the returned value is done with yield at each page (max 1000 changes)
+        :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
         return self._get_recent(TicketsClient.Recency.CREATED, limit=limit,
                                 time_offset=time_offset)
 
     def get_recently_created(self, limit: int = -1, time_offset: int = 0):
         """
-        get recently modified and created contacts
-        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+        get recently created tickets, adding a field in changes-changedValue with
+        the value of each change
+        returned as a list of all changes
+        :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
         generator = self.get_recently_created_as_generator(limit=limit, time_offset=time_offset)
         return list(itertools.chain.from_iterable(generator))
