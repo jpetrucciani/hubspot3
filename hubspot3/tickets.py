@@ -121,6 +121,8 @@ class TicketsClient(BaseClient):
         limit: int = -1,
         vid_offset: int = 0,
         time_offset: int = 0,
+        max_time_diff_ms: int = 60000,  # Needs a better name,
+        # default value waiting for https://community.hubspot.com/t5/APIs-Integrations/Time-difference-between-ticket-s-quot-get-log-of-changes-quot/m-p/297909#M27982
         **options
     ):
         finished = False
@@ -148,22 +150,52 @@ class TicketsClient(BaseClient):
                 doseq=True,
                 **options
             )
-            ids = [ticket["objectId"] for ticket in batch]
-            properties = set([change for ticket in batch for change in
-                              ticket['changes']['changedProperties']])
+
             total_tickets += len(batch)
             finished = len(batch) == 0 or (limited and total_tickets >= limit)
             if len(batch) > 0:
                 vid_offset = batch[-1]['objectId']
                 time_offset = batch[-1]['timestamp']
-                # Rearenge ids in set of 100 (limit of the batch API)
-                ids = [[ticket_id for ticket_id in ids[index * query_limit:(index + 1)
-                                                       * query_limit]] for index in
-                       range(int(len(ids) / query_limit) + 1)]
-                output_par = []
-                for ids_set in ids:
-                    output_par += self.get_batch(ids_set, extra_properties=list(properties))
-                yield output_par
+                changes = self._parse_changes(batch, query_limit, max_time_diff_ms)
+                yield changes
+
+    def _parse_changes(self, batch, query_limit, max_time_diff_ms):
+        # First lets group changes by deal id
+        changes_by_id = [(ticket_change['objectId'], ticket_change) for ticket_change in batch]
+        changes_by_id = sorted(changes_by_id, key=itemgetter(0))
+        changes_by_id = dict((key, list(value)) for key, value in itertools.groupby(changes_by_id, key=itemgetter(0)))
+        # Loop through ids in batches of 100 (limit of the batch API)
+        for index in range(int(len(changes_by_id) / query_limit) + 1):
+            changes_by_id_batch = dict(list(changes_by_id.items())[index * query_limit:(index + 1) * query_limit])
+            properties = []
+            for ticket_id, changes in changes_by_id_batch.items():
+                for ticket_id, change in changes:
+                    properties += change['changes']['changedProperties']
+            properties = set(properties)
+            # Get the information of each change
+            tickets_history = self.get_batch(list(changes_by_id_batch.keys()),
+                                             extra_properties=list(properties))
+            for ticket_id, ticket_history in tickets_history.items():
+                ticket_id = int(ticket_id)
+                properties = ticket_history['properties']
+                # Match the information of changes with each change
+                changes = changes_by_id_batch[ticket_id]
+                for ticket_id, change in changes:
+                    change['changes']['changedValues'] = {}
+                    for changed_variable in change['changes']['changedProperties']:
+                        versions = properties[changed_variable]['versions']
+                        time_diffs = [abs(version['timestamp'] - change['timestamp'])
+                                      for version in versions]
+                        min_time_index = min(range(len(time_diffs)),
+                                             key=time_diffs.__getitem__)
+                        if time_diffs[min_time_index] <= max_time_diff_ms:
+                            value = versions[min_time_index]['value']
+                            change['changes']['changedValues'][changed_variable] = value
+                        else:
+                            get_log.warning(f"Unable to find value for {changed_variable}"
+                                            " within the time range")
+        # Finally lets return only the changes as a list
+        return [change[1] for changes in changes_by_id.values() for change in changes]
 
     def get_recently_modified_as_generator(self, limit: int = -1, time_offset: int = 0):
         """
