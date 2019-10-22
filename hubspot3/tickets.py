@@ -2,6 +2,7 @@
 hubspot tickets api
 """
 import itertools
+from operator import itemgetter
 
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
@@ -104,11 +105,11 @@ class TicketsClient(BaseClient):
             "objects/tickets/batch-read",
             method="POST",
             doseq=True,
-            params={"properties": list(properties)},
+            params={"propertiesWithHistory": list(properties)},
             data={'ids': ids}
         )
         # It returns a dict with IDs as keys
-        return [prettify(batch[contact], id_key="objectId") for contact in batch]
+        return batch
 
     def _get_recent(
         self,
