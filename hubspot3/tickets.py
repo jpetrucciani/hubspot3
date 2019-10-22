@@ -212,3 +212,20 @@ class TicketsClient(BaseClient):
         """
         generator = self.get_recently_modified_as_generator(limit=limit, time_offset=time_offset)
         return list(itertools.chain.from_iterable(generator))
+
+    def get_recently_created_as_generator(self, limit: int = -1, time_offset: int = 0):
+        """
+        get recently modified and created contacts
+        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+        """
+        return self._get_recent(TicketsClient.Recency.CREATED, limit=limit,
+                                time_offset=time_offset)
+
+    def get_recently_created(self, limit: int = -1, time_offset: int = 0):
+        """
+        get recently modified and created contacts
+        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+        """
+        generator = self.get_recently_created_as_generator(limit=limit, time_offset=time_offset)
+        return list(itertools.chain.from_iterable(generator))
+
