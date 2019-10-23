@@ -25,6 +25,7 @@ class TicketsClient(BaseClient):
 
         CREATED = "CREATED"
         MODIFIED = "CHANGED"
+        DELETED = "DELETED"
 
     def __init__(self, *args, **kwargs):
         """initialize a tickets client"""
@@ -90,10 +91,14 @@ class TicketsClient(BaseClient):
 
         return output if not limited else output[:limit]
 
-    def get_batch(self, ids, extra_properties: Union[list, str] = None, with_history: bool = False):
+    default_batch_properties = [
+        "subject",
+    ]
+
+    def _get_batch(self, ids, extra_properties: Union[list, str] = None, with_history: bool = False):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
-        properties = set([])
+        properties = set(self.default_batch_properties)
 
         # append extras if they exist
         if extra_properties:
@@ -105,14 +110,28 @@ class TicketsClient(BaseClient):
             property_name = 'propertiesWithHistory'
         else:
             property_name = 'properties'
+        if len(properties) > 0:
+            params = {property_name: list(properties)}
+        else:
+            params = {}
         batch = self._call(
             "objects/tickets/batch-read",
             method="POST",
             doseq=True,
-            params={property_name: list(properties)},
+            params=params,
             data={'ids': ids}
         )
-        # It returns a dict with IDs as keys
+        # Returning a dict with IDs as keys
+        return batch
+
+    def get_batch(self, ids, extra_properties: Union[list, str] = None):
+        """given a batch of ticket, get more of their info"""
+        batch = self._get_batch(ids, extra_properties=extra_properties, with_history=False)
+        return [prettify(batch[ticket], id_key="objectId") for ticket in batch]
+
+    def get_batch_with_history(self, ids, extra_properties: Union[list, str] = None):
+        """given a batch of ticket, get more of their info with history"""
+        batch = self._get_batch(ids, extra_properties=extra_properties, with_history=True)
         return batch
 
     def _get_recent(
