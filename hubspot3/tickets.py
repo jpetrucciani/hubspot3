@@ -95,7 +95,8 @@ class TicketsClient(BaseClient):
         "subject",
     ]
 
-    def _get_batch(self, ids, extra_properties: Union[list, str] = None, with_history: bool = False):
+    def _get_batch(self, ids, extra_properties: Union[list, str] = None,
+                   with_history: bool = False):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
         properties = set(self.default_batch_properties)
@@ -257,4 +258,3 @@ class TicketsClient(BaseClient):
         """
         generator = self.get_recently_created_as_generator(limit=limit, time_offset=time_offset)
         return list(itertools.chain.from_iterable(generator))
-

@@ -18,8 +18,6 @@ TICKETS = TicketsClient(api_key=TEST_KEY)
 BASE_TICKET = TICKETS.get_all(limit=1)[0]
 
 
-
-
 @pytest.fixture
 def tickets_client(mock_connection):
     client = TicketsClient(disable_auth=True)
@@ -99,6 +97,7 @@ def test_get_batch(
     assert len(resp) == 2
     assert {"id": 3234574} in resp
     assert {"id": 3234575} in resp
+
 
 @pytest.mark.parametrize(
     "extra_properties_given, extra_properties_as_list",
