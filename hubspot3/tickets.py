@@ -148,11 +148,6 @@ class TicketsClient(BaseClient):
 
         finished = False
         query_limit = 100  # max according to the docs
-        recency_string = (
-            "all"
-            if recency_type == TicketsClient.Recency.CREATED
-            else "recently_updated"
-        )
         limited = limit > 0
         if limited and limit < query_limit:
             query_limit = limit
@@ -165,7 +160,7 @@ class TicketsClient(BaseClient):
                 params["timestamp"] = int(time_offset)
             params['changeType'] = recency_type
             batch = self._call(
-                "change-log/tickets".format(recency_string),
+                "change-log/tickets",
                 method="GET",
                 params=params,
                 doseq=True,
@@ -173,7 +168,7 @@ class TicketsClient(BaseClient):
             )
 
             total_tickets += len(batch)
-            finished = len(batch) == 0 or (limited and total_tickets >= limit)
+            finished = (len(batch) == 0) or (limited and total_tickets >= limit)
             if len(batch) > 0:
                 vid_offset = batch[-1]['objectId']
                 time_offset = batch[-1]['timestamp']
@@ -184,18 +179,22 @@ class TicketsClient(BaseClient):
         # First lets group changes by deal id
         changes_by_id = [(ticket_change['objectId'], ticket_change) for ticket_change in batch]
         changes_by_id = sorted(changes_by_id, key=itemgetter(0))
-        changes_by_id = dict((key, list(value)) for key, value in itertools.groupby(changes_by_id, key=itemgetter(0)))
+        changes_by_id = dict((key, list(value)) for key, value in
+                             itertools.groupby(changes_by_id, key=itemgetter(0)))
         # Loop through ids in batches of 100 (limit of the batch API)
         for index in range(int(len(changes_by_id) / query_limit) + 1):
-            changes_by_id_batch = dict(list(changes_by_id.items())[index * query_limit:(index + 1) * query_limit])
+            # Get a batch of 100 elements
+            changes_by_id_batch = dict(list(changes_by_id.items())[index * query_limit:(index + 1)
+                                                                   * query_limit])
             properties = []
             for ticket_id, changes in changes_by_id_batch.items():
                 for ticket_id, change in changes:
-                    properties += change['changes']['changedProperties']
+                    if change['changeType'] != TicketsClient.Recency.DELETED:
+                        properties += change['changes']['changedProperties']
             properties = set(properties)
             # Get the information of each change
-            tickets_history = self.get_batch(list(changes_by_id_batch.keys()),
-                                             extra_properties=list(properties))
+            tickets_history = self.get_batch_with_history(list(changes_by_id_batch.keys()),
+                                                          extra_properties=list(properties))
             for ticket_id, ticket_history in tickets_history.items():
                 ticket_id = int(ticket_id)
                 properties = ticket_history['properties']
@@ -213,8 +212,9 @@ class TicketsClient(BaseClient):
                             value = versions[min_time_index]['value']
                             change['changes']['changedValues'][changed_variable] = value
                         else:
-                            get_log.warning(f"Unable to find value for {changed_variable}"
-                                            " within the time range")
+                            get_log(__name__).warning(f"Unable to find value for {changed_variable}"
+                                                      f" within the time range for ticket"
+                                                      f" {ticket_id}")
         # Finally lets return only the changes as a list
         return [change[1] for changes in changes_by_id.values() for change in changes]
 
