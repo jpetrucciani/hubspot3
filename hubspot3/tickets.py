@@ -131,12 +131,12 @@ class TicketsClient(BaseClient):
         # Returning a dict with IDs as keys
         return batch
 
-    def get_batch(self, ids, extra_properties: Union[list, str] = None):
+    def get_batch(self, ids: list, extra_properties: Union[list, str] = None):
         """given a batch of ticket, get more of their info"""
         batch = self._get_batch(ids, extra_properties=extra_properties, with_history=False)
         return [prettify(batch[ticket], id_key="objectId") for ticket in batch]
 
-    def get_batch_with_history(self, ids, extra_properties: Union[list, str] = None):
+    def get_batch_with_history(self, ids: list, extra_properties: Union[list, str] = None):
         """given a batch of ticket, get more of their info with history"""
         batch = self._get_batch(ids, extra_properties=extra_properties, with_history=True)
         return batch
@@ -190,13 +190,17 @@ class TicketsClient(BaseClient):
                 # This is an getting all the changed variables for all tickets,
                 # this is more data than needed, should eventually break in
                 # groups to get less discarted data
-                tickets_history = self.get_batch_with_history(list(ids), extra_properties=
-                                                              list(properties))
+                tickets_history = self.get_batch_with_history(list(ids),
+                                                              extra_properties=list(properties))
 
-                changes = self._merge_changes_with_history(changes, tickets_history, max_time_diff_ms)
+                changes = self._merge_changes_with_history(changes, tickets_history,
+                                                           max_time_diff_ms)
                 yield changes
 
-    def _merge_changes_with_history(self, changes, tickets_history, max_time_diff_ms):
+    def _merge_changes_with_history(self,
+                                    changes: list,
+                                    tickets_history: dict,
+                                    max_time_diff_ms: int):
         # First lets group changes by deal id
         changes_by_id = {}
         for change in changes:
