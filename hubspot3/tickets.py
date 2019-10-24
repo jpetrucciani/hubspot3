@@ -2,7 +2,6 @@
 hubspot tickets api
 """
 import itertools
-from operator import itemgetter
 
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
@@ -91,9 +90,7 @@ class TicketsClient(BaseClient):
 
         return output if not limited else output[:limit]
 
-    default_batch_properties = [
-        "subject",
-    ]
+    default_batch_properties = ["subject"]
 
     def _get_batch(self, ids: list, extra_properties: Union[list, str] = None,
                    with_history: bool = False):
@@ -148,8 +145,6 @@ class TicketsClient(BaseClient):
         vid_offset: int = 0,
         time_offset: int = 0,
         max_time_diff_ms: int = 60000,
-        # Correct default value waiting for
-        # https://community.hubspot.com/t5/APIs-Integrations/Time-difference-between-ticket-s-quot-get-log-of-changes-quot/m-p/297909#M27982
         **options
     ):
 
@@ -173,7 +168,6 @@ class TicketsClient(BaseClient):
                 doseq=True,
                 **options
             )
-
             total_tickets += len(changes)
             finished = (len(changes) == 0) or (limited and total_tickets >= limit)
             if len(changes) > 0:
