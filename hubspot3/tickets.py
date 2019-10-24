@@ -95,7 +95,7 @@ class TicketsClient(BaseClient):
         "subject",
     ]
 
-    def _get_batch(self, ids, extra_properties: Union[list, str] = None,
+    def _get_batch(self, ids: list, extra_properties: Union[list, str] = None,
                    with_history: bool = False):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
@@ -115,13 +115,19 @@ class TicketsClient(BaseClient):
             params = {property_name: list(properties)}
         else:
             params = {}
-        batch = self._call(
-            "objects/tickets/batch-read",
-            method="POST",
-            doseq=True,
-            params=params,
-            data={'ids': ids}
-        )
+        # run the ids as a list of 100
+        batch = {}
+        while len(ids) > 0:
+            partial_ids = ids[:100]
+            ids = ids[100:]
+            partial_batch = self._call(
+                "objects/tickets/batch-read",
+                method="POST",
+                doseq=True,
+                params=params,
+                data={'ids': partial_ids}
+            )
+            batch.update(partial_batch)
         # Returning a dict with IDs as keys
         return batch
 
@@ -160,7 +166,7 @@ class TicketsClient(BaseClient):
             if time_offset:
                 params["timestamp"] = int(time_offset)
             params['changeType'] = recency_type
-            batch = self._call(
+            changes = self._call(
                 "change-log/tickets",
                 method="GET",
                 params=params,
@@ -168,56 +174,61 @@ class TicketsClient(BaseClient):
                 **options
             )
 
-            total_tickets += len(batch)
-            finished = (len(batch) == 0) or (limited and total_tickets >= limit)
-            if len(batch) > 0:
-                vid_offset = batch[-1]['objectId']
-                time_offset = batch[-1]['timestamp']
-                changes = self._parse_changes(batch, query_limit, max_time_diff_ms)
-                yield changes
+            total_tickets += len(changes)
+            finished = (len(changes) == 0) or (limited and total_tickets >= limit)
+            if len(changes) > 0:
+                vid_offset = changes[-1]['objectId']
+                time_offset = changes[-1]['timestamp']
 
-    def _parse_changes(self, batch, query_limit, max_time_diff_ms):
-        # First lets group changes by deal id
-        changes_by_id = [(ticket_change['objectId'], ticket_change) for ticket_change in batch]
-        changes_by_id = sorted(changes_by_id, key=itemgetter(0))
-        changes_by_id = dict((key, list(value)) for key, value in
-                             itertools.groupby(changes_by_id, key=itemgetter(0)))
-        # Loop through ids in batches of 100 (limit of the batch API)
-        for index in range(int(len(changes_by_id) / query_limit) + 1):
-            # Get a batch of 100 elements
-            changes_by_id_batch = dict(list(changes_by_id.items())[index * query_limit:(index + 1)
-                                                                   * query_limit])
-            properties = []
-            for ticket_id, changes in changes_by_id_batch.items():
-                for ticket_id, change in changes:
+                ids = set([change['objectId'] for change in changes])
+                properties = []
+                for change in changes:
                     if change['changeType'] != TicketsClient.Recency.DELETED:
                         properties += change['changes']['changedProperties']
-            properties = set(properties)
-            # Get the information of each change
-            tickets_history = self.get_batch_with_history(list(changes_by_id_batch.keys()),
-                                                          extra_properties=list(properties))
-            for ticket_id, ticket_history in tickets_history.items():
-                ticket_id = int(ticket_id)
-                properties = ticket_history['properties']
-                # Match the information of changes with each change
-                changes = changes_by_id_batch[ticket_id]
-                for ticket_id, change in changes:
-                    change['changes']['changedValues'] = {}
-                    for changed_variable in change['changes']['changedProperties']:
-                        versions = properties[changed_variable]['versions']
-                        time_diffs = [abs(version['timestamp'] - change['timestamp'])
-                                      for version in versions]
-                        min_time_index = min(range(len(time_diffs)),
-                                             key=time_diffs.__getitem__)
-                        if time_diffs[min_time_index] <= max_time_diff_ms:
-                            value = versions[min_time_index]['value']
-                            change['changes']['changedValues'][changed_variable] = value
-                        else:
-                            get_log(__name__).warning(f"Unable to find value for {changed_variable}"
-                                                      f" within the time range for ticket"
-                                                      f" {ticket_id}")
+                properties = set(properties)
+
+                # This is an getting all the changed variables for all tickets,
+                # this is more data than needed, should eventually break in
+                # groups to get less discarted data
+                tickets_history = self.get_batch_with_history(list(ids), extra_properties=
+                                                              list(properties))
+
+                changes = self._merge_changes_with_history(changes, tickets_history, max_time_diff_ms)
+                yield changes
+
+    def _merge_changes_with_history(self, changes, tickets_history, max_time_diff_ms):
+        # First lets group changes by deal id
+        changes_by_id = {}
+        for change in changes:
+            change_id = change['objectId']
+            if change_id not in changes_by_id:
+                changes_by_id[change_id] = []
+            changes_by_id[change_id].append(change)
+
+        # Now merge
+        for ticket_id, ticket_history in tickets_history.items():
+            ticket_id = int(ticket_id)
+            properties = ticket_history['properties']
+            # Match the information of changes with each change
+            changes = changes_by_id[ticket_id]
+            for change in changes:
+                change['changes']['changedValues'] = {}
+                for changed_variable in change['changes']['changedProperties']:
+                    versions = properties[changed_variable]['versions']
+                    # Get the smallest time diff between change and history
+                    time_diffs = [abs(version['timestamp'] - change['timestamp'])
+                                  for version in versions]
+                    min_time_index = min(range(len(time_diffs)),
+                                         key=time_diffs.__getitem__)
+                    if time_diffs[min_time_index] <= max_time_diff_ms:
+                        value = versions[min_time_index]['value']
+                        change['changes']['changedValues'][changed_variable] = value
+                    else:
+                        get_log(__name__).warning(f"Unable to find value for {changed_variable}"
+                                                  f" within the time range for ticket"
+                                                  f" {ticket_id}")
         # Finally lets return only the changes as a list
-        return [change[1] for changes in changes_by_id.values() for change in changes]
+        return [change for changes in changes_by_id.values() for change in changes]
 
     def get_recently_modified_as_generator(self, limit: int = -1, time_offset: int = 0):
         """
