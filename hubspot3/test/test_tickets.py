@@ -9,10 +9,7 @@ import pytest
 from hubspot3.tickets import TicketsClient
 from hubspot3.test.globals import TEST_KEY
 
-
 TICKETS = TicketsClient(api_key=TEST_KEY)
-
-
 # since we need to have an id to submit and to attempt to get a ticket,
 # we need to be hacky here and fetch one upon loading this file.
 BASE_TICKET = TICKETS.get_all(limit=1)[0]
@@ -246,7 +243,7 @@ def base_get_recently(
         "POST", "/crm-objects/v1/objects/tickets/batch-read", **params_batch, data={'ids': ids},
     )
     assert len(changes) == 2
-    assert [47005994, 47005994] == [change['objectId'] for change in changes]
+    assert [change['objectId'] for change in changes] == [47005994, 47005994]
     assert len(changes[0]['changes']['changedValues']) == 1
     assert len(changes[1]['changes']['changedValues']) == 2
 
