@@ -61,14 +61,12 @@ def test_get_all_tickets():
 
 @pytest.mark.parametrize(
     "extra_properties_given, extra_properties_as_list",
-    [
-        (None, []),
-        ("lead_source", ["lead_source"]),
-        (
-            ["hs_analytics_last_url", "hs_analytics_revenue"],
-            ["hs_analytics_last_url", "hs_analytics_revenue"],
-        ),
-    ],
+    [(None, []),
+     ("lead_source", ["lead_source"]),
+     (["hs_analytics_last_url", "hs_analytics_revenue"],
+      ["hs_analytics_last_url", "hs_analytics_revenue"]
+      )
+     ]
 )
 def test_get_batch(
     tickets_client,
