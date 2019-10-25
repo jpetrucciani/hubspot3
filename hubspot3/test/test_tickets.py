@@ -81,7 +81,7 @@ def test_get_batch(
         "3234575": {"objectId": 3234575, "properties": {}},
     }
     ids = ["3234574", "3234575"]
-    properties = tickets_client.default_batch_properties.copy()
+    properties = tickets_client.__default_batch_properties.copy()
     properties.extend(extra_properties_as_list)
     params = {"properties": p for p in properties}
 
@@ -92,8 +92,8 @@ def test_get_batch(
         "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={'ids': ids}
     )
     assert len(resp) == 2
-    assert {"id": 3234574} in resp
-    assert {"id": 3234575} in resp
+    for single_id in ids:
+        assert single_id in resp
 
 
 @pytest.mark.parametrize(
@@ -118,7 +118,7 @@ def test_get_batch_with_history(
         "3234575": {"objectId": 3234575, "properties": {}},
     }
     ids = ["3234574", "3234575"]
-    properties = tickets_client.default_batch_properties.copy()
+    properties = tickets_client.__default_batch_properties.copy()
     properties.extend(extra_properties_as_list)
     params = {"propertiesWithHistory": p for p in properties}
 
@@ -217,6 +217,7 @@ def base_get_recently(
             }
         }
     }
+    # TODO should add more complex data to test, this is not testing the full complexity of the method
     ids = [47005994]
     properties = ['hs_lastcontacted', 'hs_last_email_activity']
     params_batch = {"propertiesWithHistory": p for p in properties}
