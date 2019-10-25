@@ -1,12 +1,10 @@
 """
 hubspot tickets api
 """
-import itertools
+from typing import Dict, List, Union
 
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
-
-from typing import Dict, Union, List
 
 
 TICKETS_API_VERSION = "1"
@@ -170,11 +168,11 @@ class TicketsClient(BaseClient):
                 ticket_id_offset = changes[-1]["objectId"]
                 time_offset = changes[-1]["timestamp"]
 
-                ids = set([change["objectId"] for change in changes])
+                ids = {change["objectId"] for change in changes}
                 properties = []
                 for change in changes:
                     if change["changeType"] != TicketsClient.Recency.DELETED:
-                        properties += change["changes"]["changedProperties"]
+                        properties.extend(change["changes"]["changedProperties"])
                 properties = set(properties)
 
                 # This is an getting all the changed variables for all tickets,
