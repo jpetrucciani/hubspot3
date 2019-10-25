@@ -221,7 +221,6 @@ def base_get_recently(
     properties = ['hs_lastcontacted', 'hs_last_email_activity']
     params_batch = {"propertiesWithHistory": p for p in properties}
     params_recent = {
-        'count': 100,
         'objectId': 47005994,
         'timestamp': 1571411169000,
         'changeType': changeType
