@@ -1,18 +1,14 @@
 [![image](https://travis-ci.org/jpetrucciani/hubspot3.svg?branch=master)](https://travis-ci.org/jpetrucciani/hubspot3)
-
 [![PyPI
 version](https://badge.fury.io/py/hubspot3.svg)](https://badge.fury.io/py/hubspot3)
-
 [![Code style:
 black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
-
 [![Documentation
 Status](https://readthedocs.org/projects/hubspot3/badge/?version=latest)](https://hubspot3.readthedocs.io/en/latest/?badge=latest)
-
 [![Python 3.5+
 supported](https://img.shields.io/badge/python-3.5+-blue.svg)](https://www.python.org/downloads/release/python-350/)
 
-A python wrapper around HubSpot's APIs, *for python 3.5+*.
+A python wrapper around HubSpot's APIs, _for python 3.5+_.
 
 Built initially around hapipy, but heavily modified.
 
@@ -23,14 +19,14 @@ here](https://hubspot3.readthedocs.io/en/latest/)\! (thanks readthedocs)
 
 ## Installation
 
-``` bash
+```bash
 # install hubspot3
 pip install hubspot3
 ```
 
 ## Basic Usage
 
-``` python
+```python
 from hubspot3 import Hubspot3
 
 API_KEY = "your-api-key"
@@ -53,7 +49,7 @@ client.usage_limits.calls_remaining
 
 ## Individual Clients
 
-``` python
+```python
 from hubspot3.companies import CompaniesClient
 
 API_KEY = "your-api-key"
@@ -66,7 +62,7 @@ for company in client.get_all():
 
 ## Passing Params
 
-``` python
+```python
 import json
 from hubspot3.deals import DealsClient
 
@@ -88,13 +84,13 @@ print(json.dumps(deal_data))
 There is also a command-line tool available. Install the extra
 requirement for that tool via:
 
-``` bash
+```bash
 pip install hubspot3[cli]
 ```
 
 and you can use it as a command:
 
-``` bash
+```bash
 hubspot3 --help
 ```
 
@@ -111,13 +107,13 @@ API requests:
 
 Free & Starter:
 
-  - 10 requests per second
-  - 250,000 requests per day.
+-   10 requests per second
+-   250,000 requests per day.
 
 Professional & Enterprise:
 
-  - 10 requests per second
-  - 500,000 requests per day.
+-   10 requests per second
+-   500,000 requests per day.
 
 This daily limit resets at midnight based on the time zone setting of
 the HubSpot account. There is also an additional addon you can purchase
@@ -136,7 +132,7 @@ keyword argument to any Client constructor, or to individual API calls.
 Some of the APIs are not yet complete\! If you'd like to use an API that
 isn't yet in this repo, you can extend the BaseClient class\!
 
-``` python
+```python
 import json
 from hubspot3.base import BaseClient
 
@@ -177,7 +173,7 @@ API and ensure that we get the correct type of mock data back. These
 tests are currently in a **very** early state - I'll be working soon to
 get them all built out.
 
-``` bash
+```bash
 # run tests
 make
 # or
