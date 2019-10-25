@@ -110,9 +110,10 @@ class TicketsClient(BaseClient):
         params['includeDeletes'] = True
         # run the ids as a list of 100
         batch = {}
-        while len(ids) > 0:
-            partial_ids = ids[:100]
-            ids = ids[100:]
+        remaining_ids = ids.copy()
+        while len(remaining_ids) > 0:
+            partial_ids = remaining_ids[:100]
+            remaining_ids = remaining_ids[100:]
             partial_batch = self._call(
                 "objects/tickets/batch-read",
                 method="POST",
