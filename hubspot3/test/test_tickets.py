@@ -129,8 +129,8 @@ def test_get_batch_with_history(
         "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={'ids': ids}
     )
     assert len(resp) == 2
-    assert '3234574' in resp
-    assert '3234575' in resp
+    for single_id in ids:
+        assert single_id in resp
 
 
 def base_get_recently(
@@ -242,7 +242,8 @@ def base_get_recently(
         "POST", "/crm-objects/v1/objects/tickets/batch-read", **params_batch, data={'ids': ids},
     )
     assert len(changes) == 2
-    assert [change['objectId'] for change in changes] == [47005994, 47005994]
+    assert [change['objectId'] for change in changes] == [change['objectId'] for
+                                                          change in response_body_recent]
     assert len(changes[0]['changes']['changedValues']) == 1
     assert len(changes[1]['changes']['changedValues']) == 2
 
