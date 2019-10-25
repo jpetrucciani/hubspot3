@@ -236,9 +236,10 @@ def base_get_recently(
                                    (200, json.dumps(response_body_batch)),
                                    (200, '[]')])
     if changeType == 'CHANGED':
-        changes = tickets_client.get_recently_modified(time_offset=1571847002)
+        get_recently_method = tickets_client.get_recently_modified
     else:
-        changes = tickets_client.get_recently_created(time_offset=1571847002)
+        get_recently_method = tickets_client.get_recently_created
+    changes = get_recently_method(time_offset=1571847002)
     mock_connection.assert_num_requests(3)
 
     mock_connection.assert_has_request(
