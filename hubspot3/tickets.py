@@ -185,7 +185,7 @@ class TicketsClient(BaseClient):
 
                 changes = self._merge_changes_with_history(changes, tickets_history,
                                                            max_time_diff_ms)
-                yield changes
+                yield from changes
 
     def _merge_changes_with_history(self,
                                     changes: list,
@@ -248,7 +248,7 @@ class TicketsClient(BaseClient):
         """
         generator = self.get_recently_modified_as_generator(limit=limit, time_offset=time_offset,
                                                             ticket_id_offset=ticket_id_offset)
-        return list(itertools.chain.from_iterable(generator))
+        return list(generator)
 
     def get_recently_created_as_generator(self, limit: int = -1, time_offset: int = 0,
                                           ticket_id_offset: int = 0) -> List[dict]:
@@ -271,4 +271,4 @@ class TicketsClient(BaseClient):
         """
         generator = self.get_recently_created_as_generator(limit=limit, time_offset=time_offset,
                                                            ticket_id_offset=ticket_id_offset)
-        return list(itertools.chain.from_iterable(generator))
+        return list(generator)
