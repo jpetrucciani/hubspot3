@@ -6,8 +6,7 @@ import itertools
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
 
-from typing import Dict
-from typing import Union
+from typing import Dict, Union, List
 
 
 TICKETS_API_VERSION = "1"
@@ -92,8 +91,8 @@ class TicketsClient(BaseClient):
 
     default_batch_properties = ["subject"]
 
-    def _get_batch(self, ids: list, extra_properties: Union[list, str] = None,
-                   with_history: bool = False):
+    def _get_batch(self, ids: List[int], extra_properties: Union[List[str], str] = None,
+                   with_history: bool = False) -> Dict:
         """given a batch of vids, get more of their info"""
         # default properties to fetch
         properties = set(self.default_batch_properties)
@@ -105,13 +104,12 @@ class TicketsClient(BaseClient):
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
         if with_history:
-            property_name = 'propertiesWithHistory'
+            property_name = "propertiesWithHistory"
         else:
-            property_name = 'properties'
+            property_name = "properties"
+        params = {}
         if len(properties) > 0:
             params = {property_name: list(properties)}
-        else:
-            params = {}
         # run the ids as a list of 100
         batch = {}
         while len(ids) > 0:
@@ -122,18 +120,18 @@ class TicketsClient(BaseClient):
                 method="POST",
                 doseq=True,
                 params=params,
-                data={'ids': partial_ids}
+                data={"ids": partial_ids}
             )
             batch.update(partial_batch)
-        # Returning a dict with IDs as keys
         return batch
 
-    def get_batch(self, ids: list, extra_properties: Union[list, str] = None):
+    def get_batch(self, ids: List[int], extra_properties: Union[List[str], str] = None) -> List:
         """given a batch of ticket, get more of their info"""
         batch = self._get_batch(ids, extra_properties=extra_properties, with_history=False)
         return [prettify(batch[ticket], id_key="objectId") for ticket in batch]
 
-    def get_batch_with_history(self, ids: list, extra_properties: Union[list, str] = None):
+    def get_batch_with_history(self, ids: List[int],
+                               extra_properties: Union[List[str], str] = None) -> Dict:
         """given a batch of ticket, get more of their info with history"""
         batch = self._get_batch(ids, extra_properties=extra_properties, with_history=True)
         return batch
@@ -146,21 +144,18 @@ class TicketsClient(BaseClient):
         time_offset: int = 0,
         max_time_diff_ms: int = 60000,
         **options
-    ):
+    ) -> List:
 
         finished = False
-        query_limit = 100  # max according to the docs
         limited = limit > 0
-        if limited and limit < query_limit:
-            query_limit = limit
         total_tickets = 0
         while not finished:
-            params = {"count": query_limit}
+            params = {}
             if vid_offset:
                 params["objectId"] = vid_offset
             if time_offset:
                 params["timestamp"] = int(time_offset)
-            params['changeType'] = recency_type
+            params["changeType"] = recency_type
             changes = self._call(
                 "change-log/tickets",
                 method="GET",
@@ -171,14 +166,14 @@ class TicketsClient(BaseClient):
             total_tickets += len(changes)
             finished = (len(changes) == 0) or (limited and total_tickets >= limit)
             if len(changes) > 0:
-                vid_offset = changes[-1]['objectId']
-                time_offset = changes[-1]['timestamp']
+                vid_offset = changes[-1]["objectId"]
+                time_offset = changes[-1]["timestamp"]
 
-                ids = set([change['objectId'] for change in changes])
+                ids = set([change["objectId"] for change in changes])
                 properties = []
                 for change in changes:
-                    if change['changeType'] != TicketsClient.Recency.DELETED:
-                        properties += change['changes']['changedProperties']
+                    if change["changeType"] != TicketsClient.Recency.DELETED:
+                        properties += change["changes"]["changedProperties"]
                 properties = set(properties)
 
                 # This is an getting all the changed variables for all tickets,
@@ -194,11 +189,11 @@ class TicketsClient(BaseClient):
     def _merge_changes_with_history(self,
                                     changes: list,
                                     tickets_history: dict,
-                                    max_time_diff_ms: int):
+                                    max_time_diff_ms: int) -> List:
         # First lets group changes by deal id
         changes_by_id = {}
         for change in changes:
-            change_id = change['objectId']
+            change_id = change["objectId"]
             if change_id not in changes_by_id:
                 changes_by_id[change_id] = []
             changes_by_id[change_id].append(change)
@@ -206,29 +201,29 @@ class TicketsClient(BaseClient):
         # Now merge
         for ticket_id, ticket_history in tickets_history.items():
             ticket_id = int(ticket_id)
-            properties = ticket_history['properties']
+            properties = ticket_history["properties"]
             # Match the information of changes with each change
             changes = changes_by_id[ticket_id]
             for change in changes:
-                change['changes']['changedValues'] = {}
-                for changed_variable in change['changes']['changedProperties']:
-                    versions = properties[changed_variable]['versions']
+                change["changes"]["changedValues"] = {}
+                for changed_variable in change["changes"]["changedProperties"]:
+                    versions = properties[changed_variable]["versions"]
                     # Get the smallest time diff between change and history
-                    time_diffs = [abs(version['timestamp'] - change['timestamp'])
+                    time_diffs = [abs(version["timestamp"] - change["timestamp"])
                                   for version in versions]
                     min_time_index = min(range(len(time_diffs)),
                                          key=time_diffs.__getitem__)
                     if time_diffs[min_time_index] <= max_time_diff_ms:
-                        value = versions[min_time_index]['value']
-                        change['changes']['changedValues'][changed_variable] = value
+                        value = versions[min_time_index]["value"]
+                        change["changes"]["changedValues"][changed_variable] = value
                     else:
                         get_log(__name__).warning(f"Unable to find value for {changed_variable}"
-                                                  f" within the time range for ticket"
+                                                  " within the time range for ticket"
                                                   f" {ticket_id}")
         # Finally lets return only the changes as a list
         return [change for changes in changes_by_id.values() for change in changes]
 
-    def get_recently_modified_as_generator(self, limit: int = -1, time_offset: int = 0):
+    def get_recently_modified_as_generator(self, limit: int = -1, time_offset: int = 0) -> List:
         """
         get recently modified and created tickets, adding a field in changes-changedValue with
         the value of each change
@@ -238,7 +233,7 @@ class TicketsClient(BaseClient):
         return self._get_recent(TicketsClient.Recency.MODIFIED, limit=limit,
                                 time_offset=time_offset)
 
-    def get_recently_modified(self, limit: int = -1, time_offset: int = 0):
+    def get_recently_modified(self, limit: int = -1, time_offset: int = 0) -> List:
         """
         get recently modified and created tickets, adding a field in changes-changedValue with
         the value of each change
@@ -248,7 +243,7 @@ class TicketsClient(BaseClient):
         generator = self.get_recently_modified_as_generator(limit=limit, time_offset=time_offset)
         return list(itertools.chain.from_iterable(generator))
 
-    def get_recently_created_as_generator(self, limit: int = -1, time_offset: int = 0):
+    def get_recently_created_as_generator(self, limit: int = -1, time_offset: int = 0) -> List:
         """
         get recently created tickets, adding a field in changes-changedValue with
         the value of each change
@@ -258,7 +253,7 @@ class TicketsClient(BaseClient):
         return self._get_recent(TicketsClient.Recency.CREATED, limit=limit,
                                 time_offset=time_offset)
 
-    def get_recently_created(self, limit: int = -1, time_offset: int = 0):
+    def get_recently_created(self, limit: int = -1, time_offset: int = 0) -> List:
         """
         get recently created tickets, adding a field in changes-changedValue with
         the value of each change
