@@ -18,7 +18,7 @@ class TicketsClient(BaseClient):
     :see: https://developers.hubspot.com/docs/methods/tickets/tickets-overview
     """
 
-    __default_batch_properties = ["subject"]
+    default_batch_properties = ["subject"]
 
     class Recency:
         """recency type enum"""
@@ -93,9 +93,9 @@ class TicketsClient(BaseClient):
 
     def _get_batch(self, ids: List[int], extra_properties: Union[List[str], str] = None,
                    with_history: bool = False) -> Dict[str, dict]:
-        """given a batch of vids, get more of their info"""
+        """given a batch of ticket_ids, get more of their info"""
         # default properties to fetch
-        properties = set(self.__default_batch_properties)
+        properties = set(self.default_batch_properties)
 
         # append extras if they exist
         if extra_properties:
@@ -141,7 +141,7 @@ class TicketsClient(BaseClient):
         self,
         recency_type: str,
         limit: int = -1,
-        vid_offset: int = 0,
+        ticket_id_offset: int = 0,
         time_offset: int = 0,
         max_time_diff_ms: int = 60000,
         **options
@@ -152,8 +152,8 @@ class TicketsClient(BaseClient):
         finished = False
         while not finished:
             params = {}
-            if vid_offset:
-                params["objectId"] = vid_offset
+            if ticket_id_offset:
+                params["objectId"] = ticket_id_offset
             if time_offset:
                 params["timestamp"] = int(time_offset)
             params["changeType"] = recency_type
@@ -167,7 +167,7 @@ class TicketsClient(BaseClient):
             total_tickets += len(changes)
             finished = (len(changes) == 0) or (limited and total_tickets >= limit)
             if len(changes) > 0:
-                vid_offset = changes[-1]["objectId"]
+                ticket_id_offset = changes[-1]["objectId"]
                 time_offset = changes[-1]["timestamp"]
 
                 ids = set([change["objectId"] for change in changes])
@@ -227,8 +227,8 @@ class TicketsClient(BaseClient):
         # Finally lets return only the changes as a list
         return [change for changes in changes_by_id.values() for change in changes]
 
-    def get_recently_modified_as_generator(self, limit: int = -1,
-                                           time_offset: int = 0) -> List[dict]:
+    def get_recently_modified_as_generator(self, limit: int = -1, time_offset: int = 0,
+                                           ticket_id_offset: int = 0) -> List[dict]:
         """
         get recently modified and created tickets, adding a field in changes-changedValue with
         the value of each change
@@ -236,20 +236,22 @@ class TicketsClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
         return self._get_recent(TicketsClient.Recency.MODIFIED, limit=limit,
-                                time_offset=time_offset)
+                                time_offset=time_offset, ticket_id_offset=ticket_id_offset)
 
-    def get_recently_modified(self, limit: int = -1, time_offset: int = 0) -> List[dict]:
+    def get_recently_modified(self, limit: int = -1, time_offset: int = 0,
+                              ticket_id_offset: int = 0) -> List[dict]:
         """
         get recently modified and created tickets, adding a field in changes-changedValue with
         the value of each change
         returned as a list of all changes
         :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
-        generator = self.get_recently_modified_as_generator(limit=limit, time_offset=time_offset)
+        generator = self.get_recently_modified_as_generator(limit=limit, time_offset=time_offset,
+                                                            ticket_id_offset=ticket_id_offset)
         return list(itertools.chain.from_iterable(generator))
 
-    def get_recently_created_as_generator(self, limit: int = -1,
-                                          time_offset: int = 0) -> List[dict]:
+    def get_recently_created_as_generator(self, limit: int = -1, time_offset: int = 0,
+                                          ticket_id_offset: int = 0) -> List[dict]:
         """
         get recently created tickets, adding a field in changes-changedValue with
         the value of each change
@@ -257,14 +259,16 @@ class TicketsClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
         return self._get_recent(TicketsClient.Recency.CREATED, limit=limit,
-                                time_offset=time_offset)
+                                time_offset=time_offset, ticket_id_offset=ticket_id_offset)
 
-    def get_recently_created(self, limit: int = -1, time_offset: int = 0) -> List:
+    def get_recently_created(self, limit: int = -1, time_offset: int = 0,
+                             ticket_id_offset: int = 0) -> List[dict]:
         """
         get recently created tickets, adding a field in changes-changedValue with
         the value of each change
         returned as a list of all changes
         :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
-        generator = self.get_recently_created_as_generator(limit=limit, time_offset=time_offset)
+        generator = self.get_recently_created_as_generator(limit=limit, time_offset=time_offset,
+                                                           ticket_id_offset=ticket_id_offset)
         return list(itertools.chain.from_iterable(generator))
