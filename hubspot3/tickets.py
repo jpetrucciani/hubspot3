@@ -220,9 +220,10 @@ class TicketsClient(BaseClient):
                         value = versions[min_time_index]["value"]
                         change["changes"]["changedValues"][changed_variable] = value
                     else:
-                        get_log(__name__).warning(f"Unable to find value for {changed_variable}"
-                                                  " within the time range for ticket"
-                                                  f" {ticket_id}")
+                        get_log(__name__).warning("Unable to find value for "
+                                                  "{}".format(changed_variable)
+                                                  + " within the time range for ticket"
+                                                  " {}".format(ticket_id))
         # Finally lets return only the changes as a list
         return [change for changes in changes_by_id.values() for change in changes]
 
