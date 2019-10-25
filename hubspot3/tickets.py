@@ -110,6 +110,7 @@ class TicketsClient(BaseClient):
         params = {}
         if len(properties) > 0:
             params = {property_name: list(properties)}
+        params['includeDeletes'] = True
         # run the ids as a list of 100
         batch = {}
         while len(ids) > 0:
@@ -205,6 +206,9 @@ class TicketsClient(BaseClient):
             # Match the information of changes with each change
             changes = changes_by_id[ticket_id]
             for change in changes:
+                if change["changeType"] == TicketsClient.Recency.DELETED:
+                    # Deleted changes have no properties
+                    continue
                 change["changes"]["changedValues"] = {}
                 for changed_variable in change["changes"]["changedProperties"]:
                     versions = properties[changed_variable]["versions"]
