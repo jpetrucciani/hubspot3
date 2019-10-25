@@ -81,19 +81,20 @@ def test_get_batch(
         "3234575": {"objectId": 3234575, "properties": {}},
     }
     ids = ["3234574", "3234575"]
-    properties = tickets_client.__default_batch_properties.copy()
+    properties = TicketsClient.default_batch_properties.copy()
     properties.extend(extra_properties_as_list)
     params = {"properties": p for p in properties}
 
     mock_connection.set_response(200, json.dumps(response_body))
-    resp = tickets_client.get_batch(ids, extra_properties_given)
+    tickets = tickets_client.get_batch(ids, extra_properties_given)
     mock_connection.assert_num_requests(1)
     mock_connection.assert_has_request(
         "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={'ids': ids}
     )
-    assert len(resp) == 2
+    assert len(tickets) == 2
+    response_ids = [ticket['id'] for ticket in tickets]
     for single_id in ids:
-        assert single_id in resp
+        assert int(single_id) in response_ids
 
 
 @pytest.mark.parametrize(
@@ -118,7 +119,7 @@ def test_get_batch_with_history(
         "3234575": {"objectId": 3234575, "properties": {}},
     }
     ids = ["3234574", "3234575"]
-    properties = tickets_client.__default_batch_properties.copy()
+    properties = TicketsClient.default_batch_properties.copy()
     properties.extend(extra_properties_as_list)
     params = {"propertiesWithHistory": p for p in properties}
 
@@ -217,7 +218,8 @@ def base_get_recently(
             }
         }
     }
-    # TODO should add more complex data to test, this is not testing the full complexity of the method
+    # TODO should add more complex data to test, this is not testing the full complexity of the
+    # method
     ids = [47005994]
     properties = ['hs_lastcontacted', 'hs_last_email_activity']
     params_batch = {"propertiesWithHistory": p for p in properties}
