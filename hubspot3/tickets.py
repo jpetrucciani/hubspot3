@@ -147,9 +147,9 @@ class TicketsClient(BaseClient):
         **options
     ) -> List:
 
-        finished = False
         limited = limit > 0
         total_tickets = 0
+        finished = False
         while not finished:
             params = {}
             if vid_offset:
