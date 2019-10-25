@@ -18,6 +18,8 @@ class TicketsClient(BaseClient):
     :see: https://developers.hubspot.com/docs/methods/tickets/tickets-overview
     """
 
+    __default_batch_properties = ["subject"]
+
     class Recency:
         """recency type enum"""
 
@@ -89,13 +91,11 @@ class TicketsClient(BaseClient):
 
         return output if not limited else output[:limit]
 
-    default_batch_properties = ["subject"]
-
     def _get_batch(self, ids: List[int], extra_properties: Union[List[str], str] = None,
-                   with_history: bool = False) -> Dict:
+                   with_history: bool = False) -> Dict[str, dict]:
         """given a batch of vids, get more of their info"""
         # default properties to fetch
-        properties = set(self.default_batch_properties)
+        properties = set(self.__default_batch_properties)
 
         # append extras if they exist
         if extra_properties:
@@ -108,8 +108,7 @@ class TicketsClient(BaseClient):
         else:
             property_name = "properties"
         params = {}
-        if len(properties) > 0:
-            params = {property_name: list(properties)}
+        params[property_name] = list(properties)
         params['includeDeletes'] = True
         # run the ids as a list of 100
         batch = {}
@@ -126,13 +125,14 @@ class TicketsClient(BaseClient):
             batch.update(partial_batch)
         return batch
 
-    def get_batch(self, ids: List[int], extra_properties: Union[List[str], str] = None) -> List:
+    def get_batch(self, ids: List[int],
+                  extra_properties: Union[List[str], str] = None) -> List[dict]:
         """given a batch of ticket, get more of their info"""
         batch = self._get_batch(ids, extra_properties=extra_properties, with_history=False)
-        return [prettify(batch[ticket], id_key="objectId") for ticket in batch]
+        return [prettify(batch[ticket_id], id_key="objectId") for ticket_id in batch]
 
     def get_batch_with_history(self, ids: List[int],
-                               extra_properties: Union[List[str], str] = None) -> Dict:
+                               extra_properties: Union[List[str], str] = None) -> Dict[str, dict]:
         """given a batch of ticket, get more of their info with history"""
         batch = self._get_batch(ids, extra_properties=extra_properties, with_history=True)
         return batch
@@ -190,7 +190,7 @@ class TicketsClient(BaseClient):
     def _merge_changes_with_history(self,
                                     changes: list,
                                     tickets_history: dict,
-                                    max_time_diff_ms: int) -> List:
+                                    max_time_diff_ms: int) -> List[dict]:
         # First lets group changes by deal id
         changes_by_id = {}
         for change in changes:
@@ -227,7 +227,8 @@ class TicketsClient(BaseClient):
         # Finally lets return only the changes as a list
         return [change for changes in changes_by_id.values() for change in changes]
 
-    def get_recently_modified_as_generator(self, limit: int = -1, time_offset: int = 0) -> List:
+    def get_recently_modified_as_generator(self, limit: int = -1,
+                                           time_offset: int = 0) -> List[dict]:
         """
         get recently modified and created tickets, adding a field in changes-changedValue with
         the value of each change
@@ -237,7 +238,7 @@ class TicketsClient(BaseClient):
         return self._get_recent(TicketsClient.Recency.MODIFIED, limit=limit,
                                 time_offset=time_offset)
 
-    def get_recently_modified(self, limit: int = -1, time_offset: int = 0) -> List:
+    def get_recently_modified(self, limit: int = -1, time_offset: int = 0) -> List[dict]:
         """
         get recently modified and created tickets, adding a field in changes-changedValue with
         the value of each change
@@ -247,7 +248,8 @@ class TicketsClient(BaseClient):
         generator = self.get_recently_modified_as_generator(limit=limit, time_offset=time_offset)
         return list(itertools.chain.from_iterable(generator))
 
-    def get_recently_created_as_generator(self, limit: int = -1, time_offset: int = 0) -> List:
+    def get_recently_created_as_generator(self, limit: int = -1,
+                                          time_offset: int = 0) -> List[dict]:
         """
         get recently created tickets, adding a field in changes-changedValue with
         the value of each change
