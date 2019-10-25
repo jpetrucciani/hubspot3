@@ -83,14 +83,16 @@ def test_get_batch(
     ids = ["3234574", "3234575"]
     properties = TicketsClient.default_batch_properties.copy()
     properties.extend(extra_properties_as_list)
-    params = {"properties": p for p in properties}
 
     mock_connection.set_response(200, json.dumps(response_body))
     tickets = tickets_client.get_batch(ids, extra_properties_given)
     mock_connection.assert_num_requests(1)
-    mock_connection.assert_has_request(
-        "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={'ids': ids}
-    )
+    for one_property in properties:
+        # Underling function only accepts one value per parameter
+        params = {"properties": one_property}
+        mock_connection.assert_has_request(
+            "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={'ids': ids}
+        )
     assert len(tickets) == 2
     response_ids = [ticket['id'] for ticket in tickets]
     for single_id in ids:
@@ -121,14 +123,16 @@ def test_get_batch_with_history(
     ids = ["3234574", "3234575"]
     properties = TicketsClient.default_batch_properties.copy()
     properties.extend(extra_properties_as_list)
-    params = {"propertiesWithHistory": p for p in properties}
 
     mock_connection.set_response(200, json.dumps(response_body))
     resp = tickets_client.get_batch_with_history(ids, extra_properties_given)
     mock_connection.assert_num_requests(1)
-    mock_connection.assert_has_request(
-        "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={'ids': ids}
-    )
+    for one_property in properties:
+        # Underling function only accepts one value per parameter
+        params = {"propertiesWithHistory": one_property}
+        mock_connection.assert_has_request(
+            "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={'ids': ids}
+        )
     assert len(resp) == 2
     for single_id in ids:
         assert single_id in resp
@@ -222,7 +226,6 @@ def base_get_recently(
     # method
     ids = [47005994]
     properties = ['hs_lastcontacted', 'hs_last_email_activity']
-    params_batch = {"propertiesWithHistory": p for p in properties}
     params_recent = {
         'objectId': 47005994,
         'timestamp': 1571411169000,
@@ -241,9 +244,12 @@ def base_get_recently(
     mock_connection.assert_has_request(
         "GET", "/crm-objects/v1/change-log/ticket", **params_recent
     )
-    mock_connection.assert_has_request(
-        "POST", "/crm-objects/v1/objects/tickets/batch-read", **params_batch, data={'ids': ids},
-    )
+    for one_property in properties:
+        # Underling function only accepts one value per parameter
+        params_batch = {"propertiesWithHistory": one_property}
+        mock_connection.assert_has_request(
+            "POST", "/crm-objects/v1/objects/tickets/batch-read", **params_batch, data={'ids': ids},
+        )
     assert len(changes) == 2
     assert [change['objectId'] for change in changes] == [change['objectId'] for
                                                           change in response_body_recent]
