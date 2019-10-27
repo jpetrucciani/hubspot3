@@ -34,7 +34,8 @@ def mock_connection():
             request_data = args[2]
 
             if data is not None and not isinstance(data, str):
-                request_data = json.loads(request_data)
+                if request_data is not None:
+                    request_data = json.loads(request_data)
 
             url_check = (
                 request_url == url if not params else request_url.startswith(url)
