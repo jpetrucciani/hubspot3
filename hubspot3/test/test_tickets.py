@@ -48,15 +48,63 @@ def test_get_ticket():
     assert isinstance(ticket, dict)
 
 
-def test_get_all_tickets():
+def test_get_all_tickets(tickets_client, mock_connection):
     """
     tests getting all tickets
     :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
     """
-    tickets = TICKETS.get_all()
-    assert tickets
-    assert isinstance(tickets, list)
-    assert len(tickets) > 1
+    response_bodies = [{
+        "objects": [
+            {
+                "addedAt": 1390574181854,
+                "objectId": 204726,
+                "properties": {'prop_1': 1},
+            }
+        ],
+        "hasMore": True,
+        "offset": 204727,
+    }, {'objects': []}, {
+        "objects": [
+            {
+                "addedAt": 1390574181854,
+                "objectId": 204727,
+                "properties": {'prop_1': 1},
+            }
+        ],
+        "hasMore": False,
+        "offset": 204727,
+    }, {
+        "objects": [
+            {
+                "addedAt": 1390574181854,
+                "objectId": 204727,
+                "properties": {'prop_2': 1},
+            },
+            {
+                "addedAt": 1390574181854,
+                "objectId": 204728,
+                "properties": {'prop_2': 1},
+            }
+        ],
+        "hasMore": False,
+        "offset": 204727,
+    }]
+    extra_properties = [str(num) for num in range(70)]
+    responses = [(200, response_body) for response_body in response_bodies]
+    mock_connection.set_responses(responses)
+    tickets = tickets_client.get_all(extra_properties=extra_properties)
+    mock_connection.assert_num_requests(4)
+    for extra_property in extra_properties:
+        mock_connection.assert_has_request(
+            "GET", "/crm-objects/v1/objects/tickets/paged", **{'properties': extra_property}
+        )
+    first_ticket = [ticket for ticket in tickets if ticket['objectId'] == 204726][0]
+    second_ticket = [ticket for ticket in tickets if ticket['objectId'] == 204727][0]
+    third_ticket = [ticket for ticket in tickets if ticket['objectId'] == 204728][0]
+    assert len(tickets) == 2
+    assert list(first_ticket['properties'].keys()) == ['prop_1']
+    assert list(second_ticket['properties'].keys()) == ['prop_1', 'prop_2']
+    assert list(third_ticket['properties'].keys()) == ['prop_2']
 
 
 @pytest.mark.parametrize(
