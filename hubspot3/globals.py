@@ -9,6 +9,7 @@ BASE_URL = "https://api.hubapi.com"
 OBJECT_TYPE_COMPANIES = "companies"
 OBJECT_TYPE_CONTACTS = "contacts"
 OBJECT_TYPE_DEALS = "deals"
+OBJECT_TYPE_TICKETS = "tickets"
 OBJECT_TYPE_PRODUCTS = "products"
 OBJECT_TYPE_LINE_ITEMS = "line_items"
 
