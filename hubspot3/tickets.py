@@ -67,9 +67,9 @@ class TicketsClient(BaseClient):
             "objects/tickets/{}".format(ticket_id), method="GET", **options
         )
 
-    def _join_get_all_properties(self, tickets):
+    def _join_get_all_properties(self, tickets: List[dict]) -> List[dict]:
         """
-        Join request to show only one output per ticketId
+        Join request properties to show only one output per ticketId
         """
         joined_tickets_dict = {}
         for ticket in tickets:
@@ -95,10 +95,10 @@ class TicketsClient(BaseClient):
         return list(generator)
 
     def get_all_as_generator(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
-                             with_history: bool = False,
-                             properties_per_request=50, **options) -> Iterator[dict]:
+                             with_history: bool = False, properties_per_request=50,
+                             **options) -> Iterator[dict]:
         """
-        Get all tickets in hubspot
+        Get all tickets in hubspot, returning them as a generator
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
         """
         finished = False
@@ -132,7 +132,7 @@ class TicketsClient(BaseClient):
             finished = not batch["hasMore"] or (limited and total_tickets >= limit)
             offset = batch["offset"]
 
-    def _get_properties(self, extra_properties: Union[List[str], str] = None):
+    def _get_properties(self, extra_properties: Union[List[str], str] = None) -> List[str]:
         # default properties to fetch
         properties = set(self.default_batch_properties)
 
