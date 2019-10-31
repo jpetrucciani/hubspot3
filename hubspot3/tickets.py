@@ -1,7 +1,7 @@
 """
 hubspot tickets api
 """
-from typing import Dict, List, Union
+from typing import Dict, Iterator, List, Union
 
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
@@ -96,7 +96,7 @@ class TicketsClient(BaseClient):
 
     def get_all_as_generator(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
                              with_history: bool = False,
-                             properties_per_request=50, **options) -> list:
+                             properties_per_request=50, **options) -> Iterator[dict]:
         """
         Get all tickets in hubspot
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
