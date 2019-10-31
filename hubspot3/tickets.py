@@ -67,31 +67,72 @@ class TicketsClient(BaseClient):
             "objects/tickets/{}".format(ticket_id), method="GET", **options
         )
 
-    def get_all(self, limit: int = -1, **options) -> list:
+    def _join_get_all_properties(self, tickets):
+        """
+        Join request to show only one output per ticketId
+        """
+        joined_tickets_dict = {}
+        for ticket in tickets:
+            ticket_id = ticket['objectId']
+            if ticket_id not in joined_tickets_dict:
+                joined_tickets_dict[ticket_id] = ticket
+            else:
+                joined_tickets_dict[ticket_id]['properties'] = {**joined_tickets_dict[ticket_id]
+                                                                ['properties'],
+                                                                **ticket['properties']}
+        return [ticket for ticket in joined_tickets_dict.values()]
+
+    def get_all(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
+                with_history: bool = False, properties_per_request=50, **options) -> list:
+        """
+        Get all tickets in hubspot
+        :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
+        """
+        generator = self.get_all_as_generator(limit=limit, extra_properties=extra_properties,
+                                              with_history=with_history,
+                                              properties_per_request=properties_per_request,
+                                              **options)
+        return list(generator)
+
+    def get_all_as_generator(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
+                             with_history: bool = False,
+                             properties_per_request=50, **options) -> list:
         """
         Get all tickets in hubspot
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
         """
         finished = False
-        output = []  # type: list
         offset = 0
         limited = limit > 0
+        properties = self._get_properties(extra_properties)
+        if with_history:
+            property_name = "propertiesWithHistory"
+        else:
+            property_name = "properties"
+        total_tickets = 0
         while not finished:
-            batch = self._call(
-                "objects/tickets/paged",
-                method="GET",
-                params={"offset": offset},
-                **options
-            )
-            output.extend(batch["objects"])
-            finished = not batch["hasMore"]
+            # Since properties is added to the url there is a limiting amount that you can request
+            remaining_properties = list(properties.copy())
+            unjoined_outputs = []
+            while len(remaining_properties) > 0:
+                partial_properties = remaining_properties[:properties_per_request]
+                remaining_properties = remaining_properties[properties_per_request:]
+
+                batch = self._call(
+                    "objects/tickets/paged",
+                    method="GET",
+                    doseq=True,
+                    params={"offset": offset, property_name: partial_properties},
+                    **options
+                )
+                unjoined_outputs.extend(batch["objects"])
+            outputs = self._join_get_all_properties(unjoined_outputs)
+            yield from outputs
+            total_tickets += len(outputs)
+            finished = not batch["hasMore"] or (limited and total_tickets >= limit)
             offset = batch["offset"]
 
-        return output if not limited else output[:limit]
-
-    def _get_batch(self, ids: List[int], extra_properties: Union[List[str], str] = None,
-                   with_history: bool = False) -> Dict[str, dict]:
-        """given a batch of ticket_ids, get more of their info"""
+    def _get_properties(self, extra_properties: Union[List[str], str] = None):
         # default properties to fetch
         properties = set(self.default_batch_properties)
 
@@ -101,6 +142,12 @@ class TicketsClient(BaseClient):
                 properties.update(extra_properties)
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
+        return properties
+
+    def _get_batch(self, ids: List[int], extra_properties: Union[List[str], str] = None,
+                   with_history: bool = False) -> Dict[str, dict]:
+        """given a batch of ticket_ids, get more of their info"""
+        properties = self._get_properties(extra_properties)
         if with_history:
             property_name = "propertiesWithHistory"
         else:
