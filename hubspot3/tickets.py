@@ -1,7 +1,7 @@
 """
 hubspot tickets api
 """
-from typing import Dict, Iterator, List, Union
+from typing import Dict, Iterator, List, Set, Union
 
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
@@ -132,7 +132,7 @@ class TicketsClient(BaseClient):
             finished = not batch["hasMore"] or (limited and total_tickets >= limit)
             offset = batch["offset"]
 
-    def _get_properties(self, extra_properties: Union[List[str], str] = None) -> List[str]:
+    def _get_properties(self, extra_properties: Union[List[str], str] = None) -> Set[str]:
         # default properties to fetch
         properties = set(self.default_batch_properties)
 
