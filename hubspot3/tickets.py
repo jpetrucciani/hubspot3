@@ -80,7 +80,7 @@ class TicketsClient(BaseClient):
             "objects/tickets/{}".format(ticket_id), method="GET", **options
         )
 
-    def _join_get_all_properties(self, tickets: List[dict]) -> List[dict]:
+    def _join_output_properties(self, tickets: List[dict]) -> List[dict]:
         """
         Join request properties to show only one output per ticketId
         This will change the first object for each ticketId
@@ -168,7 +168,7 @@ class TicketsClient(BaseClient):
                     **options
                 )
                 unjoined_outputs.extend(batch["objects"])
-            outputs = self._join_get_all_properties(unjoined_outputs)
+            outputs = self._join_output_properties(unjoined_outputs)
 
             total_tickets += len(outputs)
             offset = batch["offset"]
