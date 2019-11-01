@@ -77,6 +77,7 @@ class TicketsClient(BaseClient):
     def _join_get_all_properties(self, tickets: List[dict]) -> List[dict]:
         """
         Join request properties to show only one output per ticketId
+        This will change the first object for each ticketId
         """
         joined_tickets_dict = {}
         for ticket in tickets:
@@ -100,15 +101,15 @@ class TicketsClient(BaseClient):
         properties_groups = []
         current_properties_group = []
         property_name_len = len(property_name)
-        for ticket_property in properties:
-            current_length += len(ticket_property) + property_name_len
+        for single_property in properties:
+            current_length += len(single_property) + property_name_len
 
             if current_length > max_properties_request_length:
                 properties_groups.append(current_properties_group)
                 current_length = 0
                 current_properties_group = []
 
-            current_properties_group.append(ticket_property)
+            current_properties_group.append(single_property)
 
         if len(current_properties_group) > 0:
             properties_groups.append(current_properties_group)
