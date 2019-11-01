@@ -21,9 +21,15 @@ class TicketsClient(BaseClient):
     """
     Since this value is not defined by hubspot, and the tickets API is
     different from the others I won't assume that this number is equal
-    for all APIs
+    for all APIs. Waiting on an anwser from Hubspot for a more precise
+    value
     """
     _maximum_request_length = 15500
+
+    """
+    Same comment above is true for this
+    """
+    _max_time_diff_ms = 60000
 
     class Recency:
         """recency type enum"""
@@ -91,16 +97,19 @@ class TicketsClient(BaseClient):
         return list(joined_tickets_dict.values())
 
     def _split_properties(self, properties: Set[str],
-                          max_properties_request_length=_maximum_request_length,
-                          property_name="properties") -> List[Set[str]]:
+                          max_properties_request_length: int = _maximum_request_length,
+                          property_name: str = "properties") -> List[Set[str]]:
         """
         Split a set of properties in a list of sets of properties where the total length of
         "properties=..." for each property is smaller than the max
         """
+
+        # property_name_len is its length plus the '=' at the end
+        property_name_len = len(property_name) + 1
+
         current_length = 0
         properties_groups = []
         current_properties_group = []
-        property_name_len = len(property_name)
         for single_property in properties:
             current_length += len(single_property) + property_name_len
 
@@ -132,16 +141,21 @@ class TicketsClient(BaseClient):
         Get all tickets in hubspot, returning them as a generator
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
         """
-        finished = False
-        offset = 0
+
         limited = limit > 0
+
         properties = self._get_properties(extra_properties)
+
         if with_history:
             property_name = "propertiesWithHistory"
         else:
             property_name = "properties"
-        total_tickets = 0
+
         properties_groups = self._split_properties(properties, property_name=property_name)
+
+        offset = 0
+        total_tickets = 0
+        finished = False
         while not finished:
             # Since properties is added to the url there is a limiting amount that you can request
             unjoined_outputs = []
@@ -155,21 +169,28 @@ class TicketsClient(BaseClient):
                 )
                 unjoined_outputs.extend(batch["objects"])
             outputs = self._join_get_all_properties(unjoined_outputs)
-            yield from outputs
+
             total_tickets += len(outputs)
-            finished = not batch["hasMore"] or (limited and total_tickets >= limit)
             offset = batch["offset"]
 
+            reached_limit = limited and total_tickets >= limit
+            finished = not batch["hasMore"] or reached_limit
+
+            # Since the API doesn't aways tries to return 100 tickets we may pass the desired limit
+            if reached_limit:
+                outputs = outputs[:limit]
+
+            yield from outputs
+
     def _get_properties(self, extra_properties: Union[List[str], str] = None) -> Set[str]:
-        # default properties to fetch
         properties = set(self.default_batch_properties)
 
-        # append extras if they exist
         if extra_properties:
             if isinstance(extra_properties, list):
                 properties.update(extra_properties)
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
+
         return properties
 
     def _get_batch(self, ids: List[int], extra_properties: Union[List[str], str] = None,
@@ -217,7 +238,7 @@ class TicketsClient(BaseClient):
         limit: int = -1,
         ticket_id_offset: int = 0,
         time_offset: int = 0,
-        max_time_diff_ms: int = 60000,
+        max_time_diff_ms: int = _max_time_diff_ms,
         **options
     ) -> List:
 
