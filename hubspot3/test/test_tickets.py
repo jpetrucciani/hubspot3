@@ -63,7 +63,7 @@ def test_get_all_tickets(tickets_client, mock_connection):
         ],
         "hasMore": True,
         "offset": 204727,
-    }, {'objects': []}, {
+    }, {'objects': [], "hasMore": True, "offset": 204727}, {
         "objects": [
             {
                 "addedAt": 1390574181854,
@@ -89,7 +89,8 @@ def test_get_all_tickets(tickets_client, mock_connection):
         "hasMore": False,
         "offset": 204727,
     }]
-    extra_properties = [str(num) for num in range(70)]
+    # This extra properties are enough to generate 2 requests
+    extra_properties = [str(num) for num in range(2000)]
     responses = [(200, response_body) for response_body in response_bodies]
     mock_connection.set_responses(responses)
     tickets = tickets_client.get_all(extra_properties=extra_properties)
@@ -101,7 +102,7 @@ def test_get_all_tickets(tickets_client, mock_connection):
     first_ticket = [ticket for ticket in tickets if ticket['objectId'] == 204726][0]
     second_ticket = [ticket for ticket in tickets if ticket['objectId'] == 204727][0]
     third_ticket = [ticket for ticket in tickets if ticket['objectId'] == 204728][0]
-    assert len(tickets) == 2
+    assert len(tickets) == 3
     assert list(first_ticket['properties'].keys()) == ['prop_1']
     assert list(second_ticket['properties'].keys()) == ['prop_1', 'prop_2']
     assert list(third_ticket['properties'].keys()) == ['prop_2']
