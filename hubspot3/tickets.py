@@ -18,6 +18,13 @@ class TicketsClient(BaseClient):
 
     default_batch_properties = ["subject"]
 
+    """
+    Since this value is not defined by hubspot, and the tickets API is
+    different from the others I won't assume that this number is equal
+    for all APIs
+    """
+    _maximum_request_length = 15500
+
     class Recency:
         """recency type enum"""
 
@@ -83,40 +90,44 @@ class TicketsClient(BaseClient):
         return list(joined_tickets_dict.values())
 
     def _split_properties(self, properties: Set[str],
-                          max_properties_request_length=8500) -> List[Set[str]]:
+                          max_properties_request_length=_maximum_request_length,
+                          property_name="properties") -> List[Set[str]]:
         """
-        Split a set of properties in a list of sets of properties with total length
-        smaller than the max
+        Split a set of properties in a list of sets of properties where the total length of
+        "properties=..." for each property is smaller than the max
         """
+        print(len(properties))
         current_length = 0
         properties_groups = []
         current_properties_group = []
+        property_name_len = len(property_name)
         for ticket_property in properties:
-            current_length += len(ticket_property)
+            current_length += len(ticket_property) + property_name_len
+
             if current_length > max_properties_request_length:
                 properties_groups.append(current_properties_group)
                 current_length = 0
                 current_properties_group = []
+
             current_properties_group.append(ticket_property)
+
         if len(current_properties_group) > 0:
             properties_groups.append(current_properties_group)
+
         return properties_groups
 
     def get_all(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
-                with_history: bool = False, properties_per_request=50, **options) -> list:
+                with_history: bool = False, **options) -> list:
         """
         Get all tickets in hubspot
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
         """
         generator = self.get_all_as_generator(limit=limit, extra_properties=extra_properties,
-                                              with_history=with_history,
-                                              properties_per_request=properties_per_request,
-                                              **options)
+                                              with_history=with_history, **options)
         return list(generator)
 
     def get_all_as_generator(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
-                             with_history: bool = False, properties_per_request=50,
-                             **options) -> Iterator[dict]:
+                             with_history: bool = False, **options) -> Iterator[dict]:
         """
         Get all tickets in hubspot, returning them as a generator
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
@@ -130,12 +141,11 @@ class TicketsClient(BaseClient):
         else:
             property_name = "properties"
         total_tickets = 0
-        properties_groups = self._split_properties(properties)
+        properties_groups = self._split_properties(properties, property_name=property_name)
         while not finished:
             # Since properties is added to the url there is a limiting amount that you can request
             unjoined_outputs = []
             for properties_group in properties_groups:
-                print(properties_group)
                 batch = self._call(
                     "objects/tickets/paged",
                     method="GET",
