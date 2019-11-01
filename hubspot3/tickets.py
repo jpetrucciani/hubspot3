@@ -80,13 +80,13 @@ class TicketsClient(BaseClient):
         """
         joined_tickets_dict = {}
         for ticket in tickets:
-            ticket_id = ticket['objectId']
+            ticket_id = ticket["objectId"]
             if ticket_id not in joined_tickets_dict:
                 joined_tickets_dict[ticket_id] = ticket
             else:
-                joined_tickets_dict[ticket_id]['properties'] = {**joined_tickets_dict[ticket_id]
-                                                                ['properties'],
-                                                                **ticket['properties']}
+                joined_tickets_dict[ticket_id]["properties"] = {**joined_tickets_dict[ticket_id]
+                                                                ["properties"],
+                                                                **ticket["properties"]}
         return list(joined_tickets_dict.values())
 
     def _split_properties(self, properties: Set[str],
@@ -182,7 +182,7 @@ class TicketsClient(BaseClient):
             property_name = "properties"
         params = {}
         params[property_name] = list(properties)
-        params['includeDeletes'] = True
+        params["includeDeletes"] = True
         # run the ids as a list of 100
         batch = {}
         remaining_ids = ids.copy()
