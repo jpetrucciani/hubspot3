@@ -80,7 +80,27 @@ class TicketsClient(BaseClient):
                 joined_tickets_dict[ticket_id]['properties'] = {**joined_tickets_dict[ticket_id]
                                                                 ['properties'],
                                                                 **ticket['properties']}
-        return [ticket for ticket in joined_tickets_dict.values()]
+        return list(joined_tickets_dict.values())
+
+    def _split_properties(self, properties: Set[str],
+                          max_properties_request_length=8500) -> List[Set[str]]:
+        """
+        Split a set of properties in a list of sets of properties with total length
+        smaller than the max
+        """
+        current_length = 0
+        properties_groups = []
+        current_properties_group = []
+        for ticket_property in properties:
+            current_length += len(ticket_property)
+            if current_length > max_properties_request_length:
+                properties_groups.append(current_properties_group)
+                current_length = 0
+                current_properties_group = []
+            current_properties_group.append(ticket_property)
+        if len(current_properties_group) > 0:
+            properties_groups.append(current_properties_group)
+        return properties_groups
 
     def get_all(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
                 with_history: bool = False, properties_per_request=50, **options) -> list:
@@ -110,19 +130,17 @@ class TicketsClient(BaseClient):
         else:
             property_name = "properties"
         total_tickets = 0
+        properties_groups = self._split_properties(properties)
         while not finished:
             # Since properties is added to the url there is a limiting amount that you can request
-            remaining_properties = list(properties.copy())
             unjoined_outputs = []
-            while len(remaining_properties) > 0:
-                partial_properties = remaining_properties[:properties_per_request]
-                remaining_properties = remaining_properties[properties_per_request:]
-
+            for properties_group in properties_groups:
+                print(properties_group)
                 batch = self._call(
                     "objects/tickets/paged",
                     method="GET",
                     doseq=True,
-                    params={"offset": offset, property_name: partial_properties},
+                    params={"offset": offset, property_name: properties_group},
                     **options
                 )
                 unjoined_outputs.extend(batch["objects"])
