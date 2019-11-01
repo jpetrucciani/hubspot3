@@ -89,20 +89,28 @@ def test_get_all_tickets(tickets_client, mock_connection):
         "hasMore": False,
         "offset": 204727,
     }]
+
     # This extra properties are enough to generate 2 requests
     extra_properties = [str(num) for num in range(2000)]
+
     responses = [(200, response_body) for response_body in response_bodies]
     mock_connection.set_responses(responses)
+
     tickets = tickets_client.get_all(extra_properties=extra_properties)
+
     mock_connection.assert_num_requests(4)
     for extra_property in extra_properties:
+        # This checks if a request had the URL and includes the given parameters
         mock_connection.assert_has_request(
             "GET", "/crm-objects/v1/objects/tickets/paged", **{'properties': extra_property}
         )
+
+    assert len(tickets) == 3
+
     first_ticket = [ticket for ticket in tickets if ticket['objectId'] == 204726][0]
     second_ticket = [ticket for ticket in tickets if ticket['objectId'] == 204727][0]
     third_ticket = [ticket for ticket in tickets if ticket['objectId'] == 204728][0]
-    assert len(tickets) == 3
+
     assert list(first_ticket['properties'].keys()) == ['prop_1']
     assert list(second_ticket['properties'].keys()) == ['prop_1', 'prop_2']
     assert list(third_ticket['properties'].keys()) == ['prop_2']
