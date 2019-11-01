@@ -96,7 +96,6 @@ class TicketsClient(BaseClient):
         Split a set of properties in a list of sets of properties where the total length of
         "properties=..." for each property is smaller than the max
         """
-        print(len(properties))
         current_length = 0
         properties_groups = []
         current_properties_group = []
