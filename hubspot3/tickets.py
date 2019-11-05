@@ -24,12 +24,12 @@ class TicketsClient(BaseClient):
     for all APIs. Waiting on an anwser from Hubspot for a more precise
     value
     """
-    _maximum_request_length = 15500
+    _MAXIMUM_REQUEST_LENGTH = 15500
 
     """
     Same comment above is true for this
     """
-    _max_time_diff_ms = 60000
+    _MAX_TIME_DIFF_MS = 60000
 
     class Recency:
         """recency type enum"""
@@ -91,18 +91,18 @@ class TicketsClient(BaseClient):
             if ticket_id not in joined_tickets_dict:
                 joined_tickets_dict[ticket_id] = ticket
             else:
-                joined_tickets_dict[ticket_id]["properties"] = {**joined_tickets_dict[ticket_id]
-                                                                ["properties"],
-                                                                **ticket["properties"]}
+                joined_tickets_dict[ticket_id]["properties"].update(ticket["properties"])
         return list(joined_tickets_dict.values())
 
     def _split_properties(self, properties: Set[str],
-                          max_properties_request_length: int = _maximum_request_length,
+                          max_properties_request_length: int = None,
                           property_name: str = "properties") -> List[Set[str]]:
         """
         Split a set of properties in a list of sets of properties where the total length of
         "properties=..." for each property is smaller than the max
         """
+        if max_properties_request_length is None:
+            max_properties_request_length = self._MAXIMUM_REQUEST_LENGTH
 
         # property_name_len is its length plus the '=' at the end
         property_name_len = len(property_name) + 1
@@ -238,9 +238,12 @@ class TicketsClient(BaseClient):
         limit: int = -1,
         ticket_id_offset: int = 0,
         time_offset: int = 0,
-        max_time_diff_ms: int = _max_time_diff_ms,
+        max_time_diff_ms: int = None,
         **options
     ) -> List:
+
+        if max_time_diff_ms is None:
+            max_time_diff_ms = self._MAX_TIME_DIFF_MS
 
         limited = limit > 0
         total_tickets = 0
