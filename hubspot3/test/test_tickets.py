@@ -111,9 +111,9 @@ def test_get_all_tickets(tickets_client, mock_connection):
     second_ticket = [ticket for ticket in tickets if ticket["objectId"] == 204727][0]
     third_ticket = [ticket for ticket in tickets if ticket["objectId"] == 204728][0]
 
-    assert list(first_ticket["properties"].keys()) == ["prop_1"]
-    assert list(second_ticket["properties"].keys()) == ["prop_1", "prop_2"]
-    assert list(third_ticket["properties"].keys()) == ["prop_2"]
+    assert set(first_ticket["properties"].keys()) == {"prop_1"}
+    assert set(second_ticket["properties"].keys()) == {"prop_1", "prop_2"}
+    assert set(third_ticket["properties"].keys()) == {"prop_2"}
 
 
 @pytest.mark.parametrize(
