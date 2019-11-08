@@ -247,7 +247,7 @@ def base_get_recently(
     )
 
     assert len(changes) == 2
-    assert changes == changes
+    assert changes == response_body_recent
 
 
 def test_get_recently_created(
