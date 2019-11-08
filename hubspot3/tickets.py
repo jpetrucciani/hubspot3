@@ -238,12 +238,8 @@ class TicketsClient(BaseClient):
         limit: int = -1,
         ticket_id_offset: int = 0,
         time_offset: int = 0,
-        max_time_diff_ms: int = None,
         **options
     ) -> List:
-
-        if max_time_diff_ms is None:
-            max_time_diff_ms = self._MAX_TIME_DIFF_MS
 
         limited = limit > 0
         total_tickets = 0
@@ -268,27 +264,13 @@ class TicketsClient(BaseClient):
                 ticket_id_offset = changes[-1]["objectId"]
                 time_offset = changes[-1]["timestamp"]
 
-                ids = {change["objectId"] for change in changes}
-                properties = []
-                for change in changes:
-                    if change["changeType"] != TicketsClient.Recency.DELETED:
-                        properties.extend(change["changes"]["changedProperties"])
-                properties = set(properties)
-
-                # This is an getting all the changed variables for all tickets,
-                # this is more data than needed, should eventually break in
-                # groups to get less discarted data
-                tickets_history = self.get_batch_with_history(list(ids),
-                                                              extra_properties=list(properties))
-
-                changes = self._merge_changes_with_history(changes, tickets_history,
-                                                           max_time_diff_ms)
-                yield from changes
+            yield from changes
 
     def _merge_changes_with_history(self,
                                     changes: list,
                                     tickets_history: dict,
                                     max_time_diff_ms: int) -> List[dict]:
+        # TODO Should this method be in this lib?? I don't think so....
         # First lets group changes by deal id
         changes_by_id = {}
         for change in changes:
@@ -326,12 +308,37 @@ class TicketsClient(BaseClient):
         # Finally lets return only the changes as a list
         return [change for changes in changes_by_id.values() for change in changes]
 
+    def expand_recently_modified(self, changes, max_time_diff_ms: int = None):
+        """
+            Given a list of changes (returned by get_recently_modified) it will add a field
+            in changes-changedValue with the value of each change
+        """
+
+        if max_time_diff_ms is None:
+            max_time_diff_ms = self._MAX_TIME_DIFF_MS
+
+        ids = {change["objectId"] for change in changes}
+        properties = set()
+        for change in changes:
+            if change["changeType"] != TicketsClient.Recency.DELETED:
+                properties.update(change["changes"]["changedProperties"])
+
+        print(properties)
+        # This is an getting all the changed variables for all tickets,
+        # this is more data than needed, should eventually break in
+        # groups to get less discarted data
+        tickets_history = self.get_batch_with_history(list(ids),
+                                                      extra_properties=list(properties))
+
+        changes = self._merge_changes_with_history(changes, tickets_history,
+                                                       max_time_diff_ms)
+        return changes
+
     def get_recently_modified_as_generator(self, limit: int = -1, time_offset: int = 0,
                                            ticket_id_offset: int = 0) -> List[dict]:
         """
-        get recently modified and created tickets, adding a field in changes-changedValue with
-        the value of each change
-        the returned value is done with yield at each page (max 1000 changes)
+        get recently modified and created tickets, the returned value is done with
+        yield at each page (max 1000 changes)
         :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
         return self._get_recent(TicketsClient.Recency.MODIFIED, limit=limit,
@@ -340,9 +347,7 @@ class TicketsClient(BaseClient):
     def get_recently_modified(self, limit: int = -1, time_offset: int = 0,
                               ticket_id_offset: int = 0) -> List[dict]:
         """
-        get recently modified and created tickets, adding a field in changes-changedValue with
-        the value of each change
-        returned as a list of all changes
+        get recently modified and created tickets, returned as a list of all changes
         :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
         generator = self.get_recently_modified_as_generator(limit=limit, time_offset=time_offset,
@@ -352,9 +357,8 @@ class TicketsClient(BaseClient):
     def get_recently_created_as_generator(self, limit: int = -1, time_offset: int = 0,
                                           ticket_id_offset: int = 0) -> List[dict]:
         """
-        get recently created tickets, adding a field in changes-changedValue with
-        the value of each change
-        the returned value is done with yield at each page (max 1000 changes)
+        get recently created tickets, the returned value is done with yield at each
+        page (max 1000 changes)
         :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
         return self._get_recent(TicketsClient.Recency.CREATED, limit=limit,
@@ -363,9 +367,7 @@ class TicketsClient(BaseClient):
     def get_recently_created(self, limit: int = -1, time_offset: int = 0,
                              ticket_id_offset: int = 0) -> List[dict]:
         """
-        get recently created tickets, adding a field in changes-changedValue with
-        the value of each change
-        returned as a list of all changes
+        get recently created tickets, returned as a list of all changes
         :see: https://developers.hubspot.com/docs/methods/tickets/get-ticket-changes
         """
         generator = self.get_recently_created_as_generator(limit=limit, time_offset=time_offset,
