@@ -316,10 +316,7 @@ class TicketsClient(BaseClient):
                     min_time_index = min(range(len(time_diffs)),
                                          key=time_diffs.__getitem__)
                     if time_diffs[min_time_index] <= max_time_diff_ms:
-                        if "value" in versions[min_time_index]:
-                            value = versions[min_time_index]["value"]
-                        else:
-                            value = None
+                        value = versions[min_time_index].get("value")
                         change["changes"]["changedValues"][changed_variable] = value
                     else:
                         get_log(__name__).warning("Unable to find value for "
