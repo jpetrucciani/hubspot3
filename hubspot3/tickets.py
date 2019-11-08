@@ -1,7 +1,7 @@
 """
 hubspot tickets api
 """
-from typing import Dict, List, Union
+from typing import Dict, Iterator, List, Set, Union
 
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
@@ -17,6 +17,19 @@ class TicketsClient(BaseClient):
     """
 
     default_batch_properties = ["subject"]
+
+    """
+    Since this value is not defined by hubspot, and the tickets API is
+    different from the others I won't assume that this number is equal
+    for all APIs. Waiting on an anwser from Hubspot for a more precise
+    value
+    """
+    _MAXIMUM_REQUEST_LENGTH = 15500
+
+    """
+    Same comment above is true for this
+    """
+    _MAX_TIME_DIFF_MS = 60000
 
     class Recency:
         """recency type enum"""
@@ -67,47 +80,130 @@ class TicketsClient(BaseClient):
             "objects/tickets/{}".format(ticket_id), method="GET", **options
         )
 
-    def get_all(self, limit: int = -1, **options) -> list:
+    def _join_output_properties(self, tickets: List[dict]) -> List[dict]:
+        """
+        Join request properties to show only one output per ticketId
+        This will change the first object for each ticketId
+        """
+        joined_tickets_dict = {}
+        for ticket in tickets:
+            ticket_id = ticket["objectId"]
+            if ticket_id not in joined_tickets_dict:
+                joined_tickets_dict[ticket_id] = ticket
+            else:
+                joined_tickets_dict[ticket_id]["properties"].update(ticket["properties"])
+        return list(joined_tickets_dict.values())
+
+    def _split_properties(self, properties: Set[str],
+                          max_properties_request_length: int = None,
+                          property_name: str = "properties") -> List[Set[str]]:
+        """
+        Split a set of properties in a list of sets of properties where the total length of
+        "properties=..." for each property is smaller than the max
+        """
+        if max_properties_request_length is None:
+            max_properties_request_length = self._MAXIMUM_REQUEST_LENGTH
+
+        # property_name_len is its length plus the '=' at the end
+        property_name_len = len(property_name) + 1
+
+        current_length = 0
+        properties_groups = []
+        current_properties_group = []
+        for single_property in properties:
+            current_length += len(single_property) + property_name_len
+
+            if current_length > max_properties_request_length:
+                properties_groups.append(current_properties_group)
+                current_length = 0
+                current_properties_group = []
+
+            current_properties_group.append(single_property)
+
+        if len(current_properties_group) > 0:
+            properties_groups.append(current_properties_group)
+
+        return properties_groups
+
+    def get_all(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
+                with_history: bool = False, **options) -> list:
         """
         Get all tickets in hubspot
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
         """
-        finished = False
-        output = []  # type: list
-        offset = 0
+        generator = self.get_all_as_generator(limit=limit, extra_properties=extra_properties,
+                                              with_history=with_history, **options)
+        return list(generator)
+
+    def get_all_as_generator(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
+                             with_history: bool = False, **options) -> Iterator[dict]:
+        """
+        Get all tickets in hubspot, returning them as a generator
+        :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
+        """
+
         limited = limit > 0
+
+        properties = self._get_properties(extra_properties)
+
+        if with_history:
+            property_name = "propertiesWithHistory"
+        else:
+            property_name = "properties"
+
+        properties_groups = self._split_properties(properties, property_name=property_name)
+
+        offset = 0
+        total_tickets = 0
+        finished = False
         while not finished:
-            batch = self._call(
-                "objects/tickets/paged",
-                method="GET",
-                params={"offset": offset},
-                **options
-            )
-            output.extend(batch["objects"])
-            finished = not batch["hasMore"]
+            # Since properties is added to the url there is a limiting amount that you can request
+            unjoined_outputs = []
+            for properties_group in properties_groups:
+                batch = self._call(
+                    "objects/tickets/paged",
+                    method="GET",
+                    doseq=True,
+                    params={"offset": offset, property_name: properties_group},
+                    **options
+                )
+                unjoined_outputs.extend(batch["objects"])
+            outputs = self._join_output_properties(unjoined_outputs)
+
+            total_tickets += len(outputs)
             offset = batch["offset"]
 
-        return output if not limited else output[:limit]
+            reached_limit = limited and total_tickets >= limit
+            finished = not batch["hasMore"] or reached_limit
 
-    def _get_batch(self, ids: List[int], extra_properties: Union[List[str], str] = None,
-                   with_history: bool = False) -> Dict[str, dict]:
-        """given a batch of ticket_ids, get more of their info"""
-        # default properties to fetch
+            # Since the API doesn't aways tries to return 100 tickets we may pass the desired limit
+            if reached_limit:
+                outputs = outputs[:limit]
+
+            yield from outputs
+
+    def _get_properties(self, extra_properties: Union[List[str], str] = None) -> Set[str]:
         properties = set(self.default_batch_properties)
 
-        # append extras if they exist
         if extra_properties:
             if isinstance(extra_properties, list):
                 properties.update(extra_properties)
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
+
+        return properties
+
+    def _get_batch(self, ids: List[int], extra_properties: Union[List[str], str] = None,
+                   with_history: bool = False) -> Dict[str, dict]:
+        """given a batch of ticket_ids, get more of their info"""
+        properties = self._get_properties(extra_properties)
         if with_history:
             property_name = "propertiesWithHistory"
         else:
             property_name = "properties"
         params = {}
         params[property_name] = list(properties)
-        params['includeDeletes'] = True
+        params["includeDeletes"] = True
         # run the ids as a list of 100
         batch = {}
         remaining_ids = ids.copy()
@@ -142,9 +238,12 @@ class TicketsClient(BaseClient):
         limit: int = -1,
         ticket_id_offset: int = 0,
         time_offset: int = 0,
-        max_time_diff_ms: int = 60000,
+        max_time_diff_ms: int = None,
         **options
     ) -> List:
+
+        if max_time_diff_ms is None:
+            max_time_diff_ms = self._MAX_TIME_DIFF_MS
 
         limited = limit > 0
         total_tickets = 0

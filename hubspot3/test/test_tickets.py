@@ -48,15 +48,72 @@ def test_get_ticket():
     assert isinstance(ticket, dict)
 
 
-def test_get_all_tickets():
+def test_get_all_tickets(tickets_client, mock_connection):
     """
     tests getting all tickets
     :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
     """
-    tickets = TICKETS.get_all()
-    assert tickets
-    assert isinstance(tickets, list)
-    assert len(tickets) > 1
+    response_bodies = [{
+        "objects": [
+            {
+                "addedAt": 1390574181854,
+                "objectId": 204726,
+                "properties": {"prop_1": 1},
+            }
+        ],
+        "hasMore": True,
+        "offset": 204727,
+    }, {"objects": [], "hasMore": True, "offset": 204727}, {
+        "objects": [
+            {
+                "addedAt": 1390574181854,
+                "objectId": 204727,
+                "properties": {"prop_1": 1},
+            }
+        ],
+        "hasMore": False,
+        "offset": 204727,
+    }, {
+        "objects": [
+            {
+                "addedAt": 1390574181854,
+                "objectId": 204727,
+                "properties": {"prop_2": 1},
+            },
+            {
+                "addedAt": 1390574181854,
+                "objectId": 204728,
+                "properties": {"prop_2": 1},
+            }
+        ],
+        "hasMore": False,
+        "offset": 204727,
+    }]
+
+    # This extra properties are enough to generate 2 requests
+    extra_properties = [str(num) for num in range(2000)]
+
+    responses = [(200, response_body) for response_body in response_bodies]
+    mock_connection.set_responses(responses)
+
+    tickets = tickets_client.get_all(extra_properties=extra_properties)
+
+    mock_connection.assert_num_requests(4)
+    for extra_property in extra_properties:
+        # This checks if a request had the URL and includes the given parameters
+        mock_connection.assert_has_request(
+            "GET", "/crm-objects/v1/objects/tickets/paged", **{"properties": extra_property}
+        )
+
+    assert len(tickets) == 3
+
+    first_ticket = [ticket for ticket in tickets if ticket["objectId"] == 204726][0]
+    second_ticket = [ticket for ticket in tickets if ticket["objectId"] == 204727][0]
+    third_ticket = [ticket for ticket in tickets if ticket["objectId"] == 204728][0]
+
+    assert set(first_ticket["properties"].keys()) == {"prop_1"}
+    assert set(second_ticket["properties"].keys()) == {"prop_1", "prop_2"}
+    assert set(third_ticket["properties"].keys()) == {"prop_2"}
 
 
 @pytest.mark.parametrize(
@@ -89,10 +146,10 @@ def test_get_batch(
         # Underling function only accepts one value per parameter
         params = {"properties": one_property}
         mock_connection.assert_has_request(
-            "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={'ids': ids}
+            "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={"ids": ids}
         )
     assert len(tickets) == 2
-    response_ids = [ticket['id'] for ticket in tickets]
+    response_ids = [ticket["id"] for ticket in tickets]
     for single_id in ids:
         assert int(single_id) in response_ids
 
@@ -129,7 +186,7 @@ def test_get_batch_with_history(
         # Underling function only accepts one value per parameter
         params = {"propertiesWithHistory": one_property}
         mock_connection.assert_has_request(
-            "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={'ids': ids}
+            "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={"ids": ids}
         )
     assert len(resp) == 2
     for single_id in ids:
@@ -143,79 +200,79 @@ def base_get_recently(
 ):
     response_body_recent = [
         {
-            'timestamp': 1571409899877,
-            'changeType': 'CHANGED',
-            'objectId': 47005994,
-            'changes':
+            "timestamp": 1571409899877,
+            "changeType": "CHANGED",
+            "objectId": 47005994,
+            "changes":
             {
-                'changedProperties': ['hs_lastcontacted', 'hs_last_email_activity'],
-                'newAssociations': [],
-                'removedAssociations': [],
-                'newListMemberships': [],
-                'removedListMemberships': [],
+                "changedProperties": ["hs_lastcontacted", "hs_last_email_activity"],
+                "newAssociations": [],
+                "removedAssociations": [],
+                "newListMemberships": [],
+                "removedListMemberships": [],
             }
         },
         {
-            'timestamp': 1571411169000,
-            'changeType': 'CREATED',
-            'objectId': 47005994,
-            'changes':
+            "timestamp": 1571411169000,
+            "changeType": "CREATED",
+            "objectId": 47005994,
+            "changes":
             {
-                'changedProperties': ['hs_lastcontacted', 'hs_last_email_activity'],
-                'newAssociations': [],
-                'removedAssociations': [],
-                'newListMemberships': [],
-                'removedListMemberships': [],
+                "changedProperties": ["hs_lastcontacted", "hs_last_email_activity"],
+                "newAssociations": [],
+                "removedAssociations": [],
+                "newListMemberships": [],
+                "removedListMemberships": [],
             }
         }
     ]
     response_body_batch = {
-        '47005994': {
-            'objectType': 'TICKET',
-            'portalId': 5282301,
-            'objectId': 47005994,
-            'properties': {
-                'hs_lastcontacted': {
-                    'versions': [{
-                        'name': 'hs_lastcontacted',
-                        'value': '1571427728000',
-                        'timestamp': 1571411169418,
-                        'sourceId': 'TicketsRollupProperties',
-                        'source': 'CALCULATED',
-                        'sourceVid': []
+        "47005994": {
+            "objectType": "TICKET",
+            "portalId": 5282301,
+            "objectId": 47005994,
+            "properties": {
+                "hs_lastcontacted": {
+                    "versions": [{
+                        "name": "hs_lastcontacted",
+                        "value": "1571427728000",
+                        "timestamp": 1571411169418,
+                        "sourceId": "TicketsRollupProperties",
+                        "source": "CALCULATED",
+                        "sourceVid": []
                     }, {
-                        'name': 'hs_lastcontacted',
-                        'value': '1571415325000',
-                        'timestamp': 1571410899877,
-                        'sourceId': 'TicketsRollupProperties',
-                        'source': 'CALCULATED',
-                        'sourceVid': []
+                        "name": "hs_lastcontacted",
+                        "value": "1571415325000",
+                        "timestamp": 1571410899877,
+                        "sourceId": "TicketsRollupProperties",
+                        "source": "CALCULATED",
+                        "sourceVid": []
                     }],
-                    'value': '1571427728000',
-                    'timestamp': 1571411169418,
-                    'source': 'CALCULATED',
-                    'sourceId': 'TicketsRollupProperties'
+                    "value": "1571427728000",
+                    "timestamp": 1571411169418,
+                    "source": "CALCULATED",
+                    "sourceId": "TicketsRollupProperties"
                 },
-                'hs_last_email_activity': {
-                    'versions': [{
-                        'name': 'hs_last_email_activity',
-                        'value': 'SENT_TO_CONTACT',
-                        'timestamp': 1571411169118,
-                        'sourceId': 'TicketsRollupProperties',
-                        'source': 'CALCULATED',
-                        'sourceVid': []
+                "hs_last_email_activity": {
+                    "versions": [{
+                        "name": "hs_last_email_activity",
+                        "value": "SENT_TO_CONTACT",
+                        "timestamp": 1571411169118,
+                        "sourceId": "TicketsRollupProperties",
+                        "source": "CALCULATED",
+                        "sourceVid": []
                     }, {
-                        'name': 'hs_last_email_activity',
-                        'value': 'REPLY_FROM_CONTACT',
-                        'timestamp': 1571409899877,
-                        'sourceId': 'TicketsRollupProperties',
-                        'source': 'CALCULATED',
-                        'sourceVid': []
+                        "name": "hs_last_email_activity",
+                        "value": "REPLY_FROM_CONTACT",
+                        "timestamp": 1571409899877,
+                        "sourceId": "TicketsRollupProperties",
+                        "source": "CALCULATED",
+                        "sourceVid": []
                     }],
-                    'value': 'SENT_TO_CONTACT',
-                    'timestamp': 1571411169118,
-                    'source': 'CALCULATED',
-                    'sourceId': 'TicketsRollupProperties'
+                    "value": "SENT_TO_CONTACT",
+                    "timestamp": 1571411169118,
+                    "source": "CALCULATED",
+                    "sourceId": "TicketsRollupProperties"
                 }
             }
         }
@@ -223,17 +280,17 @@ def base_get_recently(
     # TODO should add more complex data to test, this is not testing the full complexity of the
     # method
     ids = [47005994]
-    properties = ['hs_lastcontacted', 'hs_last_email_activity']
+    properties = ["hs_lastcontacted", "hs_last_email_activity"]
     params_recent = {
-        'objectId': 47005994,
-        'timestamp': 1571411169000,
-        'changeType': changeType
+        "objectId": 47005994,
+        "timestamp": 1571411169000,
+        "changeType": changeType
     }
 
     mock_connection.set_responses([(200, json.dumps(response_body_recent)),
                                    (200, json.dumps(response_body_batch)),
-                                   (200, '[]')])
-    if changeType == 'CHANGED':
+                                   (200, "[]")])
+    if changeType == "CHANGED":
         get_recently_method = tickets_client.get_recently_modified
     else:
         get_recently_method = tickets_client.get_recently_created
@@ -247,24 +304,24 @@ def base_get_recently(
         # Underling function only accepts one value per parameter
         params_batch = {"propertiesWithHistory": one_property}
         mock_connection.assert_has_request(
-            "POST", "/crm-objects/v1/objects/tickets/batch-read", **params_batch, data={'ids': ids},
+            "POST", "/crm-objects/v1/objects/tickets/batch-read", **params_batch, data={"ids": ids},
         )
     assert len(changes) == 2
-    assert [change['objectId'] for change in changes] == [change['objectId'] for
+    assert [change["objectId"] for change in changes] == [change["objectId"] for
                                                           change in response_body_recent]
-    assert len(changes[0]['changes']['changedValues']) == 1
-    assert len(changes[1]['changes']['changedValues']) == 2
+    assert len(changes[0]["changes"]["changedValues"]) == 1
+    assert len(changes[1]["changes"]["changedValues"]) == 2
 
 
 def test_get_recently_created(
     tickets_client,
     mock_connection,
 ):
-    base_get_recently(tickets_client, mock_connection, 'CREATED')
+    base_get_recently(tickets_client, mock_connection, "CREATED")
 
 
 def test_get_recently_modified(
     tickets_client,
     mock_connection,
 ):
-    base_get_recently(tickets_client, mock_connection, 'CHANGED')
+    base_get_recently(tickets_client, mock_connection, "CHANGED")
