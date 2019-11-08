@@ -26,11 +26,6 @@ class TicketsClient(BaseClient):
     """
     _MAXIMUM_REQUEST_LENGTH = 15500
 
-    """
-    Same comment above is true for this
-    """
-    _MAX_TIME_DIFF_MS = 60000
-
     class Recency:
         """recency type enum"""
 
