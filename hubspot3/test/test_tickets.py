@@ -116,38 +116,27 @@ def test_get_all_tickets(tickets_client, mock_connection):
     assert set(third_ticket["properties"].keys()) == {"prop_2"}
 
 
-@pytest.mark.parametrize(
-    "extra_properties_given, extra_properties_as_list",
-    [(None, []),
-     ("lead_source", ["lead_source"]),
-     (["hs_analytics_last_url", "hs_analytics_revenue"],
-      ["hs_analytics_last_url", "hs_analytics_revenue"]
-      )
-     ]
-)
-def test_get_batch(
-    tickets_client,
-    mock_connection,
-    extra_properties_given,
-    extra_properties_as_list,
-):
+def test_get_batch(tickets_client, mock_connection):
     response_body = {
         "3234574": {"objectId": 3234574, "properties": {}},
         "3234575": {"objectId": 3234575, "properties": {}},
     }
     ids = ["3234574", "3234575"]
     properties = TicketsClient.default_batch_properties.copy()
-    properties.extend(extra_properties_as_list)
+
+    # This extra properties are enough to generate 2 requests
+    extra_properties = [str(num) for num in range(2000)]
 
     mock_connection.set_response(200, json.dumps(response_body))
-    tickets = tickets_client.get_batch(ids, extra_properties_given)
-    mock_connection.assert_num_requests(1)
-    for one_property in properties:
+    tickets = tickets_client.get_batch(ids, extra_properties=extra_properties)
+    mock_connection.assert_num_requests(2)
+    for one_property in properties.extend(extra_properties):
         # Underling function only accepts one value per parameter
         params = {"properties": one_property}
         mock_connection.assert_has_request(
             "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={"ids": ids}
         )
+
     assert len(tickets) == 2
     response_ids = [ticket["id"] for ticket in tickets]
     for single_id in ids:
