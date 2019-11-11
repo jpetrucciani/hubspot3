@@ -122,7 +122,6 @@ def test_get_batch(tickets_client, mock_connection):
         "3234575": {"objectId": 3234575, "properties": {}},
     }
     ids = ["3234574", "3234575"]
-    properties = TicketsClient.default_batch_properties.copy()
 
     # This extra properties are enough to generate 2 requests
     extra_properties = [str(num) for num in range(2000)]
@@ -130,7 +129,7 @@ def test_get_batch(tickets_client, mock_connection):
     mock_connection.set_response(200, json.dumps(response_body))
     tickets = tickets_client.get_batch(ids, extra_properties=extra_properties)
     mock_connection.assert_num_requests(2)
-    for one_property in properties.extend(extra_properties):
+    for one_property in extra_properties:
         # Underling function only accepts one value per parameter
         params = {"properties": one_property}
         mock_connection.assert_has_request(
