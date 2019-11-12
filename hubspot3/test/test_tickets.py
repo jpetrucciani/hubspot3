@@ -117,29 +117,61 @@ def test_get_all_tickets(tickets_client, mock_connection):
 
 
 def test_get_batch(tickets_client, mock_connection):
-    response_body = {
-        "3234574": {"objectId": 3234574, "properties": {}},
-        "3234575": {"objectId": 3234575, "properties": {}},
-    }
     ids = ["3234574", "3234575"]
 
-    # This extra properties are enough to generate 2 requests
-    extra_properties = [str(num) for num in range(2000)]
+    response_bodies = [{
+        "3234574": {"objectId": 3234574,
+                    "properties": {
+                        "a": {
+                            "value": "1571427728000",
+                            "timestamp": 1571411169418,
+                            "source": "CALCULATED",
+                            "sourceId": "TicketsRollupProperties"}}},
+        "3234575": {"objectId": 3234575,
+                    "properties": {
+                        "a": {
+                            "value": "1571427728000",
+                            "timestamp": 1571411169418,
+                            "source": "CALCULATED",
+                            "sourceId": "TicketsRollupProperties"}}}},
+        {
+        "3234574": {"objectId": 3234574,
+                    "properties":
+                        {"b": {
+                            "value": "1571427728000",
+                            "timestamp": 1571411169418,
+                            "source": "CALCULATED",
+                            "sourceId": "TicketsRollupProperties"}}},
+        "3234575": {"objectId": 3234575,
+                    "properties":
+                        {"b": {
+                            "value": "1571427728000",
+                            "timestamp": 1571411169418,
+                            "source": "CALCULATED",
+                            "sourceId": "TicketsRollupProperties"}}}}]
 
-    mock_connection.set_response(200, json.dumps(response_body))
-    tickets = tickets_client.get_batch(ids, extra_properties=extra_properties)
+    # This extra properties are enough to generate 2 requests
+    extra_properties = [str(num) for num in range(1000)]
+
+    responses = [(200, response_body) for response_body in response_bodies]
+    mock_connection.set_responses(responses)
+
+    tickets = tickets_client.get_batch_with_history(ids, extra_properties=extra_properties)
     mock_connection.assert_num_requests(2)
     for one_property in extra_properties:
         # Underling function only accepts one value per parameter
-        params = {"properties": one_property}
+        params = {"propertiesWithHistory": one_property}
         mock_connection.assert_has_request(
             "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={"ids": ids}
         )
 
     assert len(tickets) == 2
-    response_ids = [ticket["id"] for ticket in tickets]
+    response_ids = tickets.keys()
     for single_id in ids:
-        assert int(single_id) in response_ids
+        assert single_id in response_ids
+
+    for ticket in tickets.values():
+        assert set(ticket["properties"].keys()) == {"a", "b"}
 
 
 @pytest.mark.parametrize(
