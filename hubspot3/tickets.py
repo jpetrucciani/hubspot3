@@ -1,7 +1,7 @@
 """
 hubspot tickets api
 """
-from typing import Dict, Iterator, List, Set, Union
+from typing import Dict, Iterator, List, Set, Optional, Union
 
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
@@ -103,7 +103,7 @@ class TicketsClient(BaseClient):
         return list(self._join_output_properties(tickets).values())
 
     def _split_properties(self, properties: Set[str],
-                          max_properties_request_length: int = None,
+                          max_properties_request_length: Optional[int] = None,
                           property_name: str = "properties") -> List[Set[str]]:
         """
         Split a set of properties in a list of sets of properties where the total length of
