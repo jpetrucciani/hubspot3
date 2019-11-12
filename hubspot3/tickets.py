@@ -95,13 +95,6 @@ class TicketsClient(BaseClient):
                 joined_tickets_dict[ticket_id]["properties"].update(ticket["properties"])
         return joined_tickets_dict
 
-    def _join_output_properties_to_list(self, tickets: List[dict]) -> List[dict]:
-        """
-        Create a list with joined request properties to show only one object per ticketId
-        This will change the first object for each ticketId
-        """
-        return list(self._join_output_properties(tickets).values())
-
     def _split_properties(self, properties: Set[str],
                           max_properties_request_length: Optional[int] = None,
                           property_name: str = "properties") -> List[Set[str]]:
@@ -176,7 +169,9 @@ class TicketsClient(BaseClient):
                     **options
                 )
                 unjoined_outputs.extend(batch["objects"])
-            outputs = self._join_output_properties_to_list(unjoined_outputs)
+
+            outputs_dict = self._join_output_properties(unjoined_outputs)
+            outputs = list(outputs_dict.values())
 
             total_tickets += len(outputs)
             offset = batch["offset"]
