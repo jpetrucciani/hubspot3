@@ -186,10 +186,11 @@ def test_get_batch_with_history(
     extra_properties_given,
     extra_properties_as_list,
 ):
-    response_body = {
-        "3234574": {"objectId": 3234574, "properties": {}},
-        "3234575": {"objectId": 3234575, "properties": {}},
-    }
+    response_body = {"3234574": {"objectId": 3234574,
+                                 "properties": {}},
+                     "3234575": {"objectId": 3234575,
+                                 "properties": {}},
+                     }
     ids = ["3234574", "3234575"]
     properties = TicketsClient.default_batch_properties.copy()
     properties.extend(extra_properties_as_list)
@@ -213,6 +214,7 @@ def base_get_recently(
     mock_connection,
     changeType
 ):
+  
     response_body_recent = [{"timestamp": 1571409899877,
                              "changeType": "CHANGED",
                              "objectId": 47005994,
@@ -235,57 +237,6 @@ def base_get_recently(
                              }
                             ]
 
-    hs_lastcontacted_versions = [{"name": "hs_lastcontacted",
-                                  "value": "1571427728000",
-                                  "timestamp": 1571411169418,
-                                  "sourceId": "TicketsRollupProperties",
-                                  "source": "CALCULATED",
-                                  "sourceVid": []},
-                                 {"name": "hs_lastcontacted",
-                                  "value": "1571415325000",
-                                  "timestamp": 1571410899877,
-                                  "sourceId": "TicketsRollupProperties",
-                                  "source": "CALCULATED",
-                                  "sourceVid": []}
-                                 ]
-
-    hs_last_email_activity_versions = [{"name": "hs_last_email_activity",
-                                        "value": "SENT_TO_CONTACT",
-                                        "timestamp": 1571411169118,
-                                        "sourceId": "TicketsRollupProperties",
-                                        "source": "CALCULATED",
-                                        "sourceVid": []},
-                                       {"name": "hs_last_email_activity",
-                                        "value": "REPLY_FROM_CONTACT",
-                                        "timestamp": 1571409899877,
-                                        "sourceId": "TicketsRollupProperties",
-                                        "source": "CALCULATED",
-                                        "sourceVid": []}
-                                       ]                          
-
-    response_body_batch = {"47005994": {"objectType": "TICKET",
-                                        "portalId": 5282301,
-                                        "objectId": 47005994,
-                                        "properties":
-                                            {"hs_lastcontacted":
-                                                {"versions": hs_lastcontacted_versions,
-                                                 "value": "1571427728000",
-                                                 "timestamp": 1571411169418,
-                                                 "source": "CALCULATED",
-                                                 "sourceId": "TicketsRollupProperties"},
-                                             "hs_last_email_activity":
-                                                {"versions": hs_last_email_activity_versions,
-                                                 "value": "SENT_TO_CONTACT",
-                                                 "timestamp": 1571411169118,
-                                                 "source": "CALCULATED",
-                                                 "sourceId": "TicketsRollupProperties"}
-                                             }
-                                        }
-                           }
-    # TODO should add more complex data to test, this is not testing the full complexity of the
-    # method
-    ids = [47005994]
-    properties = ["hs_lastcontacted", "hs_last_email_activity"]
     params_recent = {
         "objectId": 47005994,
         "timestamp": 1571411169000,
@@ -293,29 +244,20 @@ def base_get_recently(
     }
 
     mock_connection.set_responses([(200, json.dumps(response_body_recent)),
-                                   (200, json.dumps(response_body_batch)),
                                    (200, "[]")])
     if changeType == "CHANGED":
         get_recently_method = tickets_client.get_recently_modified
     else:
         get_recently_method = tickets_client.get_recently_created
     changes = get_recently_method(time_offset=1571847002)
-    mock_connection.assert_num_requests(3)
+    mock_connection.assert_num_requests(2)
 
     mock_connection.assert_has_request(
         "GET", "/crm-objects/v1/change-log/ticket", **params_recent
     )
-    for one_property in properties:
-        # Underling function only accepts one value per parameter
-        params_batch = {"propertiesWithHistory": one_property}
-        mock_connection.assert_has_request(
-            "POST", "/crm-objects/v1/objects/tickets/batch-read", **params_batch, data={"ids": ids},
-        )
+
     assert len(changes) == 2
-    assert [change["objectId"] for change in changes] == [change["objectId"] for
-                                                          change in response_body_recent]
-    assert len(changes[0]["changes"]["changedValues"]) == 1
-    assert len(changes[1]["changes"]["changedValues"]) == 2
+    assert changes == response_body_recent
 
 
 def test_get_recently_created(
