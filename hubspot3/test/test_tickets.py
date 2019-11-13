@@ -53,42 +53,36 @@ def test_get_all_tickets(tickets_client, mock_connection):
     tests getting all tickets
     :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
     """
-    response_bodies = [{
-        "objects": [
-            {
-                "addedAt": 1390574181854,
-                "objectId": 204726,
-                "properties": {"prop_1": 1},
-            }
-        ],
-        "hasMore": True,
-        "offset": 204727,
-    }, {"objects": [], "hasMore": True, "offset": 204727}, {
-        "objects": [
-            {
-                "addedAt": 1390574181854,
-                "objectId": 204727,
-                "properties": {"prop_1": 1},
-            }
-        ],
-        "hasMore": False,
-        "offset": 204727,
-    }, {
-        "objects": [
-            {
-                "addedAt": 1390574181854,
-                "objectId": 204727,
-                "properties": {"prop_2": 1},
-            },
-            {
-                "addedAt": 1390574181854,
-                "objectId": 204728,
-                "properties": {"prop_2": 1},
-            }
-        ],
-        "hasMore": False,
-        "offset": 204727,
-    }]
+    response_bodies = [{"objects": [{"addedAt": 1390574181854,
+                                     "objectId": 204726,
+                                     "properties": {"prop_1": 1}
+                                     }
+                                    ],
+                        "hasMore": True,
+                        "offset": 204727},
+                       {"objects": [],
+                        "hasMore": True,
+                        "offset": 204727},
+                       {"objects": [{"addedAt": 1390574181854,
+                                     "objectId": 204727,
+                                     "properties": {"prop_1": 1},
+                                     }
+                                    ],
+                        "hasMore": False,
+                        "offset": 204727},
+                       {"objects": [{"addedAt": 1390574181854,
+                                     "objectId": 204727,
+                                     "properties": {"prop_2": 1},
+                                     },
+                                    {"addedAt": 1390574181854,
+                                     "objectId": 204728,
+                                    "properties": {"prop_2": 1},
+                                     }
+                                    ],
+                        "hasMore": False,
+                        "offset": 204727,
+                        }
+                       ]
 
     # This extra properties are enough to generate 2 requests
     extra_properties = [str(num) for num in range(2000)]
@@ -219,85 +213,73 @@ def base_get_recently(
     mock_connection,
     changeType
 ):
-    response_body_recent = [
-        {
-            "timestamp": 1571409899877,
-            "changeType": "CHANGED",
-            "objectId": 47005994,
-            "changes":
-            {
-                "changedProperties": ["hs_lastcontacted", "hs_last_email_activity"],
-                "newAssociations": [],
-                "removedAssociations": [],
-                "newListMemberships": [],
-                "removedListMemberships": [],
-            }
-        },
-        {
-            "timestamp": 1571411169000,
-            "changeType": "CREATED",
-            "objectId": 47005994,
-            "changes":
-            {
-                "changedProperties": ["hs_lastcontacted", "hs_last_email_activity"],
-                "newAssociations": [],
-                "removedAssociations": [],
-                "newListMemberships": [],
-                "removedListMemberships": [],
-            }
-        }
-    ]
-    response_body_batch = {
-        "47005994": {
-            "objectType": "TICKET",
-            "portalId": 5282301,
-            "objectId": 47005994,
-            "properties": {
-                "hs_lastcontacted": {
-                    "versions": [{
-                        "name": "hs_lastcontacted",
-                        "value": "1571427728000",
-                        "timestamp": 1571411169418,
-                        "sourceId": "TicketsRollupProperties",
-                        "source": "CALCULATED",
-                        "sourceVid": []
-                    }, {
-                        "name": "hs_lastcontacted",
-                        "value": "1571415325000",
-                        "timestamp": 1571410899877,
-                        "sourceId": "TicketsRollupProperties",
-                        "source": "CALCULATED",
-                        "sourceVid": []
-                    }],
-                    "value": "1571427728000",
-                    "timestamp": 1571411169418,
-                    "source": "CALCULATED",
-                    "sourceId": "TicketsRollupProperties"
-                },
-                "hs_last_email_activity": {
-                    "versions": [{
-                        "name": "hs_last_email_activity",
-                        "value": "SENT_TO_CONTACT",
-                        "timestamp": 1571411169118,
-                        "sourceId": "TicketsRollupProperties",
-                        "source": "CALCULATED",
-                        "sourceVid": []
-                    }, {
-                        "name": "hs_last_email_activity",
-                        "value": "REPLY_FROM_CONTACT",
-                        "timestamp": 1571409899877,
-                        "sourceId": "TicketsRollupProperties",
-                        "source": "CALCULATED",
-                        "sourceVid": []
-                    }],
-                    "value": "SENT_TO_CONTACT",
-                    "timestamp": 1571411169118,
-                    "source": "CALCULATED",
-                    "sourceId": "TicketsRollupProperties"
-                }
-            }
-        }
-    }
+    response_body_recent = [{"timestamp": 1571409899877,
+                             "changeType": "CHANGED",
+                             "objectId": 47005994,
+                             "changes": {"changedProperties": ["hs_lastcontacted",
+                                                               "hs_last_email_activity"],
+                                         "newAssociations": [],
+                                         "removedAssociations": [],
+                                         "newListMemberships": [],
+                                         "removedListMemberships": []}
+                             },
+                            {"timestamp": 1571411169000,
+                             "changeType": "CREATED",
+                             "objectId": 47005994,
+                             "changes": {"changedProperties": ["hs_lastcontacted",
+                                                               "hs_last_email_activity"],
+                                         "newAssociations": [],
+                                         "removedAssociations": [],
+                                         "newListMemberships": [],
+                                         "removedListMemberships": []}
+                             }
+                            ]
+
+    source_id = "TicketsRollupProperties"
+
+    response_body_batch = {"47005994": {"objectType": "TICKET",
+                                        "portalId": 5282301,
+                                        "objectId": 47005994,
+                                        "properties":
+                                            {"hs_lastcontacted":
+                                                {"versions": [{"name": "hs_lastcontacted",
+                                                               "value": "1571427728000",
+                                                               "timestamp": 1571411169418,
+                                                               "sourceId": source_id,
+                                                               "source": "CALCULATED",
+                                                               "sourceVid": []},
+                                                              {"name": "hs_lastcontacted",
+                                                               "value": "1571415325000",
+                                                               "timestamp": 1571410899877,
+                                                               "sourceId": source_id,
+                                                               "source": "CALCULATED",
+                                                               "sourceVid": []}
+                                                              ],
+                                                 "value": "1571427728000",
+                                                 "timestamp": 1571411169418,
+                                                 "source": "CALCULATED",
+                                                 "sourceId": source_id},
+                                             "hs_last_email_activity":
+                                                {"versions": [{"name": "hs_last_email_activity",
+                                                               "value": "SENT_TO_CONTACT",
+                                                               "timestamp": 1571411169118,
+                                                               "sourceId": source_id,
+                                                               "source": "CALCULATED",
+                                                               "sourceVid": []},
+                                                              {"name": "hs_last_email_activity",
+                                                               "value": "REPLY_FROM_CONTACT",
+                                                               "timestamp": 1571409899877,
+                                                               "sourceId": source_id,
+                                                               "source": "CALCULATED",
+                                                               "sourceVid": []}
+                                                              ],
+                                                 "value": "SENT_TO_CONTACT",
+                                                 "timestamp": 1571411169118,
+                                                 "source": "CALCULATED",
+                                                 "sourceId": source_id}
+                                             }
+                                        }
+                           }
     # TODO should add more complex data to test, this is not testing the full complexity of the
     # method
     ids = [47005994]
