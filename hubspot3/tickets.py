@@ -1,7 +1,7 @@
 """
 hubspot tickets api
 """
-from typing import Dict, Iterator, List, Set, Union
+from typing import Dict, Iterator, List, Set, Optional, Union
 
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
@@ -75,22 +75,23 @@ class TicketsClient(BaseClient):
             "objects/tickets/{}".format(ticket_id), method="GET", **options
         )
 
-    def _join_output_properties(self, tickets: List[dict]) -> List[dict]:
+    def _join_output_properties(self, tickets: List[dict]) -> dict:
         """
-        Join request properties to show only one output per ticketId
+        Join request properties to show only one object per ticketId
         This will change the first object for each ticketId
         """
         joined_tickets_dict = {}
         for ticket in tickets:
-            ticket_id = ticket["objectId"]
+            # Converting the ID to str to make it compatible with API
+            ticket_id = str(ticket["objectId"])
             if ticket_id not in joined_tickets_dict:
                 joined_tickets_dict[ticket_id] = ticket
             else:
                 joined_tickets_dict[ticket_id]["properties"].update(ticket["properties"])
-        return list(joined_tickets_dict.values())
+        return joined_tickets_dict
 
     def _split_properties(self, properties: Set[str],
-                          max_properties_request_length: int = None,
+                          max_properties_request_length: Optional[int] = None,
                           property_name: str = "properties") -> List[Set[str]]:
         """
         Split a set of properties in a list of sets of properties where the total length of
@@ -163,7 +164,9 @@ class TicketsClient(BaseClient):
                     **options
                 )
                 unjoined_outputs.extend(batch["objects"])
-            outputs = self._join_output_properties(unjoined_outputs)
+
+            outputs_dict = self._join_output_properties(unjoined_outputs)
+            outputs = list(outputs_dict.values())
 
             total_tickets += len(outputs)
             offset = batch["offset"]
@@ -196,22 +199,28 @@ class TicketsClient(BaseClient):
             property_name = "propertiesWithHistory"
         else:
             property_name = "properties"
-        params = {}
-        params[property_name] = list(properties)
-        params["includeDeletes"] = True
+
+        properties_groups = self._split_properties(properties, property_name=property_name)
+
         # run the ids as a list of 100
         batch = {}
         remaining_ids = ids.copy()
         while len(remaining_ids) > 0:
             partial_ids = remaining_ids[:100]
             remaining_ids = remaining_ids[100:]
-            partial_batch = self._call(
-                "objects/tickets/batch-read",
-                method="POST",
-                doseq=True,
-                params=params,
-                data={"ids": partial_ids}
-            )
+
+            unjoined_outputs = []
+            for properties_group in properties_groups:
+                partial_batch = self._call(
+                    "objects/tickets/batch-read",
+                    method="POST",
+                    doseq=True,
+                    params={"includeDeletes": True, property_name: properties_group},
+                    data={"ids": partial_ids}
+                )
+                unjoined_outputs.extend(partial_batch.values())
+
+            partial_batch = self._join_output_properties(unjoined_outputs)
             batch.update(partial_batch)
         return batch
 

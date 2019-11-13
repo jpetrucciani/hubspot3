@@ -53,42 +53,36 @@ def test_get_all_tickets(tickets_client, mock_connection):
     tests getting all tickets
     :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
     """
-    response_bodies = [{
-        "objects": [
-            {
-                "addedAt": 1390574181854,
-                "objectId": 204726,
-                "properties": {"prop_1": 1},
-            }
-        ],
-        "hasMore": True,
-        "offset": 204727,
-    }, {"objects": [], "hasMore": True, "offset": 204727}, {
-        "objects": [
-            {
-                "addedAt": 1390574181854,
-                "objectId": 204727,
-                "properties": {"prop_1": 1},
-            }
-        ],
-        "hasMore": False,
-        "offset": 204727,
-    }, {
-        "objects": [
-            {
-                "addedAt": 1390574181854,
-                "objectId": 204727,
-                "properties": {"prop_2": 1},
-            },
-            {
-                "addedAt": 1390574181854,
-                "objectId": 204728,
-                "properties": {"prop_2": 1},
-            }
-        ],
-        "hasMore": False,
-        "offset": 204727,
-    }]
+    response_bodies = [{"objects": [{"addedAt": 1390574181854,
+                                     "objectId": 204726,
+                                     "properties": {"prop_1": 1}
+                                     }
+                                    ],
+                        "hasMore": True,
+                        "offset": 204727},
+                       {"objects": [],
+                        "hasMore": True,
+                        "offset": 204727},
+                       {"objects": [{"addedAt": 1390574181854,
+                                     "objectId": 204727,
+                                     "properties": {"prop_1": 1},
+                                     }
+                                    ],
+                        "hasMore": False,
+                        "offset": 204727},
+                       {"objects": [{"addedAt": 1390574181854,
+                                     "objectId": 204727,
+                                     "properties": {"prop_2": 1},
+                                     },
+                                    {"addedAt": 1390574181854,
+                                     "objectId": 204728,
+                                    "properties": {"prop_2": 1},
+                                     }
+                                    ],
+                        "hasMore": False,
+                        "offset": 204727,
+                        }
+                       ]
 
     # This extra properties are enough to generate 2 requests
     extra_properties = [str(num) for num in range(2000)]
@@ -116,42 +110,63 @@ def test_get_all_tickets(tickets_client, mock_connection):
     assert set(third_ticket["properties"].keys()) == {"prop_2"}
 
 
-@pytest.mark.parametrize(
-    "extra_properties_given, extra_properties_as_list",
-    [(None, []),
-     ("lead_source", ["lead_source"]),
-     (["hs_analytics_last_url", "hs_analytics_revenue"],
-      ["hs_analytics_last_url", "hs_analytics_revenue"]
-      )
-     ]
-)
-def test_get_batch(
-    tickets_client,
-    mock_connection,
-    extra_properties_given,
-    extra_properties_as_list,
-):
-    response_body = {
-        "3234574": {"objectId": 3234574, "properties": {}},
-        "3234575": {"objectId": 3234575, "properties": {}},
-    }
+def test_get_batch(tickets_client, mock_connection):
     ids = ["3234574", "3234575"]
-    properties = TicketsClient.default_batch_properties.copy()
-    properties.extend(extra_properties_as_list)
 
-    mock_connection.set_response(200, json.dumps(response_body))
-    tickets = tickets_client.get_batch(ids, extra_properties_given)
-    mock_connection.assert_num_requests(1)
-    for one_property in properties:
+    response_bodies = [{"3234574": {"objectId": 3234574,
+                                    "properties": {"a": {"value": "1571427728000",
+                                                         "timestamp": 1571411169418,
+                                                         "source": "CALCULATED",
+                                                         "sourceId": "TicketsRollupProperties"}
+                                                   }
+                                    },
+                        "3234575": {"objectId": 3234575,
+                                    "properties": {"a": {"value": "1571427728000",
+                                                         "timestamp": 1571411169418,
+                                                         "source": "CALCULATED",
+                                                         "sourceId": "TicketsRollupProperties"}
+                                                   }
+                                    }
+                        },
+                       {"3234574": {"objectId": 3234574,
+                                    "properties": {"b": {"value": "1571427728000",
+                                                         "timestamp": 1571411169418,
+                                                         "source": "CALCULATED",
+                                                         "sourceId": "TicketsRollupProperties"}
+                                                   }
+                                    },
+                        "3234575": {"objectId": 3234575,
+                                    "properties": {"b": {"value": "1571427728000",
+                                                         "timestamp": 1571411169418,
+                                                         "source": "CALCULATED",
+                                                         "sourceId": "TicketsRollupProperties"}
+                                                   }
+                                    }
+                        }
+                       ]
+
+    # This extra properties are enough to generate 2 requests
+    extra_properties = [str(num) for num in range(1000)]
+
+    responses = [(200, response_body) for response_body in response_bodies]
+    mock_connection.set_responses(responses)
+
+    tickets = tickets_client.get_batch_with_history(ids, extra_properties=extra_properties)
+    mock_connection.assert_num_requests(2)
+    for one_property in extra_properties:
         # Underling function only accepts one value per parameter
-        params = {"properties": one_property}
+        params = {"propertiesWithHistory": one_property}
         mock_connection.assert_has_request(
             "POST", "/crm-objects/v1/objects/tickets/batch-read", **params, data={"ids": ids}
         )
+
     assert len(tickets) == 2
-    response_ids = [ticket["id"] for ticket in tickets]
+    response_ids = tickets.keys()
     for single_id in ids:
-        assert int(single_id) in response_ids
+        assert single_id in response_ids
+
+    for ticket in tickets.values():
+        assert set(ticket["properties"].keys()) == {"a", "b"}
 
 
 @pytest.mark.parametrize(
@@ -171,10 +186,11 @@ def test_get_batch_with_history(
     extra_properties_given,
     extra_properties_as_list,
 ):
-    response_body = {
-        "3234574": {"objectId": 3234574, "properties": {}},
-        "3234575": {"objectId": 3234575, "properties": {}},
-    }
+    response_body = {"3234574": {"objectId": 3234574,
+                                 "properties": {}},
+                     "3234575": {"objectId": 3234575,
+                                 "properties": {}},
+                     }
     ids = ["3234574", "3234575"]
     properties = TicketsClient.default_batch_properties.copy()
     properties.extend(extra_properties_as_list)
@@ -198,34 +214,28 @@ def base_get_recently(
     mock_connection,
     changeType
 ):
-    response_body_recent = [
-        {
-            "timestamp": 1571409899877,
-            "changeType": "CHANGED",
-            "objectId": 47005994,
-            "changes":
-            {
-                "changedProperties": ["hs_lastcontacted", "hs_last_email_activity"],
-                "newAssociations": [],
-                "removedAssociations": [],
-                "newListMemberships": [],
-                "removedListMemberships": [],
-            }
-        },
-        {
-            "timestamp": 1571411169000,
-            "changeType": "CREATED",
-            "objectId": 47005994,
-            "changes":
-            {
-                "changedProperties": ["hs_lastcontacted", "hs_last_email_activity"],
-                "newAssociations": [],
-                "removedAssociations": [],
-                "newListMemberships": [],
-                "removedListMemberships": [],
-            }
-        }
-    ]
+  
+    response_body_recent = [{"timestamp": 1571409899877,
+                             "changeType": "CHANGED",
+                             "objectId": 47005994,
+                             "changes": {"changedProperties": ["hs_lastcontacted",
+                                                               "hs_last_email_activity"],
+                                         "newAssociations": [],
+                                         "removedAssociations": [],
+                                         "newListMemberships": [],
+                                         "removedListMemberships": []}
+                             },
+                            {"timestamp": 1571411169000,
+                             "changeType": "CREATED",
+                             "objectId": 47005994,
+                             "changes": {"changedProperties": ["hs_lastcontacted",
+                                                               "hs_last_email_activity"],
+                                         "newAssociations": [],
+                                         "removedAssociations": [],
+                                         "newListMemberships": [],
+                                         "removedListMemberships": []}
+                             }
+                            ]
 
     params_recent = {
         "objectId": 47005994,
