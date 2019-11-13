@@ -119,36 +119,37 @@ def test_get_all_tickets(tickets_client, mock_connection):
 def test_get_batch(tickets_client, mock_connection):
     ids = ["3234574", "3234575"]
 
-    response_bodies = [{
-        "3234574": {"objectId": 3234574,
-                    "properties": {
-                        "a": {
-                            "value": "1571427728000",
-                            "timestamp": 1571411169418,
-                            "source": "CALCULATED",
-                            "sourceId": "TicketsRollupProperties"}}},
-        "3234575": {"objectId": 3234575,
-                    "properties": {
-                        "a": {
-                            "value": "1571427728000",
-                            "timestamp": 1571411169418,
-                            "source": "CALCULATED",
-                            "sourceId": "TicketsRollupProperties"}}}},
-        {
-        "3234574": {"objectId": 3234574,
-                    "properties":
-                        {"b": {
-                            "value": "1571427728000",
-                            "timestamp": 1571411169418,
-                            "source": "CALCULATED",
-                            "sourceId": "TicketsRollupProperties"}}},
-        "3234575": {"objectId": 3234575,
-                    "properties":
-                        {"b": {
-                            "value": "1571427728000",
-                            "timestamp": 1571411169418,
-                            "source": "CALCULATED",
-                            "sourceId": "TicketsRollupProperties"}}}}]
+    response_bodies = [{"3234574": {"objectId": 3234574,
+                                    "properties": {"a": {"value": "1571427728000",
+                                                         "timestamp": 1571411169418,
+                                                         "source": "CALCULATED",
+                                                         "sourceId": "TicketsRollupProperties"}
+                                                   }
+                                    },
+                        "3234575": {"objectId": 3234575,
+                                    "properties": {"a": {"value": "1571427728000",
+                                                         "timestamp": 1571411169418,
+                                                         "source": "CALCULATED",
+                                                         "sourceId": "TicketsRollupProperties"}
+                                                   }
+                                    }
+                        },
+                       {"3234574": {"objectId": 3234574,
+                                    "properties": {"b": {"value": "1571427728000",
+                                                         "timestamp": 1571411169418,
+                                                         "source": "CALCULATED",
+                                                         "sourceId": "TicketsRollupProperties"}
+                                                   }
+                                    },
+                        "3234575": {"objectId": 3234575,
+                                    "properties": {"b": {"value": "1571427728000",
+                                                         "timestamp": 1571411169418,
+                                                         "source": "CALCULATED",
+                                                         "sourceId": "TicketsRollupProperties"}
+                                                   }
+                                    }
+                        }
+                       ]
 
     # This extra properties are enough to generate 2 requests
     extra_properties = [str(num) for num in range(1000)]
