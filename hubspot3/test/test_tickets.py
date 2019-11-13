@@ -235,48 +235,50 @@ def base_get_recently(
                              }
                             ]
 
-    source_id = "TicketsRollupProperties"
+    hs_lastcontacted_versions = [{"name": "hs_lastcontacted",
+                                  "value": "1571427728000",
+                                  "timestamp": 1571411169418,
+                                  "sourceId": "TicketsRollupProperties",
+                                  "source": "CALCULATED",
+                                  "sourceVid": []},
+                                 {"name": "hs_lastcontacted",
+                                  "value": "1571415325000",
+                                  "timestamp": 1571410899877,
+                                  "sourceId": "TicketsRollupProperties",
+                                  "source": "CALCULATED",
+                                  "sourceVid": []}
+                                 ]
+
+    hs_last_email_activity_versions = [{"name": "hs_last_email_activity",
+                                        "value": "SENT_TO_CONTACT",
+                                        "timestamp": 1571411169118,
+                                        "sourceId": "TicketsRollupProperties",
+                                        "source": "CALCULATED",
+                                        "sourceVid": []},
+                                       {"name": "hs_last_email_activity",
+                                        "value": "REPLY_FROM_CONTACT",
+                                        "timestamp": 1571409899877,
+                                        "sourceId": "TicketsRollupProperties",
+                                        "source": "CALCULATED",
+                                        "sourceVid": []}
+                                       ]                          
 
     response_body_batch = {"47005994": {"objectType": "TICKET",
                                         "portalId": 5282301,
                                         "objectId": 47005994,
                                         "properties":
                                             {"hs_lastcontacted":
-                                                {"versions": [{"name": "hs_lastcontacted",
-                                                               "value": "1571427728000",
-                                                               "timestamp": 1571411169418,
-                                                               "sourceId": source_id,
-                                                               "source": "CALCULATED",
-                                                               "sourceVid": []},
-                                                              {"name": "hs_lastcontacted",
-                                                               "value": "1571415325000",
-                                                               "timestamp": 1571410899877,
-                                                               "sourceId": source_id,
-                                                               "source": "CALCULATED",
-                                                               "sourceVid": []}
-                                                              ],
+                                                {"versions": hs_lastcontacted_versions,
                                                  "value": "1571427728000",
                                                  "timestamp": 1571411169418,
                                                  "source": "CALCULATED",
-                                                 "sourceId": source_id},
+                                                 "sourceId": "TicketsRollupProperties"},
                                              "hs_last_email_activity":
-                                                {"versions": [{"name": "hs_last_email_activity",
-                                                               "value": "SENT_TO_CONTACT",
-                                                               "timestamp": 1571411169118,
-                                                               "sourceId": source_id,
-                                                               "source": "CALCULATED",
-                                                               "sourceVid": []},
-                                                              {"name": "hs_last_email_activity",
-                                                               "value": "REPLY_FROM_CONTACT",
-                                                               "timestamp": 1571409899877,
-                                                               "sourceId": source_id,
-                                                               "source": "CALCULATED",
-                                                               "sourceVid": []}
-                                                              ],
+                                                {"versions": hs_last_email_activity_versions,
                                                  "value": "SENT_TO_CONTACT",
                                                  "timestamp": 1571411169118,
                                                  "source": "CALCULATED",
-                                                 "sourceId": source_id}
+                                                 "sourceId": "TicketsRollupProperties"}
                                              }
                                         }
                            }
