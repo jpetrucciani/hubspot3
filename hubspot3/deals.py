@@ -157,16 +157,21 @@ class DealsClient(BaseClient):
                     doseq=True,
                     **options
                 )
-                unjoined_deals.extend(batch['deals'])
+                unjoined_deals.extend(batch["deals"])
+
             deals = self._join_output_properties(unjoined_deals)
+
             deal_counter += len(deals)
             reached_limit = limited and deal_counter >= limit
+
             if reached_limit:
                 cutoff = len(deals) - (deal_counter - limit)
                 deals = deals[:cutoff]
-            yield from deals
+
             finished = not batch["hasMore"] or reached_limit
             offset = batch["offset"]
+
+            yield from deals
 
     def _get_recent(
         self,
