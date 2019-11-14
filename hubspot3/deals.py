@@ -2,10 +2,10 @@
 hubspot deals api
 """
 import urllib.parse
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 from hubspot3.base import BaseClient
-from hubspot3.utils import get_log, prettify
+from hubspot3.utils import get_log, prettify, split_properties
 
 DEALS_API_VERSION = "1"
 
@@ -73,11 +73,46 @@ class DealsClient(BaseClient):
         limit: int = -1,
         **options
     ):
+        deals_generator = self.get_all_as_generator(offset=offset,
+                                                    extra_properties=extra_properties,
+                                                    limit=limit, with_history=False, **options)
+        deals = list(deals_generator)
+        pretty_deals = [prettify(deal, id_key="dealId") for deal in deals if not deal["isDeleted"]]
+        return pretty_deals
+
+    def _join_output_properties(self, deals: List[dict]) -> dict:
+        """
+        Join request properties to show only one object per ticketId
+        This will change the first object for each ticketId
+        """
+        joined_deals_dict = {}
+        for deal in deals:
+            # Converting the ID to str to make it compatible with API
+            deal_id = str(deal["dealId"])
+            if deal_id not in joined_deals_dict:
+                joined_deals_dict[deal_id] = deal
+            else:
+                joined_deals_dict[deal_id]["properties"].update(deal["properties"])
+        joined_deals = list(joined_deals_dict.values())
+        return joined_deals
+
+    def get_all_as_generator(
+        self,
+        offset: int = 0,
+        extra_properties: Union[list, str] = None,
+        limit: int = -1,
+        with_history: bool = False,
+        **options
+    ):
         """
         get all deals in the hubspot account.
         extra_properties: a list used to extend the properties fetched
         :see: https://developers.hubspot.com/docs/methods/deals/get-all-deals
         """
+        if with_history:
+            property_name = "propertiesWithHistory"
+        else:
+            property_name = "properties"
         finished = False
         output = []
         query_limit = 250  # Max value according to docs
@@ -106,30 +141,33 @@ class DealsClient(BaseClient):
             if isinstance(extra_properties, str):
                 properties.append(extra_properties)
 
+        properties_groups = split_properties(properties, property_name=property_name)
+        deal_counter = 0
         while not finished:
-            batch = self._call(
-                "deal/paged",
-                method="GET",
-                params={
-                    "limit": query_limit,
-                    "offset": offset,
-                    "properties": properties,
-                    "includeAssociations": True,
-                },
-                doseq=True,
-                **options
-            )
-            output.extend(
-                [
-                    prettify(deal, id_key="dealId")
-                    for deal in batch["deals"]
-                    if not deal["isDeleted"]
-                ]
-            )
-            finished = not batch["hasMore"] or (limited and len(output) >= limit)
+            unjoined_deals = []
+            for properties_group in properties_groups:
+                batch = self._call(
+                    "deal/paged",
+                    method="GET",
+                    params={
+                        "limit": query_limit,
+                        "offset": offset,
+                        property_name: properties_group,
+                        "includeAssociations": True,
+                    },
+                    doseq=True,
+                    **options
+                )
+                unjoined_deals.extend(batch['deals'])
+            deals = self._join_output_properties(unjoined_deals)
+            deal_counter += len(deals)
+            reached_limit = limited and deal_counter >= limit
+            if reached_limit:
+                cutoff = len(deals) - (deal_counter - limit)
+                deals = deals[:cutoff]
+            yield from deals
+            finished = not batch["hasMore"] or reached_limit
             offset = batch["offset"]
-
-        return output if not limited else output[:limit]
 
     def _get_recent(
         self,
