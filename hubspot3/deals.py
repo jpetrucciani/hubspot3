@@ -114,7 +114,6 @@ class DealsClient(BaseClient):
         else:
             property_name = "properties"
         finished = False
-        output = []
         query_limit = 250  # Max value according to docs
         limited = limit > 0
         if limited and limit < query_limit:
