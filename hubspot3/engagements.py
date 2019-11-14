@@ -64,12 +64,20 @@ class EngagementsClient(BaseClient):
             "engagements/{}".format(key), data=data, method="PUT", **options
         )
 
-    def get_all(self, **options):
+    def get_all(self, limit=-1, **options):
+        engagement_generator = self.get_all_as_generator(limit=limit,
+                                                         **options)
+        return list(engagement_generator)
+
+    def get_all_as_generator(self, limit=-1, **options):
         """get all engagements"""
         finished = False
-        output = []
         query_limit = 250  # Max value according to docs
+        limited = limit > 0
+        if limited and limit < query_limit:
+            query_limit = limit
         offset = 0
+        engagement_counter = 0
         while not finished:
             batch = self._call(
                 "engagements/paged",
@@ -77,8 +85,18 @@ class EngagementsClient(BaseClient):
                 params={"limit": query_limit, "offset": offset},
                 **options
             )
-            output.extend(batch["results"])
-            finished = not batch["hasMore"]
+
+            engagements = batch["results"]
+
+            engagement_counter += len(engagements)
+            reached_limit = limited and engagement_counter >= limit
+
+            if reached_limit:
+                cutoff = len(engagements) - (engagement_counter - limit)
+                engagements = engagements[:cutoff]
+
+            finished = not batch["hasMore"] or reached_limit
             offset = batch["offset"]
 
-        return output
+            yield from engagements
+
