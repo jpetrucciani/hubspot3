@@ -4,10 +4,11 @@ base utils for the hubspot3 library
 import logging
 import sys
 from collections import OrderedDict
-from typing import Dict, Union
+from typing import Dict, Union, List, Optional, Set
 
 
 PY_VERSION = sys.version_info
+MAXIMUM_REQUEST_LENGTH = 15500
 
 
 class NullHandler(logging.Handler):
@@ -58,3 +59,35 @@ def ordered_dict(dictionary: Dict) -> Union[Dict, OrderedDict]:
     if PY_VERSION[0] == 3 and PY_VERSION[1] == 5:
         return OrderedDict(sorted(dictionary.items(), key=lambda x: x[0]))
     return dictionary
+
+
+def split_properties(properties: Set[str],
+                     max_properties_request_length: Optional[int] = None,
+                     property_name: str = "properties") -> List[Set[str]]:
+    """
+    Split a set of properties in a list of sets of properties where the total length of
+    "properties=..." for each property is smaller than the max
+    """
+    if max_properties_request_length is None:
+        max_properties_request_length = MAXIMUM_REQUEST_LENGTH
+
+    # property_name_len is its length plus the '=' at the end
+    property_name_len = len(property_name) + 1
+
+    current_length = 0
+    properties_groups = []
+    current_properties_group = []
+    for single_property in properties:
+        current_length += len(single_property) + property_name_len
+
+        if current_length > max_properties_request_length:
+            properties_groups.append(current_properties_group)
+            current_length = 0
+            current_properties_group = []
+
+        current_properties_group.append(single_property)
+
+    if len(current_properties_group) > 0:
+        properties_groups.append(current_properties_group)
+
+    return properties_groups
