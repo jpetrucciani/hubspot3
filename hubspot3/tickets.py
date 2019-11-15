@@ -47,7 +47,7 @@ class TicketsClient(BaseClient):
             "objects/tickets/{}".format(ticket_id), method="PUT", data=data, **options
         )
 
-    def get(self, ticket_id: str, properties: list() = None, include_deleted: bool = False, **options) -> Dict:
+    def get(self, ticket_id: str, properties: list = None, include_deleted: bool = False, **options) -> Dict:
         """
         get a ticket by its ticket_id
         TODO: add properties support
@@ -62,7 +62,7 @@ class TicketsClient(BaseClient):
             "objects/tickets/{}".format(ticket_id), method="GET", properties=properties, **options
         )
 
-    def get_all(self, properties: list() = None, limit: int = -1, **options) -> list:
+    def get_all(self, properties: list = None, limit: int = -1, **options) -> list:
         """
         Get all tickets in hubspot
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets

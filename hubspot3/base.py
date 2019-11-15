@@ -348,7 +348,7 @@ class BaseClient:
         doseq: bool = False,
         query: str = "",
         raw: bool = False,
-        properties: list() = None,
+        properties: list = None,
         **options
     ):
         result = self._call_raw(
