@@ -55,7 +55,7 @@ class TicketsClient(BaseClient):
         TODO: add properties support
         :see: https://developers.hubspot.com/docs/methods/tickets/get_ticket_by_id
         """
-        properties = properties or ["subject","content","hs_pipeline","hs_pipeline_stage"]
+        properties = properties or ["subject", "content", "hs_pipeline", "hs_pipeline_stage"]
 
         params = options.pop("params", {})
         params.update({"includeDeletes": include_deleted})
@@ -70,7 +70,7 @@ class TicketsClient(BaseClient):
         Get all tickets in hubspot
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
         """
-        properties = properties or ["subject","content","hs_pipeline","hs_pipeline_stage"]
+        properties = properties or ["subject", "content", "hs_pipeline", "hs_pipeline_stage"]
 
         finished = False
         output = []  # type: list
