@@ -110,9 +110,10 @@ class BaseClient:
             params["hapikey"] = params.get("hapikey") or self.api_key
 
     def _prepare_request(
-        self, subpath, params, data, opts, doseq=False, query="", retried=False
+        self, subpath, params, data, opts, doseq=False, query="", retried=False, properties=None
     ):
         params = params or {}
+        properties = properties or []
         self._prepare_request_auth(subpath, params, data, opts)
 
         if opts.get("hub_id") or opts.get("portal_id"):
@@ -138,6 +139,9 @@ class BaseClient:
 
         if data and headers["Content-Type"] == "application/json" and not retried:
             data = json.dumps(data)
+
+        for hs_property in properties:
+            url += '&properties={}'.format(hs_property)
 
         return url, headers, data
 
@@ -221,6 +225,7 @@ class BaseClient:
         doseq=False,
         query="",
         retried=False,
+        properties=None,
         **options
     ):
         opts = self.options.copy()
@@ -229,7 +234,11 @@ class BaseClient:
         debug = opts.get("debug")
 
         url, headers, data = self._prepare_request(
-            subpath, params, data, opts, doseq=doseq, query=query, retried=retried
+            subpath, params, data, opts,
+            doseq=doseq,
+            query=query,
+            retried=retried,
+            properties=properties
         )
 
         if debug:
@@ -343,6 +352,7 @@ class BaseClient:
         doseq: bool = False,
         query: str = "",
         raw: bool = False,
+        properties: list = None,
         **options
     ):
         result = self._call_raw(
@@ -353,6 +363,7 @@ class BaseClient:
             doseq=doseq,
             query=query,
             retried=False,
+            properties=properties,
             **options
         )
         return result if raw else self._digest_result(result.body)
