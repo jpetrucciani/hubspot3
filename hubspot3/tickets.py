@@ -3,7 +3,7 @@ hubspot tickets api
 """
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
-from typing import Dict
+from typing import Dict, List
 
 
 TICKETS_API_VERSION = "1"
@@ -25,7 +25,7 @@ class TicketsClient(BaseClient):
         return "crm-objects/v{}/{}".format(TICKETS_API_VERSION, subpath)
 
     def create(
-        self, pipeline: str, stage: str, properties: dict = None, **options
+        self, pipeline: str, stage: str, properties: Dict = None, **options
     ) -> Dict:
         """
         create a ticket.
@@ -42,35 +42,55 @@ class TicketsClient(BaseClient):
         ticket_data.append({"name": "hs_pipeline_stage", "value": stage})
         return self._call("objects/tickets", data=ticket_data, method="POST", **options)
 
-    def update(self, ticket_id: str, data: dict, **options) -> Dict:
+    def update(self, ticket_id: str, data: Dict, **options) -> Dict:
+        """
+        update a ticket by its ticket id, with the given data
+        :see: https://developers.hubspot.com/docs/methods/tickets/update-ticket
+        """
         return self._call(
             "objects/tickets/{}".format(ticket_id), method="PUT", data=data, **options
         )
 
     def get(
-        self, ticket_id: str, properties: list = None, include_deleted: bool = False, **options
+        self,
+        ticket_id: str,
+        properties: List[str] = None,
+        include_deleted: bool = False,
+        **options
     ) -> Dict:
         """
         get a ticket by its ticket_id
-        TODO: add properties support
         :see: https://developers.hubspot.com/docs/methods/tickets/get_ticket_by_id
         """
-        properties = properties or ["subject", "content", "hs_pipeline", "hs_pipeline_stage"]
+        properties = properties or [
+            "subject",
+            "content",
+            "hs_pipeline",
+            "hs_pipeline_stage",
+        ]
 
         params = options.pop("params", {})
         params.update({"includeDeletes": include_deleted})
         options.update({"params": params})
 
         return self._call(
-            "objects/tickets/{}".format(ticket_id), method="GET", properties=properties, **options
+            "objects/tickets/{}".format(ticket_id),
+            method="GET",
+            properties=properties,
+            **options
         )
 
-    def get_all(self, properties: list = None, limit: int = -1, **options) -> list:
+    def get_all(self, properties: List[str] = None, limit: int = -1, **options) -> list:
         """
         Get all tickets in hubspot
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
         """
-        properties = properties or ["subject", "content", "hs_pipeline", "hs_pipeline_stage"]
+        properties = properties or [
+            "subject",
+            "content",
+            "hs_pipeline",
+            "hs_pipeline_stage",
+        ]
 
         finished = False
         output = []  # type: list

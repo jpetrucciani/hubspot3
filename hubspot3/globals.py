@@ -1,10 +1,11 @@
 """
 globals file for hubspot3
 """
-__version__ = "3.2.36"
+__version__ = "3.2.37"
 
 
 BASE_URL = "https://api.hubapi.com"
+
 
 OBJECT_TYPE_COMPANIES = "companies"
 OBJECT_TYPE_CONTACTS = "contacts"

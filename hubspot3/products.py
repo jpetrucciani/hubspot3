@@ -3,7 +3,7 @@ hubspot products api
 """
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log, ordered_dict
-from typing import List
+from typing import Dict, List
 
 
 PRODUCTS_API_VERSION = "1"
@@ -70,12 +70,12 @@ class ProductsClient(BaseClient):
             self.options.get("version") or PRODUCTS_API_VERSION, subpath
         )
 
-    def create(self, data=None, **options):
+    def create(self, data: Dict = None, **options):
         """Create a new product."""
         data = data or {}
         return self._call("objects/products", data=data, method="POST", **options)
 
-    def update(self, product_id, data=None, **options):
+    def update(self, product_id: str, data: Dict = None, **options):
         """Update a product based on its product ID."""
         data = data or {}
         return self._call(
@@ -85,7 +85,7 @@ class ProductsClient(BaseClient):
             **options
         )
 
-    def delete(self, product_id, **options):
+    def delete(self, product_id: str, **options):
         """Delete a product based on its product ID."""
         return self._call(
             "objects/products/{product_id}".format(product_id=product_id),

@@ -110,7 +110,15 @@ class BaseClient:
             params["hapikey"] = params.get("hapikey") or self.api_key
 
     def _prepare_request(
-        self, subpath, params, data, opts, doseq=False, query="", retried=False, properties=None
+        self,
+        subpath,
+        params,
+        data,
+        opts,
+        doseq=False,
+        query="",
+        retried=False,
+        properties=None,
     ):
         params = params or {}
         properties = properties or []
@@ -141,7 +149,7 @@ class BaseClient:
             data = json.dumps(data)
 
         for hs_property in properties:
-            url += '&properties={}'.format(hs_property)
+            url += "&properties={}".format(hs_property)
 
         return url, headers, data
 
@@ -234,11 +242,14 @@ class BaseClient:
         debug = opts.get("debug")
 
         url, headers, data = self._prepare_request(
-            subpath, params, data, opts,
+            subpath,
+            params,
+            data,
+            opts,
             doseq=doseq,
             query=query,
             retried=retried,
-            properties=properties
+            properties=properties,
         )
 
         if debug:
