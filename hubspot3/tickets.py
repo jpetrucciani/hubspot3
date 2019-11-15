@@ -47,13 +47,21 @@ class TicketsClient(BaseClient):
             "objects/tickets/{}".format(ticket_id), method="PUT", data=data, **options
         )
 
-    def get(self, ticket_id: str, properties: list = None, include_deleted: bool = False, **options) -> Dict:
+    def get(self, ticket_id: str, properties: list = None, include_deleted: bool = False, **options
+    ) -> Dict:
         """
         get a ticket by its ticket_id
         TODO: add properties support
         :see: https://developers.hubspot.com/docs/methods/tickets/get_ticket_by_id
         """
-        properties = properties or ["subject", "content", "hs_pipeline", "hs_pipeline_stage", "hs_pipeline"]
+        properties = properties or [
+                "subject", 
+                "content", 
+                "hs_pipeline", 
+                "hs_pipeline_stage", 
+                "hs_pipeline"
+            ]
+
         params = options.pop("params", {})
         params.update({"includeDeletes": include_deleted})
         options.update({"params": params})
@@ -67,7 +75,14 @@ class TicketsClient(BaseClient):
         Get all tickets in hubspot
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
         """
-        properties = properties or ["subject", "content", "hs_pipeline", "hs_pipeline_stage", "hs_pipeline"]
+        properties = properties or [
+                "subject", 
+                "content", 
+                "hs_pipeline", 
+                "hs_pipeline_stage", 
+                "hs_pipeline"
+            ]
+            
         finished = False
         output = []  # type: list
         offset = 0

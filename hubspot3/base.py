@@ -110,7 +110,7 @@ class BaseClient:
             params["hapikey"] = params.get("hapikey") or self.api_key
 
     def _prepare_request(
-        self, subpath, params, data, opts, doseq=False, query="", retried=False, properties=[]
+        self, subpath, params, data, opts, doseq=False, query="", retried=False, properties=None
     ):
         params = params or {}
         properties = properties or []
@@ -140,8 +140,8 @@ class BaseClient:
         if data and headers["Content-Type"] == "application/json" and not retried:
             data = json.dumps(data)
 
-        for property in properties:
-            url += '&properties={}'.format(property)
+        for hs_property in properties:
+            url += '&properties={}'.format(hs_property)
 
         return url, headers, data
 
@@ -234,7 +234,11 @@ class BaseClient:
         debug = opts.get("debug")
 
         url, headers, data = self._prepare_request(
-            subpath, params, data, opts, doseq=doseq, query=query, retried=retried, properties=properties
+            subpath, params, data, opts, 
+            doseq=doseq, 
+            query=query, 
+            retried=retried, 
+            properties=properties
         )
 
         if debug:
