@@ -234,10 +234,10 @@ class BaseClient:
         debug = opts.get("debug")
 
         url, headers, data = self._prepare_request(
-            subpath, params, data, opts, 
-            doseq=doseq, 
-            query=query, 
-            retried=retried, 
+            subpath, params, data, opts,
+            doseq=doseq,
+            query=query,
+            retried=retried,
             properties=properties
         )
 
