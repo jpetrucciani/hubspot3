@@ -15,7 +15,7 @@ class NullHandler(logging.Handler):
         pass
 
 
-def get_log(name):
+def get_log(name: str):
     logger = logging.getLogger(name)
     logger.addHandler(NullHandler())
     return logger

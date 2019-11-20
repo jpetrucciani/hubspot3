@@ -18,10 +18,10 @@ class Hubspot3UsageLimits:
 
     def __init__(
         self,
-        collected_at: datetime = datetime.fromtimestamp(0),
+        collected_at: datetime = datetime.now(),
         current_usage: int = 0,
         fetch_status: str = FetchStatus.NONE,
-        resets_at: datetime = datetime.fromtimestamp(0),
+        resets_at: datetime = datetime.now(),
         usage_limit: int = 0,
     ) -> None:
         """usage limits constructor"""
