@@ -55,7 +55,8 @@ class DealsClient(BaseClient):
 
     def associate(self, deal_id, object_type, object_ids, **options):
         # Encoding the query string here since HubSpot is expecting the "id" parameter to be
-        # repeated for each object ID, which is not a standard practice and won't work otherwise.
+        # repeated for each object ID, which is not a standard practice and
+        # won't work otherwise.
         object_ids = [("id", object_id) for object_id in object_ids]
         query = urllib.parse.urlencode(object_ids)
 
@@ -69,7 +70,7 @@ class DealsClient(BaseClient):
     def get_all(
         self,
         offset: int = 0,
-        extra_properties: Union[list, str] = None,
+        extra_properties: Union[list, str]=None,
         limit: int = -1,
         **options
     ):
@@ -126,7 +127,8 @@ class DealsClient(BaseClient):
                     if not deal["isDeleted"]
                 ]
             )
-            finished = not batch["hasMore"] or (limited and len(output) >= limit)
+            finished = not batch["hasMore"] or (
+                limited and len(output) >= limit)
             offset = batch["offset"]
 
         return output if not limited else output[:limit]
