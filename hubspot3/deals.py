@@ -27,11 +27,16 @@ class DealsClient(BaseClient):
         self.log = get_log("hubspot3.deals")
 
     def _get_path(self, subpath):
+        """get the full api url for the given subpath on this client"""
         return "deals/v{}/{}".format(
             self.options.get("version") or DEALS_API_VERSION, subpath
         )
 
     def get(self, deal_id: str, **options):
+        """
+        get a single deal by id
+        :see: https://developers.hubspot.com/docs/methods/deals/get_deal
+        """
         return self._call("deal/{}".format(deal_id), method="GET", **options)
 
     def create(self, data: dict = None, **options):
@@ -43,6 +48,10 @@ class DealsClient(BaseClient):
         return self._call("deal/", data=data, method="POST", **options)
 
     def update(self, deal_id: str, data: dict = None, **options):
+        """
+        update a deal by id
+        :see: https://developers.hubspot.com/docs/methods/deals/update_deal
+        """
         data = data or {}
         return self._call("deal/{}".format(deal_id), data=data, method="PUT", **options)
 
@@ -70,7 +79,7 @@ class DealsClient(BaseClient):
     def get_all(
         self,
         offset: int = 0,
-        extra_properties: Union[list, str]=None,
+        extra_properties: Union[list, str] = None,
         limit: int = -1,
         **options
     ):
@@ -127,8 +136,7 @@ class DealsClient(BaseClient):
                     if not deal["isDeleted"]
                 ]
             )
-            finished = not batch["hasMore"] or (
-                limited and len(output) >= limit)
+            finished = not batch["hasMore"] or (limited and len(output) >= limit)
             offset = batch["offset"]
 
         return output if not limited else output[:limit]

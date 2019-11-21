@@ -82,10 +82,13 @@ class CompaniesClient(BaseClient):
     def get_all(
         self,
         prettify_output: bool = True,
-        extra_properties: Union[str, List]=None,
+        extra_properties: Union[str, List] = None,
         **options
     ) -> Optional[List]:
-        """get all companies, including extra properties if they are passed in"""
+        """
+        get all companies, including extra properties if they are passed in
+        :see: https://developers.hubspot.com/docs/methods/deals/get-all-deals
+        """
         finished = False
         output = []
         offset = 0
@@ -138,12 +141,13 @@ class CompaniesClient(BaseClient):
         return output
 
     def _get_recent(
-            self,
-            recency_type: str,
-            limit: int = 250,
-            offset: int = 0,
-            since: int = None,
-            **options) -> Optional[List]:
+        self,
+        recency_type: str,
+        limit: int = 250,
+        offset: int = 0,
+        since: int = None,
+        **options
+    ) -> Optional[List]:
         """
         Returns either list of recently modified companies or recently created companies,
         depending on recency_type passed in. Both API endpoints take identical parameters
@@ -156,10 +160,7 @@ class CompaniesClient(BaseClient):
         output = []
 
         while not finished:
-            params = {
-                "count": limit,
-                "offset": offset,
-            }
+            params = {"count": limit, "offset": offset}
             if since:
                 params["since"] = since
             batch = self._call(
@@ -182,36 +183,30 @@ class CompaniesClient(BaseClient):
         return output
 
     def get_recently_modified(
-            self,
-            limit: int = 250,
-            offset: int = 0,
-            since: int = None,
-            **options
+        self, limit: int = 250, offset: int = 0, since: int = None, **options
     ) -> Optional[List]:
+        """
+        returns all of the recently modified deals
+        :see: https://developers.hubspot.com/docs/methods/deals/get_deals_modified
+        """
         return self._get_recent(
-            "modified",
-            limit=limit,
-            offset=offset,
-            since=since,
-            **options)
+            "modified", limit=limit, offset=offset, since=since, **options
+        )
 
     def get_recently_created(
-            self,
-            limit: int = 250,
-            offset: int = 0,
-            since: int = None,
-            **options
+        self, limit: int = 250, offset: int = 0, since: int = None, **options
     ) -> Optional[List]:
+        """
+        returns all of the recently created deals
+        :see: https://developers.hubspot.com/docs/methods/deals/get_deals_created
+        """
         return self._get_recent(
-            "created",
-            limit=limit,
-            offset=offset,
-            since=since,
-            **options)
+            "created", limit=limit, offset=offset, since=since, **options
+        )
 
     def get_contacts_at_a_company(self, company_id: str, **options) -> Optional[List]:
         """
-        Returns all of the contacts who have an associatedcompanyid contact property of
+        returns all of the contacts who have an associatedcompanyid contact property of
         `company_id`.
 
         :see: https://developers.hubspot.com/docs/methods/companies/get_company_contacts
