@@ -82,7 +82,7 @@ class CompaniesClient(BaseClient):
     def get_all(
         self,
         prettify_output: bool = True,
-        extra_properties: Union[str, List] = None,
+        extra_properties: Union[str, List]=None,
         **options
     ) -> Optional[List]:
         """get all companies, including extra properties if they are passed in"""
@@ -137,7 +137,13 @@ class CompaniesClient(BaseClient):
 
         return output
 
-    def _get_recent(self, recency_type: str, **options) -> Optional[List]:
+    def _get_recent(
+            self,
+            recency_type: str,
+            limit: int = 250,
+            offset: int = 0,
+            since: int = None,
+            **options) -> Optional[List]:
         """
         Returns either list of recently modified companies or recently created companies,
         depending on recency_type passed in. Both API endpoints take identical parameters
@@ -148,15 +154,19 @@ class CompaniesClient(BaseClient):
         """
         finished = False
         output = []
-        offset = 0
-        query_limit = 250  # Max value according to docs
 
         while not finished:
+            params = {
+                "count": limit,
+                "offset": offset,
+            }
+            if since:
+                params["since"] = since
             batch = self._call(
                 "companies/recent/{}".format(recency_type),
                 method="GET",
                 doseq=True,
-                params={"count": query_limit, "offset": offset},
+                params=params,
                 **options
             )
             output.extend(
@@ -171,11 +181,33 @@ class CompaniesClient(BaseClient):
 
         return output
 
-    def get_recently_modified(self, **options) -> Optional[List]:
-        return self._get_recent("modified", **options)
+    def get_recently_modified(
+            self,
+            limit: int = 250,
+            offset: int = 0,
+            since: int = None,
+            **options
+    ) -> Optional[List]:
+        return self._get_recent(
+            "modified",
+            limit=limit,
+            offset=offset,
+            since=since,
+            **options)
 
-    def get_recently_created(self, **options) -> Optional[List]:
-        return self._get_recent("created", **options)
+    def get_recently_created(
+            self,
+            limit: int = 250,
+            offset: int = 0,
+            since: int = None,
+            **options
+    ) -> Optional[List]:
+        return self._get_recent(
+            "created",
+            limit=limit,
+            offset=offset,
+            since=since,
+            **options)
 
     def get_contacts_at_a_company(self, company_id: str, **options) -> Optional[List]:
         """
