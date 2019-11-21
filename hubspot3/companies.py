@@ -157,7 +157,7 @@ class CompaniesClient(BaseClient):
 
         while not finished:
             params = {
-                "count": query_limit,
+                "count": limit,
                 "offset": offset,
             }
             if since:
