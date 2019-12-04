@@ -42,12 +42,12 @@ class BaseClient:
         refresh_token: str = None,
         client_id: str = None,
         client_secret: str = None,
-        oauth2_token_getter: Optional[Callable[
-            [Literal['access_token', 'refresh_token'], str], str,
-        ]] = None,
-        oauth2_token_setter: Optional[Callable[
-            [Literal['access_token', 'refresh_token'], str, str], None,
-        ]] = None,
+        oauth2_token_getter: Optional[
+            Callable[[Literal["access_token", "refresh_token"], str], str,]
+        ] = None,
+        oauth2_token_setter: Optional[
+            Callable[[Literal["access_token", "refresh_token"], str, str], None,]
+        ] = None,
         timeout: int = 10,
         mixins: List = None,
         api_base: str = "api.hubapi.com",
@@ -110,28 +110,32 @@ class BaseClient:
     @property
     def access_token(self):
         if self.oauth2_token_getter:
-            return self.oauth2_token_getter('access_token', self.client_id) or self.__access_token
-        else:
-            return self.__access_token
+            return (
+                self.oauth2_token_getter("access_token", self.client_id)
+                or self.__access_token
+            )
+        return self.__access_token
 
     @access_token.setter
     def access_token(self, access_token):
         if self.oauth2_token_setter:
-            self.oauth2_token_setter('access_token', self.client_id, access_token)
-        else:
-            self.__access_token = access_token
+            self.oauth2_token_setter("access_token", self.client_id, access_token)
+        self.__access_token = access_token
 
     @property
     def refresh_token(self):
         if self.oauth2_token_getter:
-            return self.oauth2_token_getter('refresh_token', self.client_id) or self.__refresh_token
+            return (
+                self.oauth2_token_getter("refresh_token", self.client_id)
+                or self.__refresh_token
+            )
         else:
             return self.__refresh_token
 
     @refresh_token.setter
     def refresh_token(self, refresh_token):
         if self.oauth2_token_setter:
-            self.oauth2_token_setter('refresh_token', self.client_id, refresh_token)
+            self.oauth2_token_setter("refresh_token", self.client_id, refresh_token)
         else:
             self.__refresh_token = refresh_token
 
