@@ -43,10 +43,10 @@ class BaseClient:
         client_id: str = None,
         client_secret: str = None,
         oauth2_token_getter: Optional[Callable[
-            [Literal['access_token', 'refresh_token']], str,
+            [Literal['access_token', 'refresh_token'], str], str,
         ]] = None,
         oauth2_token_setter: Optional[Callable[
-            [Literal['access_token', 'refresh_token'], str], str,
+            [Literal['access_token', 'refresh_token'], str, str], None,
         ]] = None,
         timeout: int = 10,
         mixins: List = None,
