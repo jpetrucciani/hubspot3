@@ -10,7 +10,8 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import zlib
-from typing import List, Union
+from typing import Callable, List, Optional, Union
+from typing_extensions import Literal
 from hubspot3 import utils
 from hubspot3.utils import force_utf8
 from hubspot3.error import (
@@ -41,6 +42,12 @@ class BaseClient:
         refresh_token: str = None,
         client_id: str = None,
         client_secret: str = None,
+        oauth2_token_getter: Optional[Callable[
+            [Literal['access_token', 'refresh_token']], str,
+        ]] = None,
+        oauth2_token_setter: Optional[Callable[
+            [Literal['access_token', 'refresh_token'], str], str,
+        ]] = None,
         timeout: int = 10,
         mixins: List = None,
         api_base: str = "api.hubapi.com",
@@ -58,10 +65,14 @@ class BaseClient:
                 self.__class__.__bases__ = (mixin_class,) + self.__class__.__bases__
 
         self.api_key = api_key
-        self.access_token = access_token
-        self.refresh_token = refresh_token
+        # These are used as fallbacks if there aren't setters/getters, or if no remote tokens can be
+        # found. The properties without `__` prefixes should generally be used instead of these.
+        self.__access_token = access_token
+        self.__refresh_token = refresh_token
         self.client_id = client_id
         self.client_secret = client_secret
+        self.oauth2_token_getter = oauth2_token_getter
+        self.oauth2_token_setter = oauth2_token_setter
         self.log = utils.get_log("hubspot3")
         if not disable_auth:
             if self.api_key and self.access_token:
@@ -88,7 +99,37 @@ class BaseClient:
             "api_key": self.api_key,
             "access_token": self.access_token,
             "refresh_token": self.refresh_token,
+            "oauth2_token_getter": self.oauth2_token_getter,
+            "oauth2_token_setter": self.oauth2_token_setter,
         }
+
+    @property
+    def access_token(self):
+        if self.oauth2_token_getter:
+            return self.oauth2_token_getter('access_token', self.client_id) or self.__access_token
+        else:
+            return self.__access_token
+
+    @access_token.setter
+    def access_token(self, access_token):
+        if self.oauth2_token_setter:
+            self.oauth2_token_setter('access_token', self.client_id, access_token)
+        else:
+            self.__access_token = access_token
+
+    @property
+    def refresh_token(self):
+        if self.oauth2_token_getter:
+            return self.oauth2_token_getter('refresh_token', self.client_id) or self.__refresh_token
+        else:
+            return self.__refresh_token
+
+    @refresh_token.setter
+    def refresh_token(self, refresh_token):
+        if self.oauth2_token_setter:
+            self.oauth2_token_setter('refresh_token', self.client_id, refresh_token)
+        else:
+            self.__refresh_token = refresh_token
 
     def _prepare_connection_type(self):
         connection_types = {
