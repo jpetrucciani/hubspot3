@@ -130,7 +130,10 @@ class TestLinesClient(object):
         mock_instance = mock_associations_client.return_value
         lines_client.link_line_item_to_deal(1, 1)
         mock_associations_client.assert_called_with(
-            access_token=None, api_key=None, refresh_token=None,
-            oauth2_token_getter=None, oauth2_token_setter=None,
+            access_token=None,
+            api_key=None,
+            refresh_token=None,
+            oauth2_token_getter=None,
+            oauth2_token_setter=None,
         )
         mock_instance.link_line_item_to_deal.assert_called_with(1, 1)
