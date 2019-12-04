@@ -132,8 +132,7 @@ class BaseClient:
                 self.oauth2_token_getter("refresh_token", self.client_id)
                 or self.__refresh_token
             )
-        else:
-            return self.__refresh_token
+        return self.__refresh_token
 
     @refresh_token.setter
     def refresh_token(self, refresh_token):
