@@ -31,6 +31,9 @@ from hubspot3.error import (
 class BaseClient:
     """Base abstract object for interacting with the HubSpot APIs"""
 
+    # These rules are too restrictive for the `__init__()` method and attributes.
+    # pylint: disable=too-many-arguments,too-many-instance-attributes
+
     # Controls how long we sleep for during retries, overridden by unittests
     # so tests run faster
     sleep_multiplier = 1
