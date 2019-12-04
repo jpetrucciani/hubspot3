@@ -71,6 +71,10 @@ class BaseClient:
         self.__refresh_token = refresh_token
         self.client_id = client_id
         self.client_secret = client_secret
+        if (oauth2_token_getter is None) != (oauth2_token_setter is None):
+            raise HubspotBadConfig(
+                "You must either specify both the oauth2 token setter and getter, or neither."
+            )
         self.oauth2_token_getter = oauth2_token_getter
         self.oauth2_token_setter = oauth2_token_setter
         self.log = utils.get_log("hubspot3")
