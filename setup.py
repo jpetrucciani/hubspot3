@@ -44,7 +44,7 @@ setup(
     download_url="https://github.com/jpetrucciani/hubspot3.git",
     license="LICENSE",
     packages=["hubspot3"],
-    install_requires=[],
+    install_requires=["typing_extensions"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
