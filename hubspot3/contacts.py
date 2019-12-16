@@ -300,7 +300,7 @@ class ContactsClient(BaseClient):
         offset = 0
         query_limit = 100  # Max value according to docs
 
-        output = []
+        output = []  # type: list
 
         while not finished:
             batch = self._call(
