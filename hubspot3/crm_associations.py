@@ -4,6 +4,7 @@ hubspot crm_associations api
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
 from enum import Enum
+from typing import Union
 
 
 ASSOCIATIONS_API_VERSION = "1"
@@ -51,12 +52,12 @@ class CRMAssociationsClient(BaseClient):
         super(CRMAssociationsClient, self).__init__(*args, **kwargs)
         self.log = get_log("hubspot3.crm_associations")
 
-    def _get_path(self, subpath):
+    def _get_path(self, subpath: str) -> str:
         return "crm-associations/v{}/{}".format(
             self.options.get("version") or ASSOCIATIONS_API_VERSION, subpath
         )
 
-    def get(self, object_id, definition: Definitions):
+    def get(self, object_id: str, definition: Union[Definitions, int]):
         """
         get all associations for the defined object
         :param object_id: Object ID for the object you're looking up
@@ -66,11 +67,12 @@ class CRMAssociationsClient(BaseClient):
         output = []
         offset = 0
         query_limit = 100  # Max value according to docs
+        definition_id = definition if isinstance(definition, int) else definition.value
 
         while not finished:
             batch = self._call(
                 "associations/{}/{}/{}".format(
-                    object_id, "HUBSPOT_DEFINED", definition.value
+                    object_id, "HUBSPOT_DEFINED", definition_id
                 ),
                 method="GET",
                 params={"limit": query_limit, "offset": offset},
@@ -81,7 +83,7 @@ class CRMAssociationsClient(BaseClient):
 
         return output
 
-    def get_all(self, object_id, definition: Definitions, **options):
+    def get_all(self, object_id: str, definition: Union[Definitions, int], **options):
         """
         get all crm associations
         :param object_id: Object ID for the object you're looking up
@@ -91,11 +93,12 @@ class CRMAssociationsClient(BaseClient):
         output = []
         offset = 0
         query_limit = 100  # Max value according to docs
+        definition_id = definition if isinstance(definition, int) else definition.value
 
         while not finished:
             batch = self._call(
                 "associations/{}/{}/{}".format(
-                    object_id, "HUBSPOT_DEFINED", definition.value
+                    object_id, "HUBSPOT_DEFINED", definition_id
                 ),
                 method="GET",
                 params={"limit": query_limit, "offset": offset},
@@ -106,13 +109,21 @@ class CRMAssociationsClient(BaseClient):
 
         return output
 
-    def create(self, from_object, to_object, definition: Definitions, **options):
+    def create(
+        self,
+        from_object: str,
+        to_object: str,
+        definition: Union[Definitions, int],
+        **options
+    ):
         """
         create a hubspot association
         :param from_object: ID of object to relate
         :param to_object: ID of object to relate to
         :param definition: Definition ID for the objects you're looking for associations of
         """
+        definition_id = definition if isinstance(definition, int) else definition.value
+
         return self._call(
             "associations",
             method="PUT",
@@ -120,18 +131,26 @@ class CRMAssociationsClient(BaseClient):
                 "fromObjectId": from_object,
                 "toObjectId": to_object,
                 "category": "HUBSPOT_DEFINED",
-                "definitionId": definition.value,
+                "definitionId": definition_id,
             },
             **options
         )
 
-    def delete(self, from_object, to_object, definition: Definitions, **options):
+    def delete(
+        self,
+        from_object: str,
+        to_object: str,
+        definition: Union[Definitions, int],
+        **options
+    ):
         """
         delete a hubspot association
         :param from_object: ID of object to relate
         :param to_object: ID of object to relate to
         :param definition: Definition ID for the objects you're looking for associations of
         """
+        definition_id = definition if isinstance(definition, int) else definition.value
+
         return self._call(
             "associations/delete",
             method="PUT",
@@ -139,24 +158,24 @@ class CRMAssociationsClient(BaseClient):
                 "fromObjectId": from_object,
                 "toObjectId": to_object,
                 "category": "HUBSPOT_DEFINED",
-                "definitionId": definition.value,
+                "definitionId": definition_id,
             },
             **options
         )
 
-    def get_deal_to_lines_items(self, deal_id):
+    def get_deal_to_lines_items(self, deal_id: str):
         """Get the lines related to a deal."""
         return self.get(object_id=deal_id, definition=Definitions.DEAL_TO_LINE_ITEM)
 
-    def get_company_to_contacts(self, company_id):
+    def get_company_to_contacts(self, company_id: str):
         """Get the contacts related to a company."""
         return self.get(object_id=company_id, definition=Definitions.COMPANY_TO_CONTACT)
 
-    def get_company_to_deals(self, company_id):
+    def get_company_to_deals(self, company_id: str):
         """Get the deals related to a company."""
         return self.get(object_id=company_id, definition=Definitions.COMPANY_TO_DEAL)
 
-    def link_line_item_to_deal(self, line_item_id, deal_id):
+    def link_line_item_to_deal(self, line_item_id: str, deal_id: str):
         """Create a new association between a line item and a deal."""
         return self.create(
             from_object=line_item_id,
@@ -164,7 +183,7 @@ class CRMAssociationsClient(BaseClient):
             definition=Definitions.LINE_ITEM_TO_DEAL,
         )
 
-    def link_contact_to_company(self, contact_id, company_id):
+    def link_contact_to_company(self, contact_id: str, company_id: str):
         """Create a new association between a contact and a company."""
         return self.create(
             from_object=contact_id,
@@ -172,7 +191,7 @@ class CRMAssociationsClient(BaseClient):
             definition=Definitions.CONTACT_TO_COMPANY,
         )
 
-    def link_owner_to_company(self, owner_id, company_id):
+    def link_owner_to_company(self, owner_id: str, company_id: str):
         """Create a new association between an owner and a company."""
         return self.create(
             from_object=owner_id,
