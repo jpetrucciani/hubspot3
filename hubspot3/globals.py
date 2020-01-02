@@ -1,9 +1,11 @@
 """
 globals file for hubspot3
 """
-__version__ = "3.2.32"
+__version__ = "3.2.41"
+
 
 BASE_URL = "https://api.hubapi.com"
+
 
 OBJECT_TYPE_COMPANIES = "companies"
 OBJECT_TYPE_CONTACTS = "contacts"
@@ -13,6 +15,7 @@ OBJECT_TYPE_LINE_ITEMS = "line_items"
 
 DATA_TYPE_BOOL = "bool"
 DATA_TYPE_DATETIME = "datetime"
+DATA_TYPE_DATE = "date"
 DATA_TYPE_ENUM = "enumeration"
 DATA_TYPE_NUMBER = "number"
 DATA_TYPE_STRING = "string"
@@ -20,6 +23,7 @@ DATA_TYPE_STRING = "string"
 VALID_PROPERTY_DATA_TYPES = (
     DATA_TYPE_BOOL,
     DATA_TYPE_DATETIME,
+    DATA_TYPE_DATE,
     DATA_TYPE_ENUM,
     DATA_TYPE_NUMBER,
     DATA_TYPE_STRING,

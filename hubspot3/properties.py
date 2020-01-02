@@ -1,8 +1,7 @@
 """
 hubspot properties api
 """
-from typing import Dict
-
+from typing import Dict, Optional
 from hubspot3.base import BaseClient
 from hubspot3.globals import (
     OBJECT_TYPE_COMPANIES,
@@ -15,6 +14,7 @@ from hubspot3.globals import (
     DATA_TYPE_ENUM,
 )
 from hubspot3.utils import get_log
+
 
 PROPERTIES_API_VERSION = {
     OBJECT_TYPE_COMPANIES: "1",
@@ -45,7 +45,9 @@ class PropertiesClient(BaseClient):
         )
 
     @staticmethod
-    def _validate(data_type: str, widget_type: str, extra_params: dict) -> None:
+    def _validate(
+        data_type: Optional[str], widget_type: Optional[str], extra_params: dict
+    ) -> None:
         if data_type:
             if data_type not in VALID_PROPERTY_DATA_TYPES:
                 raise ValueError(
@@ -58,7 +60,8 @@ class PropertiesClient(BaseClient):
                 not extra_params or not extra_params.get("options")
             ):
                 raise ValueError(
-                    "Invalid data for updating an enumeration type. Its 'options' have to be specified."
+                    "Invalid data for updating an enumeration type. "
+                    "Its 'options' have to be specified."
                 )
 
         if widget_type and widget_type not in VALID_PROPERTY_WIDGET_TYPES:

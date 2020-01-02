@@ -9,9 +9,9 @@ import traceback
 import urllib.request
 import urllib.parse
 import urllib.error
-from typing import List, Union
 import zlib
-
+from typing import Callable, List, Optional, Union
+from typing_extensions import Literal
 from hubspot3 import utils
 from hubspot3.utils import force_utf8
 from hubspot3.error import (
@@ -28,8 +28,11 @@ from hubspot3.error import (
 )
 
 
-class BaseClient(object):
+class BaseClient:
     """Base abstract object for interacting with the HubSpot APIs"""
+
+    # These rules are too restrictive for the `__init__()` method and attributes.
+    # pylint: disable=too-many-arguments,too-many-instance-attributes
 
     # Controls how long we sleep for during retries, overridden by unittests
     # so tests run faster
@@ -42,6 +45,12 @@ class BaseClient(object):
         refresh_token: str = None,
         client_id: str = None,
         client_secret: str = None,
+        oauth2_token_getter: Optional[
+            Callable[[Literal["access_token", "refresh_token"], str], str]
+        ] = None,
+        oauth2_token_setter: Optional[
+            Callable[[Literal["access_token", "refresh_token"], str, str], None]
+        ] = None,
         timeout: int = 10,
         mixins: List = None,
         api_base: str = "api.hubapi.com",
@@ -59,10 +68,18 @@ class BaseClient(object):
                 self.__class__.__bases__ = (mixin_class,) + self.__class__.__bases__
 
         self.api_key = api_key
-        self.access_token = access_token
-        self.refresh_token = refresh_token
+        # These are used as fallbacks if there aren't setters/getters, or if no remote tokens can be
+        # found. The properties without `__` prefixes should generally be used instead of these.
+        self.__access_token = access_token
+        self.__refresh_token = refresh_token
         self.client_id = client_id
         self.client_secret = client_secret
+        if (oauth2_token_getter is None) != (oauth2_token_setter is None):
+            raise HubspotBadConfig(
+                "You must either specify both the oauth2 token setter and getter, or neither."
+            )
+        self.oauth2_token_getter = oauth2_token_getter
+        self.oauth2_token_setter = oauth2_token_setter
         self.log = utils.get_log("hubspot3")
         if not disable_auth:
             if self.api_key and self.access_token:
@@ -82,17 +99,47 @@ class BaseClient(object):
     def credentials(self):
         """
         Credentials to be used when a client needs to instantiate another one.
-
         Example:
-            ```
-            association_client = AssociationsClient(**self.credentials)
-            ```
+        association_client = AssociationsClient(**self.credentials)
         """
         return {
             "api_key": self.api_key,
             "access_token": self.access_token,
             "refresh_token": self.refresh_token,
+            "oauth2_token_getter": self.oauth2_token_getter,
+            "oauth2_token_setter": self.oauth2_token_setter,
         }
+
+    @property
+    def access_token(self):
+        if self.oauth2_token_getter:
+            return (
+                self.oauth2_token_getter("access_token", self.client_id)
+                or self.__access_token
+            )
+        return self.__access_token
+
+    @access_token.setter
+    def access_token(self, access_token):
+        if self.oauth2_token_setter:
+            self.oauth2_token_setter("access_token", self.client_id, access_token)
+        self.__access_token = access_token
+
+    @property
+    def refresh_token(self):
+        if self.oauth2_token_getter:
+            return (
+                self.oauth2_token_getter("refresh_token", self.client_id)
+                or self.__refresh_token
+            )
+        return self.__refresh_token
+
+    @refresh_token.setter
+    def refresh_token(self, refresh_token):
+        if self.oauth2_token_setter:
+            self.oauth2_token_setter("refresh_token", self.client_id, refresh_token)
+        else:
+            self.__refresh_token = refresh_token
 
     def _prepare_connection_type(self):
         connection_types = {
@@ -114,9 +161,18 @@ class BaseClient(object):
             params["hapikey"] = params.get("hapikey") or self.api_key
 
     def _prepare_request(
-        self, subpath, params, data, opts, doseq=False, query="", retried=False
+        self,
+        subpath,
+        params,
+        data,
+        opts,
+        doseq=False,
+        query="",
+        retried=False,
+        properties=None,
     ):
         params = params or {}
+        properties = properties or []
         self._prepare_request_auth(subpath, params, data, opts)
 
         if opts.get("hub_id") or opts.get("portal_id"):
@@ -142,6 +198,9 @@ class BaseClient(object):
 
         if data and headers["Content-Type"] == "application/json" and not retried:
             data = json.dumps(data)
+
+        for hs_property in properties:
+            url += "&properties={}".format(hs_property)
 
         return url, headers, data
 
@@ -184,15 +243,15 @@ class BaseClient(object):
         conn.close()
         if result.status in (404, 410):
             raise HubspotNotFound(result, request)
-        elif result.status == 401:
+        if result.status == 401:
             raise HubspotUnauthorized(result, request)
-        elif result.status == 409:
+        if result.status == 409:
             raise HubspotConflict(result, request)
-        elif result.status == 429:
+        if result.status == 429:
             raise HubspotRateLimited(result, request)
-        elif 400 <= result.status < 500 or result.status == 501:
+        if 400 <= result.status < 500 or result.status == 501:
             raise HubspotBadRequest(result, request)
-        elif result.status >= 500:
+        if result.status >= 500:
             raise HubspotServerError(result, request)
 
         return result
@@ -225,6 +284,7 @@ class BaseClient(object):
         doseq=False,
         query="",
         retried=False,
+        properties=None,
         **options
     ):
         opts = self.options.copy()
@@ -233,7 +293,14 @@ class BaseClient(object):
         debug = opts.get("debug")
 
         url, headers, data = self._prepare_request(
-            subpath, params, data, opts, doseq=doseq, query=query, retried=retried
+            subpath,
+            params,
+            data,
+            opts,
+            doseq=doseq,
+            query=query,
+            retried=retried,
+            properties=properties,
         )
 
         if debug:
@@ -315,7 +382,7 @@ class BaseClient(object):
                         retried=True,
                         **options
                     )
-                elif self.access_token:
+                if self.access_token:
                     self.log.warning(
                         "In order to enable automated refreshing of your access token, please "
                         "provide a client ID, client secret and refresh token in addition to the "
@@ -347,6 +414,7 @@ class BaseClient(object):
         doseq: bool = False,
         query: str = "",
         raw: bool = False,
+        properties: list = None,
         **options
     ):
         result = self._call_raw(
@@ -357,6 +425,7 @@ class BaseClient(object):
             doseq=doseq,
             query=query,
             retried=False,
+            properties=properties,
             **options
         )
         return result if raw else self._digest_result(result.body)

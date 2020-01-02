@@ -7,7 +7,7 @@ import re
 from setuptools import setup
 
 
-with open("README.rst") as readme:
+with open("README.md") as readme:
     LONG_DESCRIPTION = readme.read()
 
 
@@ -37,13 +37,14 @@ setup(
         "Built initially around hapipy, but heavily modified."
     ),
     long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/markdown",
     author="HubSpot Dev Team, Jacobi Petrucciani",
     author_email="jacobi@mimirhq.com",
     url="https://github.com/jpetrucciani/hubspot3.git",
     download_url="https://github.com/jpetrucciani/hubspot3.git",
     license="LICENSE",
     packages=["hubspot3"],
-    install_requires=[],
+    install_requires=["typing_extensions"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",

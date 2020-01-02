@@ -6,6 +6,8 @@ from typing import Union
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
+from typing import Dict
+
 
 CONTACTS_API_VERSION = "1"
 
@@ -27,7 +29,8 @@ class ContactsClient(BaseClient):
         super(ContactsClient, self).__init__(*args, **kwargs)
         self.log = get_log("hubspot3.contacts")
 
-    def _get_path(self, subpath):
+    def _get_path(self, subpath: str) -> str:
+        """get path"""
         return "contacts/v{}/{}".format(CONTACTS_API_VERSION, subpath)
 
     def get_by_id(self, contact_id: str, **options):
@@ -36,18 +39,18 @@ class ContactsClient(BaseClient):
             "contact/vid/{}/profile".format(contact_id), method="GET", **options
         )
 
-    def get_by_email(self, email, **options):
+    def get_by_email(self, email: str, **options):
         """Get contact specified by email address."""
         return self._call(
             "contact/email/{email}/profile".format(email=email), method="GET", **options
         )
 
-    def create(self, data=None, **options):
+    def create(self, data: Dict = None, **options):
         """create a contact"""
         data = data or {}
         return self._call("contact", data=data, method="POST", **options)
 
-    def create_or_update_by_email(self, email, data=None, **options):
+    def create_or_update_by_email(self, email: str, data: Dict = None, **options):
         """Create or Updates a client with the supplied data."""
         data = data or {}
         return self._call(
@@ -57,7 +60,7 @@ class ContactsClient(BaseClient):
             **options
         )
 
-    def update_by_id(self, contact_id, data=None, **options):
+    def update_by_id(self, contact_id: str, data: Dict = None, **options):
         """Update the contact by contact_id with the given data."""
         data = data or {}
         return self._call(
@@ -238,7 +241,7 @@ class ContactsClient(BaseClient):
         )
         return self.get_by_id(contact_id, **options)
 
-    def get_contact_by_email(self, email, **options):
+    def get_contact_by_email(self, email: str, **options):
         warnings.warn(
             "ContactsClient.get_contact_by_email is deprecated in favor of "
             "ContactsClient.get_by_email",
@@ -246,7 +249,7 @@ class ContactsClient(BaseClient):
         )
         return self.get_by_email(email, **options)
 
-    def create_or_update_a_contact(self, email, data=None, **options):
+    def create_or_update_a_contact(self, email: str, data: Dict = None, **options):
         warnings.warn(
             "ContactsClient.create_or_update_a_contact is deprecated in favor of "
             "ContactsClient.create_or_update_by_email",
@@ -254,7 +257,7 @@ class ContactsClient(BaseClient):
         )
         return self.create_or_update_by_email(email, data, **options)
 
-    def update(self, contact_id: str, data=None, **options):
+    def update(self, contact_id: str, data: Dict = None, **options):
         warnings.warn(
             "ContactsClient.update is deprecated in favor of "
             "ContactsClient.update_by_id",
@@ -262,7 +265,7 @@ class ContactsClient(BaseClient):
         )
         return self.update_by_id(contact_id, data, **options)
 
-    def update_a_contact(self, contact_id, data=None, **options):
+    def update_a_contact(self, contact_id: str, data: Dict = None, **options):
         warnings.warn(
             "ContactsClient.update_a_contact is deprecated in favor of "
             "ContactsClient.update_by_id",
@@ -278,7 +281,7 @@ class ContactsClient(BaseClient):
         )
         return self.delete_by_id(contact_id, **options)
 
-    def search(self, search_query, **options):
+    def search(self, search_query: str, **options):
         """
         Search among contacts for matches with the given `search_query`.
 
@@ -297,7 +300,7 @@ class ContactsClient(BaseClient):
         offset = 0
         query_limit = 100  # Max value according to docs
 
-        output = []
+        output = []  # type: list
 
         while not finished:
             batch = self._call(
@@ -319,4 +322,4 @@ class ContactsClient(BaseClient):
         Delete all the contacts. Please use it carefully.
         """
         for contact in self.get_all():
-            self.delete_a_contact(contact["vid"])
+            self.delete_by_id(contact["vid"])

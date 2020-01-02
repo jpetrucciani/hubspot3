@@ -8,6 +8,7 @@ ignore-patterns:
   - .*\.html
   - docs/.*
   - tmp\.py
+  - setup\.py
 
 pylint:
   disable:
@@ -20,6 +21,8 @@ pylint:
     - no-self-use
     - unused-argument
     - wrong-import-order
+    - protected-access
+    - cyclic-import
 
   options:
     max-args: 12
@@ -30,7 +33,7 @@ pylint:
     max-parents: 10
     max-attributes: 10
     min-public-methods: 0
-    max-public-methods: 20
+    max-public-methods: 40
     max-module-lines: 2000
     max-line-length: 100
 
@@ -40,8 +43,10 @@ mccabe:
 
 pep8:
   disable:
+    - E203
     - N802
     - N807
+    - N813
     - W503
   options:
     max-line-length: 100
@@ -67,12 +72,19 @@ pep257:
     - D105
     - D107
     - D200
+    - D202
     - D203
+    - D204
     - D205
     - D212
-    - D204
     - D300
     - D400
     - D401
-    - D404
     - D403
+    - D404
+    - D407
+    - D411
+    - D413
+    - D415
+    - D416
+    - D417

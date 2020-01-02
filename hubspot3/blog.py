@@ -88,14 +88,13 @@ class BlogClient(BaseClient):
             content="post_body",
             meta_desc="meta_description",
         )
-        post_dict = dict(
-            [
-                (k, locals()[p])
-                for p, k in update_param_translation.items()
-                if locals().get(p)
-            ]
-        )
-        post = json.dumps(post_dict)
+        posts = {
+            k: locals()[p]
+            for p, k in update_param_translation.items()
+            if locals().get(p)
+        }
+
+        post = json.dumps(posts)
         raw_response = self._call(
             "blog-posts/{}".format(post_guid),
             data=post,

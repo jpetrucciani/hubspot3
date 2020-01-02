@@ -103,7 +103,7 @@ class EcommerceBridgeClient(BaseClient):
 
         # Potentially perform multiple requests until the given limit is reached or until all
         # errors have been retrieved.
-        errors = []
+        errors = []  # type: List
         finished = False
         page = starting_page or 1
         while not finished:
@@ -241,7 +241,8 @@ class EcommerceBridgeClient(BaseClient):
         if webhook_uri:
             data["webhookUri"] = webhook_uri
 
-        params = {"showProvidedMappings": str(show_provided_mappings).lower()}
+        params = {}  # type: Dict
+        params["showProvidedMappings"] = str(show_provided_mappings).lower()
         if app_id:
             params["appId"] = app_id
 
