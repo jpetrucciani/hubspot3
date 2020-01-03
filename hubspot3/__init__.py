@@ -75,7 +75,10 @@ class Hubspot3UsageLimits:
         :see: https://developers.hubspot.com/docs/methods/check-daily-api-usage
         """
         five_minutes_ago = datetime.now() - timedelta(minutes=5)
-        if self.fetch_status != self.FetchStatus.NONE and self.collected_at > five_minutes_ago:
+        if (
+            self.fetch_status != self.FetchStatus.NONE
+            and self.collected_at > five_minutes_ago
+        ):
             return False
         return True
 
