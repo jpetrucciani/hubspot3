@@ -57,9 +57,9 @@ def test_update_ticket():
     :see: https://developers.hubspot.com/docs/methods/tickets/update-ticket
     """
     ticket = TICKETS.create("688840", "688845", properties={"subject": "test_hubspot3"})
-    ticket_update = TICKETS.update(ticket['objectId'], data={
-        'subject': 'test_hubspot3_update'
-    })
+    ticket_update = TICKETS.update(
+        ticket["objectId"], data={"subject": "test_hubspot3_update"}
+    )
     assert ticket_update
     assert isinstance(ticket_update, dict)
-    assert ticket_update['properties']['subject']['value'] == 'test_hubspot3_update'
+    assert ticket_update["properties"]["subject"]["value"] == "test_hubspot3_update"

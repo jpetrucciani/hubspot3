@@ -49,7 +49,10 @@ class TicketsClient(BaseClient):
         """
         ticket_data = [{"name": x, "value": y} for x, y in data.items()]
         return self._call(
-            "objects/tickets/{}".format(ticket_id), method="PUT", data=ticket_data, **options
+            "objects/tickets/{}".format(ticket_id),
+            method="PUT",
+            data=ticket_data,
+            **options
         )
 
     def get(
