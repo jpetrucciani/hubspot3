@@ -209,6 +209,8 @@ tests are currently in a **very** early state - I'll be working soon to
 get them all built out.
 
 ```bash
+# Install test packages
+pip install pytest pytest-cov
 # run tests
 make
 # or
