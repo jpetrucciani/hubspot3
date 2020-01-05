@@ -209,8 +209,11 @@ tests are currently in a **very** early state - I'll be working soon to
 get them all built out.
 
 ```bash
-# Install test packages
+# Install required test packages
 pip install pytest pytest-cov
+# or
+pip install -r requirements-dev.txt
+
 # run tests
 make
 # or
