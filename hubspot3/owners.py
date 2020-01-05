@@ -47,7 +47,7 @@ class OwnersClient(BaseClient):
                 return owner
         return None
 
-    def get_owner_by_email(self, owner_email, **options):
+    def get_owner_by_email(self, owner_email: str, **options):
         """
         Retrieve an owner by its email.
         """

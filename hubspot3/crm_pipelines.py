@@ -26,13 +26,13 @@ class PipelinesClient(BaseClient):
     def create(self, object_type, data=None, **options):
         data = data or {}
         return self._call(
-            "pipeline/{}".format(object_type), data=data, method="POST", **options
+            "pipelines/{}".format(object_type), data=data, method="POST", **options
         )
 
     def update(self, object_type, key, data=None, **options):
         data = data or {}
         return self._call(
-            "pipeline/{}/{}".format(object_type, key),
+            "pipelines/{}/{}".format(object_type, key),
             data=data,
             method="PUT",
             **options
