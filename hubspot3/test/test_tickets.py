@@ -49,3 +49,17 @@ def test_get_all_tickets():
     assert tickets
     assert isinstance(tickets, list)
     assert len(tickets) > 1
+
+
+def test_update_ticket():
+    """
+    tests getting all tickets
+    :see: https://developers.hubspot.com/docs/methods/tickets/update-ticket
+    """
+    ticket = TICKETS.create("688840", "688845", properties={"subject": "test_hubspot3"})
+    ticket_update = TICKETS.update(
+        ticket["objectId"], data={"subject": "test_hubspot3_update"}
+    )
+    assert ticket_update
+    assert isinstance(ticket_update, dict)
+    assert ticket_update["properties"]["subject"]["value"] == "test_hubspot3_update"
