@@ -144,6 +144,16 @@ class ContactsClient(BaseClient):
         list_id: str = "all",
         **options
     ) -> list:
+        contacts_generator = self.get_all_as_generator(extra_properties, limit, list_id, **options)
+        return list(contacts_generator)
+
+    def get_all_as_generator(
+        self,
+        extra_properties: Union[list, str] = None,
+        limit: int = -1,
+        list_id: str = "all",
+        **options
+    ):
         """
         get all contacts in hubspot, fetching additional properties if passed in
         Can't get phone number from a get-all, so we just grab IDs and
