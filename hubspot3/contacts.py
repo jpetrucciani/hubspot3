@@ -161,7 +161,7 @@ class ContactsClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/contacts/get_contacts
         """
         finished = False
-        output = []  # type: list
+        contacts = []  # type: list
         offset = 0
         query_limit = 100  # Max value according to docs
         limited = limit > 0
@@ -174,16 +174,22 @@ class ContactsClient(BaseClient):
                 params={"count": query_limit, "vidOffset": offset},
                 **options
             )
-            output.extend(
+            contacts.extend(
                 self.get_batch(
                     [contact["vid"] for contact in batch["contacts"]],
                     extra_properties=extra_properties,
                 )
             )
-            finished = not batch["has-more"] or (limited and len(output) >= limit)
+
+            reached_limit = limited and len(contacts) >= limit
+
+            if reached_limit:
+                contacts = contacts[:limit]
+
+            finished = not batch["has-more"] or reached_limit
             offset = batch["vid-offset"]
 
-        return output if not limited else output[:limit]
+        yield from contacts
 
     def _get_recent(
         self,
