@@ -145,13 +145,16 @@ class ContactsClient(BaseClient):
         **options
     ) -> list:
         contacts_generator = self.get_all_as_generator(extra_properties, limit, list_id, **options)
-        return list(contacts_generator)
+        contacts_list = list(contacts_generator)
+
+        return [prettify(contact, id_key="vid") for contact in contacts_list]
 
     def get_all_as_generator(
         self,
         extra_properties: Union[list, str] = None,
         limit: int = -1,
         list_id: str = "all",
+        with_history: bool = False,
         **options
     ):
         """
@@ -160,6 +163,10 @@ class ContactsClient(BaseClient):
         then have to make ANOTHER call in batches
         :see: https://developers.hubspot.com/docs/methods/contacts/get_contacts
         """
+        if with_history:
+            property_mode = "value_only"
+        else:
+            property_mode = "value_and_history"
         finished = False
         contacts = []  # type: list
         offset = 0
@@ -167,19 +174,29 @@ class ContactsClient(BaseClient):
         limited = limit > 0
         if limited and limit < query_limit:
             query_limit = limit
+
+        # default properties to fetch
+        properties = set(self.default_batch_properties)
+
+        # append extras if they exist
+        if extra_properties:
+            if isinstance(extra_properties, list):
+                properties.update(extra_properties)
+            if isinstance(extra_properties, str):
+                properties.add(extra_properties)
+
         while not finished:
             batch = self._call(
                 "lists/{}/contacts/all".format(list_id),
                 method="GET",
-                params={"count": query_limit, "vidOffset": offset},
+                params={
+                    "count": query_limit,
+                    "vidOffset": offset,
+                    "property": properties,
+                    "propertyMode": property_mode},
                 **options
             )
-            contacts.extend(
-                self.get_batch(
-                    [contact["vid"] for contact in batch["contacts"]],
-                    extra_properties=extra_properties,
-                )
-            )
+            contacts.extend(batch["contacts"])
 
             reached_limit = limited and len(contacts) >= limit
 
