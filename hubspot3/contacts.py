@@ -167,8 +167,6 @@ class ContactsClient(BaseClient):
             property_mode = "value_only"
         else:
             property_mode = "value_and_history"
-        finished = False
-        contacts = []  # type: list
         offset = 0
         query_limit = 100  # Max value according to docs
         limited = limit > 0
@@ -185,6 +183,8 @@ class ContactsClient(BaseClient):
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
 
+        contacts_count = 0
+        finished = False
         while not finished:
             batch = self._call(
                 "lists/{}/contacts/all".format(list_id),
@@ -196,9 +196,9 @@ class ContactsClient(BaseClient):
                     "propertyMode": property_mode},
                 **options
             )
-            contacts.extend(batch["contacts"])
-
-            reached_limit = limited and len(contacts) >= limit
+            contacts = batch["contacts"]
+            contacts_count += len(contacts)
+            reached_limit = limited and contacts_count >= limit
 
             if reached_limit:
                 contacts = contacts[:limit]
@@ -206,7 +206,7 @@ class ContactsClient(BaseClient):
             finished = not batch["has-more"] or reached_limit
             offset = batch["vid-offset"]
 
-        yield from contacts
+            yield from contacts
 
     def _get_recent(
         self,
