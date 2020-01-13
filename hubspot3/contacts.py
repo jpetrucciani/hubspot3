@@ -144,36 +144,69 @@ class ContactsClient(BaseClient):
         list_id: str = "all",
         **options
     ) -> list:
+        contacts_generator = self.get_all_as_generator(extra_properties, limit, list_id, **options)
+        contacts_list = list(contacts_generator)
+
+        return [prettify(contact, id_key="vid") for contact in contacts_list]
+
+    def get_all_as_generator(
+        self,
+        extra_properties: Union[list, str] = None,
+        limit: int = -1,
+        list_id: str = "all",
+        with_history: bool = False,
+        **options
+    ):
         """
         get all contacts in hubspot, fetching additional properties if passed in
         Can't get phone number from a get-all, so we just grab IDs and
         then have to make ANOTHER call in batches
         :see: https://developers.hubspot.com/docs/methods/contacts/get_contacts
         """
-        finished = False
-        output = []  # type: list
+        if with_history:
+            property_mode = "value_only"
+        else:
+            property_mode = "value_and_history"
         offset = 0
         query_limit = 100  # Max value according to docs
         limited = limit > 0
         if limited and limit < query_limit:
             query_limit = limit
+
+        # default properties to fetch
+        properties = set(self.default_batch_properties)
+
+        # append extras if they exist
+        if extra_properties:
+            if isinstance(extra_properties, list):
+                properties.update(extra_properties)
+            if isinstance(extra_properties, str):
+                properties.add(extra_properties)
+
+        contacts_count = 0
+        finished = False
         while not finished:
             batch = self._call(
                 "lists/{}/contacts/all".format(list_id),
                 method="GET",
-                params={"count": query_limit, "vidOffset": offset},
+                params={
+                    "count": query_limit,
+                    "vidOffset": offset,
+                    "property": properties,
+                    "propertyMode": property_mode},
                 **options
             )
-            output.extend(
-                self.get_batch(
-                    [contact["vid"] for contact in batch["contacts"]],
-                    extra_properties=extra_properties,
-                )
-            )
-            finished = not batch["has-more"] or (limited and len(output) >= limit)
+            contacts = batch["contacts"]
+            contacts_count += len(contacts)
+            reached_limit = limited and contacts_count >= limit
+
+            if reached_limit:
+                contacts = contacts[:limit]
+
+            finished = not batch["has-more"] or reached_limit
             offset = batch["vid-offset"]
 
-        return output if not limited else output[:limit]
+            yield from contacts
 
     def _get_recent(
         self,
