@@ -194,6 +194,7 @@ class ContactsClient(BaseClient):
                     "vidOffset": offset,
                     "property": properties,
                     "propertyMode": property_mode},
+                doseq=True,
                 **options
             )
             contacts = batch["contacts"]
