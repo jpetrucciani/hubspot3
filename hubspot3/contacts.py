@@ -164,9 +164,9 @@ class ContactsClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/contacts/get_contacts
         """
         if with_history:
-            property_mode = "value_only"
-        else:
             property_mode = "value_and_history"
+        else:
+            property_mode = "value_only"
         offset = 0
         query_limit = 100  # Max value according to docs
         limited = limit > 0
