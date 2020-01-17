@@ -200,7 +200,7 @@ class BaseClient:
             data = json.dumps(data)
 
         for hs_property in properties:
-            url += "&properties={}".format(hs_property)
+            url += "&property={}".format(hs_property)
 
         return url, headers, data
 
