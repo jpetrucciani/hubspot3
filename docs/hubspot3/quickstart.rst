@@ -42,10 +42,10 @@ Basic Usage
    all_companies = client.companies.get_all()
 
    # new usage limit functionality - keep track of your API calls
-   client.usage_limit
+   client.usage_limits
    # <Hubspot3UsageLimits: 28937/1000000 (0.028937%) [reset in 22157s, cached for 299s]>
 
-   client.usage_limit.calls_remaining
+   client.usage_limits.calls_remaining
    # 971063
 
 
