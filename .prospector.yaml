@@ -23,6 +23,8 @@ pylint:
     - wrong-import-order
     - protected-access
     - cyclic-import
+    - import-outside-toplevel
+    - unnecessary-comprehension
 
   options:
     max-args: 12

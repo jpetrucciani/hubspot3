@@ -47,8 +47,12 @@ class TicketsClient(BaseClient):
         update a ticket by its ticket id, with the given data
         :see: https://developers.hubspot.com/docs/methods/tickets/update-ticket
         """
+        ticket_data = [{"name": x, "value": y} for x, y in data.items()]
         return self._call(
-            "objects/tickets/{}".format(ticket_id), method="PUT", data=data, **options
+            "objects/tickets/{}".format(ticket_id),
+            method="PUT",
+            data=ticket_data,
+            **options
         )
 
     def get(
