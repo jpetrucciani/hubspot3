@@ -2,6 +2,7 @@
 hubspot3 error helpers
 """
 import json
+from urllib import parse
 
 from hubspot3.utils import force_utf8
 
@@ -68,6 +69,8 @@ class HubspotError(ValueError):
             self.result = result
         if request is None:
             request = {}
+        if "url" in request:
+            request["url"] = self._uglify_hapikey(request["url"])
         self.request = request
         self.err = err
 
@@ -103,6 +106,22 @@ class HubspotError(ValueError):
             else:
                 unicode_data[key] = str(type(val))
         return unicode_data
+
+    def _uglify_hapikey(self, url):
+        url_parse = parse.urlparse(url)
+        parse_query = parse.parse_qs(url_parse.query)
+        if "hapikey" not in parse_query:
+            return url
+        parse_query["hapikey"][0] = "{}****".format(parse_query["hapikey"][0][0:4])
+        parse_result = parse.ParseResult(
+            scheme=url_parse.scheme,
+            netloc=url_parse.netloc,
+            path=url_parse.path,
+            params=url_parse.params,
+            query=parse.urlencode(parse_query, doseq=True, safe="*"),
+            fragment=url_parse.fragment,
+        )
+        return parse.urlunparse(parse_result)
 
 
 class HubspotBadConfig(Exception):
