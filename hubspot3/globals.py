@@ -1,7 +1,7 @@
 """
 globals file for hubspot3
 """
-__version__ = "3.2.42"
+__version__ = "3.2.43"
 
 
 BASE_URL = "https://api.hubapi.com"
