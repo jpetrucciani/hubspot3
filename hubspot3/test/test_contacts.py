@@ -192,6 +192,29 @@ class TestContactsClient(object):
             extra_properties=extra_properties,
         )
 
+    def test_get_in_list(self, contacts_client, mock_connection):
+        list_id = 15
+        response_body = {
+            "contacts": [
+                {
+                    "addedAt": 1390574181854,
+                    "vid": 204727,
+                    "canonical-vid": 204727,
+                    "merged-vids": [],
+                    "properties": {},
+                }
+            ],
+            "has-more": False,
+            "vid-offset": 204727,
+        }
+        mock_connection.set_response(200, json.dumps(response_body))
+        resp = contacts_client.get_in_list(list_id=list_id)
+        mock_connection.assert_num_requests(1)
+        mock_connection.assert_has_request(
+            "GET", "/contacts/v1/lists/{}/contacts/all".format(list_id), count=100
+        )
+        assert resp == response_body["contacts"]
+
     @pytest.mark.parametrize(
         "extra_properties_given, extra_properties_as_list",
         [
