@@ -6,7 +6,7 @@ from typing import Union
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
-from typing import Dict
+from typing import Dict, List
 
 
 CONTACTS_API_VERSION = "1"
@@ -145,7 +145,7 @@ class ContactsClient(BaseClient):
         limit: int = -1,
         list_id: str = "all",
         **options
-    ) -> list:
+    ) -> List[Dict]:
         """
         get all contacts in hubspot, fetching additional properties if passed in
         Can't get phone number from a get-all, so we just grab IDs and
@@ -184,7 +184,7 @@ class ContactsClient(BaseClient):
         vid_offset: int = 0,
         time_offset: int = 0,
         **options
-    ):
+    ) -> List[Dict]:
         """
         return a list of either recently created or recently modified/created contacts
         """
@@ -219,7 +219,7 @@ class ContactsClient(BaseClient):
 
         return output[:limit]
 
-    def get_recently_created(self, limit: int = 100):
+    def get_recently_created(self, limit: int = 100) -> List[Dict]:
         """
         get recently created contacts
         :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_created_contacts
@@ -233,7 +233,7 @@ class ContactsClient(BaseClient):
         vid_offset: int = 0,
         time_offset: int = 0,
         **options
-    ):
+    ) -> List[Dict]:
         """
         return contacts in a list
         """
@@ -263,7 +263,7 @@ class ContactsClient(BaseClient):
 
         return output[:limit]
 
-    def get_recently_modified(self, limit: int = 100):
+    def get_recently_modified(self, limit: int = 100) -> List[Dict]:
         """
         get recently modified and created contacts
         :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
