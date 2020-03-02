@@ -226,6 +226,43 @@ class ContactsClient(BaseClient):
         """
         return self._get_recent(ContactsClient.Recency.CREATED, limit=limit)
 
+    def get_in_list(
+        self,
+        list_id: int,
+        limit: int = 100,
+        vid_offset: int = 0,
+        time_offset: int = 0,
+        **options
+    ):
+        """
+        return contacts in a list
+        """
+        finished = False
+        output = []
+        query_limit = 100  # max according to the docs
+        limited = limit > 0
+        if limited and limit < query_limit:
+            query_limit = limit
+
+        while not finished:
+            params = {"count": query_limit}
+            if vid_offset and time_offset:
+                params["vidOffset"] = vid_offset
+                params["timeOffset"] = time_offset
+            batch = self._call(
+                "lists/{}/contacts/all".format(list_id),
+                method="GET",
+                params=params,
+                doseq=True,
+                **options
+            )
+            output.extend([contact for contact in batch["contacts"]])
+            finished = not batch["has-more"] or len(output) >= limit
+            vid_offset = batch.get("vid-offset", 0)
+            time_offset = batch.get("time-offset", 0)
+
+        return output[:limit]
+
     def get_recently_modified(self, limit: int = 100):
         """
         get recently modified and created contacts
