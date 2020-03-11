@@ -19,9 +19,6 @@ class EmptyResult:
         self.msg = ""
         self.reason = ""
 
-    def __bool__(self):
-        return False
-
 
 class HubspotError(ValueError):
     """Any problems get thrown as HubspotError exceptions with the relevant info inside"""
@@ -57,9 +54,6 @@ class HubspotError(ValueError):
     def __contains__(self, item):
         """tests if the given item text is in the error text"""
         return item in self.__str__()
-
-    def __bool__(self):
-        return False
 
     def __init__(self, result, request, err=None):
         super(HubspotError, self).__init__(result and result.reason or "Unknown Reason")
