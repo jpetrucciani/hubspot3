@@ -82,7 +82,7 @@ class EngagementsClient(BaseClient):
         return output
 
     def get_recently_modified(self, since, **options):
-        """get recent engagements"""
+        """get recently modified engagements"""
         finished = False
         output = []
         query_limit = 100  # Max value according to docs
