@@ -80,3 +80,23 @@ class EngagementsClient(BaseClient):
             offset = batch["offset"]
 
         return output
+
+    def get_recent(self, since, **options):
+        """get all engagements"""
+        finished = False
+        output = []
+        query_limit = 100  # Max value according to docs
+        offset = 0
+        while not finished:
+            batch = self._call(
+                "engagements/recent/modified",
+                method="GET",
+                params={"limit": query_limit, "offset": offset, "since": since},
+                **options
+            )
+            output.extend(batch["results"])
+            finished = not batch["hasMore"]
+            offset = batch["offset"]
+
+        return output
+
