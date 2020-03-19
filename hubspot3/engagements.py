@@ -81,7 +81,7 @@ class EngagementsClient(BaseClient):
 
         return output
 
-    def get_recent(self, since, **options):
+    def get_recently_modified(self, since, **options):
         """get recent engagements"""
         finished = False
         output = []
