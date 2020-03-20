@@ -3,6 +3,7 @@ hubspot engagements api
 """
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
+from typing import Dict, List
 
 
 ENGAGEMENTS_API_VERSION = "1"
@@ -14,11 +15,12 @@ class EngagementsClient(BaseClient):
     for data.  It returns a python object translated from the json returned
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super(EngagementsClient, self).__init__(*args, **kwargs)
         self.log = get_log("hubspot3.engagements")
 
-    def _get_path(self, subpath):
+    def _get_path(self, subpath: str) -> str:
+        """get full subpath"""
         return "engagements/v{}/{}".format(
             self.options.get("version") or ENGAGEMENTS_API_VERSION, subpath
         )
@@ -29,14 +31,14 @@ class EngagementsClient(BaseClient):
             "engagements/{}".format(engagement_id), method="GET", **options
         )
 
-    def get_associated(self, object_type, object_id, **options):
+    def get_associated(self, object_type, object_id, **options) -> List[Dict]:
         """
         get all engagements associated with the given object
         :param object_type: type of object to get associations on [CONTACT, COMPANY, DEAL]
         :param object_id: ID of the object to get associations on
         """
         finished = False
-        output = []
+        output = []  # type: List[Dict]
         query_limit = 100  # Max value according to docs
         offset = 0
         while not finished:
@@ -62,10 +64,10 @@ class EngagementsClient(BaseClient):
             "engagements/{}".format(key), data=data, method="PUT", **options
         )
 
-    def get_all(self, **options):
+    def get_all(self, **options) -> List[Dict]:
         """get all engagements"""
         finished = False
-        output = []
+        output = []  # type: List[Dict]
         query_limit = 250  # Max value according to docs
         offset = 0
         while not finished:
@@ -81,10 +83,10 @@ class EngagementsClient(BaseClient):
 
         return output
 
-    def get_recently_modified(self, since, **options):
+    def get_recently_modified(self, since, **options) -> List[Dict]:
         """get recently modified engagements"""
         finished = False
-        output = []
+        output = []  # type: List[Dict]
         query_limit = 100  # Max value according to docs
         offset = 0
         while not finished:
