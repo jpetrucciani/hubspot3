@@ -119,18 +119,25 @@ class OAuth2Client(BaseClient):
 
         :see: https://developers.hubspot.com/docs/methods/oauth2/get-refresh-token-information
         """
-        return self._call("refresh-tokens/{}".format(refresh_token or self.refresh_token), **options)
+        return self._call(
+            "refresh-tokens/{}".format(refresh_token or self.refresh_token),
+            **options,
+        )
 
     def delete_refresh_token(
         self,
         refresh_token: str = None,
     ):
         """
-        Deletes a refresh token. You can use this to delete your refresh token if a user uninstalls your app.
+        Deletes a refresh token. You can use this to delete your refresh token if a user
+        uninstalls your app.
 
         If any of the optional parameters are not provided, their value will be read from the
         corresponding attributes on this client.
 
         :see: https://developers.hubspot.com/docs/methods/oauth2/delete-refresh-token
         """
-        return self._call("refresh-tokens/{}".format(refresh_token or self.refresh_token), method="DELETE")
+        return self._call(
+            "refresh-tokens/{}".format(refresh_token or self.refresh_token),
+            method="DELETE",
+        )
