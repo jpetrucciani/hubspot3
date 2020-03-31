@@ -38,7 +38,7 @@ class OAuth2Client(BaseClient):
         redirect_uri: str,
         client_id: str = None,
         client_secret: str = None,
-        **options
+        **options,
     ):
         """
         Request an initial token pair using the provided credentials.
@@ -69,7 +69,7 @@ class OAuth2Client(BaseClient):
         client_id: str = None,
         client_secret: str = None,
         refresh_token: str = None,
-        **options
+        **options,
     ):
         """
         Request a new token pair using the provided refresh token and credentials.
@@ -93,3 +93,39 @@ class OAuth2Client(BaseClient):
         if not client_id and not client_secret and not refresh_token:
             self.refresh_token = result["refresh_token"]
         return result
+
+    def get_access_token_data(self, access_token: str, **options):
+        """
+        Get the meta data for an access token.
+
+        :see: https://developers.hubspot.com/docs/methods/oauth2/get-access-token-information
+        """
+        return self._call("access-tokens/{}".format(access_token), **options)
+
+    def get_refresh_token_data(self, refresh_token: str = None, **options):
+        """
+        Get the meta data for a refresh token.
+
+        If any of the optional parameters are not provided, their value will be read from the
+        corresponding attributes on this client.
+
+        :see: https://developers.hubspot.com/docs/methods/oauth2/get-refresh-token-information
+        """
+        return self._call(
+            "refresh-tokens/{}".format(refresh_token or self.refresh_token), **options
+        )
+
+    def delete_refresh_token(self, refresh_token: str = None):
+        """
+        Deletes a refresh token. You can use this to delete your refresh token if a user
+        uninstalls your app.
+
+        If any of the optional parameters are not provided, their value will be read from the
+        corresponding attributes on this client.
+
+        :see: https://developers.hubspot.com/docs/methods/oauth2/delete-refresh-token
+        """
+        return self._call(
+            "refresh-tokens/{}".format(refresh_token or self.refresh_token),
+            method="DELETE",
+        )
