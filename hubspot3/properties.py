@@ -150,6 +150,14 @@ class PropertiesClient(BaseClient):
             "", method="GET", params={"properties": ["name", "label", "description"]}
         )
 
+    def get(self, object_type: str, code: str):
+        """Retrieve a property."""
+
+        # Save the current object type.
+        self._object_type = object_type
+
+        return self._call("named/{}".format(code), method="GET")
+
     def delete(self, object_type, code):
         """Delete a custom property."""
 
