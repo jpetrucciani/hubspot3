@@ -37,7 +37,7 @@ def properties_input_data():
     )
 
 
-class TestContactsClient(object):
+class TestPropertiesClient(object):
     @pytest.mark.parametrize(
         "object_type, api_version",
         [
@@ -151,5 +151,27 @@ class TestContactsClient(object):
             "PUT",
             "/properties/v1/contacts/properties/named/{}?".format(input_data["code"]),
             data,
+        )
+        assert resp == response_body
+
+    def test_get(self, properties_client, mock_connection, properties_input_data):
+        input_data = properties_input_data
+        response_body = {
+            "name": input_data["code"],
+            "label": input_data["label"],
+            "description": input_data["description"],
+            "groupName": "custom",
+            "type": "string",
+            "fieldType": "text",
+            "formField": True,
+            "displayOrder": 3,
+            "options": [],
+        }
+        mock_connection.set_response(200, json.dumps(response_body))
+        resp = properties_client.get(OBJECT_TYPE_DEALS, input_data["code"])
+        mock_connection.assert_num_requests(1)
+        mock_connection.assert_has_request(
+            "GET",
+            "/properties/v1/deals/properties/named/{}?".format(input_data["code"]),
         )
         assert resp == response_body
