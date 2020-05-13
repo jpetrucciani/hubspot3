@@ -115,3 +115,4 @@ test_credentials.json
 # IDEs
 .idea
 .vscode
+.history/
