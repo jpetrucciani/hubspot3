@@ -171,6 +171,13 @@ class Hubspot3:
         return CMSLayoutsClient(**self.auth, **self.options)
 
     @property
+    def cms_files(self):
+        """returns a hubspot3 files client"""
+        from hubspot3.cms_files import CMSFilesClient
+
+        return CMSFilesClient(**self.auth, **self.options)
+
+    @property
     def cms_templates(self):
         """returns a hubspot3 templates client"""
         from hubspot3.cms_templates import CMSTemplatesClient
