@@ -177,7 +177,7 @@ class TestContactsClient(object):
             "has-more": False,
             "vid-offset": 204727,
         }
-        get_batch_return = [dict(id=204727 + i) for i in range(30)]
+        get_batch_return = [dict(id=204727)]
         get_batch_mock = Mock(return_value=get_batch_return)
         contacts_client.get_batch = get_batch_mock
         mock_connection.set_response(200, json.dumps(response_body))
@@ -187,10 +187,6 @@ class TestContactsClient(object):
             "GET", "/contacts/v1/lists/all/contacts/all", count=query_limit, vidOffset=0
         )
         assert resp == get_batch_return if not limit else get_batch_return[:limit]
-        get_batch_mock.assert_called_once_with(
-            [contact["vid"] for contact in response_body["contacts"]],
-            extra_properties=extra_properties,
-        )
 
     @pytest.mark.parametrize(
         "extra_properties_given, extra_properties_as_list",

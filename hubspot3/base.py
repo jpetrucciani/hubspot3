@@ -243,7 +243,7 @@ class BaseClient:
 
         kwargs = {"timeout": opts["timeout"]}
 
-        num_retries = opts.get("number_retries", 2)
+        num_retries = opts.get("number_retries", 6)
 
         # Never retry a POST, PUT, or DELETE unless explicitly told to
         if method != "GET" and not opts.get("retry_on_post"):

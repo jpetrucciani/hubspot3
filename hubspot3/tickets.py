@@ -1,10 +1,10 @@
 """
 hubspot tickets api
 """
-from typing import Dict, Iterator, List, Set, Optional, Union
+from typing import Dict, Iterator, List, Set, Union
 
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify, get_log
+from hubspot3.utils import prettify, get_log, split_properties
 
 
 TICKETS_API_VERSION = "1"
@@ -24,7 +24,6 @@ class TicketsClient(BaseClient):
     for all APIs. Waiting on an anwser from Hubspot for a more precise
     value
     """
-    _MAXIMUM_REQUEST_LENGTH = 15500
 
     class Recency:
         """recency type enum"""
@@ -90,37 +89,6 @@ class TicketsClient(BaseClient):
                 joined_tickets_dict[ticket_id]["properties"].update(ticket["properties"])
         return joined_tickets_dict
 
-    def _split_properties(self, properties: Set[str],
-                          max_properties_request_length: Optional[int] = None,
-                          property_name: str = "properties") -> List[Set[str]]:
-        """
-        Split a set of properties in a list of sets of properties where the total length of
-        "properties=..." for each property is smaller than the max
-        """
-        if max_properties_request_length is None:
-            max_properties_request_length = self._MAXIMUM_REQUEST_LENGTH
-
-        # property_name_len is its length plus the '=' at the end
-        property_name_len = len(property_name) + 1
-
-        current_length = 0
-        properties_groups = []
-        current_properties_group = []
-        for single_property in properties:
-            current_length += len(single_property) + property_name_len
-
-            if current_length > max_properties_request_length:
-                properties_groups.append(current_properties_group)
-                current_length = 0
-                current_properties_group = []
-
-            current_properties_group.append(single_property)
-
-        if len(current_properties_group) > 0:
-            properties_groups.append(current_properties_group)
-
-        return properties_groups
-
     def get_all(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
                 with_history: bool = False, **options) -> list:
         """
@@ -147,7 +115,7 @@ class TicketsClient(BaseClient):
         else:
             property_name = "properties"
 
-        properties_groups = self._split_properties(properties, property_name=property_name)
+        properties_groups = split_properties(properties, property_name=property_name)
 
         offset = 0
         total_tickets = 0
@@ -200,7 +168,7 @@ class TicketsClient(BaseClient):
         else:
             property_name = "properties"
 
-        properties_groups = self._split_properties(properties, property_name=property_name)
+        properties_groups = split_properties(properties, property_name=property_name)
 
         # run the ids as a list of 100
         batch = {}
