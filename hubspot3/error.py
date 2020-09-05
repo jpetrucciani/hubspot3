@@ -68,6 +68,9 @@ class HubspotError(ValueError):
         self.request = request
         self.err = err
 
+    def __reduce__(self):
+        return (self.__class__, (self.result, self.request))
+
     def __str__(self):
         params = {}
         request_keys = ("method", "host", "url", "data", "headers", "timeout", "body")
