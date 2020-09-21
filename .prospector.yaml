@@ -25,6 +25,7 @@ pylint:
     - cyclic-import
     - import-outside-toplevel
     - unnecessary-comprehension
+    - missing-module-docstring
 
   options:
     max-args: 12
