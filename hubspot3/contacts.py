@@ -114,10 +114,9 @@ class ContactsClient(BaseClient):
         "associatedcompanyid",
     ]
 
-    def get_batch(self,
-                  ids,
-                  extra_properties: Union[list, str] = None,
-                  property_mode: str = None):
+    def get_batch(
+        self, ids, extra_properties: Union[list, str] = None, property_mode: str = None
+    ):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
         properties = set(self.default_batch_properties)
@@ -129,13 +128,16 @@ class ContactsClient(BaseClient):
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
 
-        if property_mode == 'value_and_history':
+        if property_mode == "value_and_history":
             return self._call(
                 "contact/vids/batch",
                 method="GET",
                 doseq=True,
-                params={"vid": ids, "property": list(
-                    properties), "propertyMode": property_mode},
+                params={
+                    "vid": ids,
+                    "property": list(properties),
+                    "propertyMode": property_mode,
+                },
             )
         batch = self._call(
             "contact/vids/batch",

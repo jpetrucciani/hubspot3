@@ -33,12 +33,14 @@ class Hubspot3UsageLimits:
 
     def __str__(self) -> str:
         """string representation"""
-        return "<Hubspot3UsageLimits: {}/{} ({}%) [reset in {}s, cached for {}s]>".format(
-            self.current_usage,
-            self.usage_limit,
-            self.calls_used,
-            self.until_reset,
-            self.until_cache_expire,
+        return (
+            "<Hubspot3UsageLimits: {}/{} ({}%) [reset in {}s, cached for {}s]>".format(
+                self.current_usage,
+                self.usage_limit,
+                self.calls_used,
+                self.until_reset,
+                self.until_cache_expire,
+            )
         )
 
     def __repr__(self) -> str:
