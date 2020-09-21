@@ -114,9 +114,12 @@ class ContactsClient(BaseClient):
         "associatedcompanyid",
     ]
 
-    property_mode_list: Union[list, str] = ['value', 'value_and_history']
+    property_mode_list: list = ['value', 'value_and_history']
 
-    def get_batch(self, ids, extra_properties: Union[list, str] = None, property_mode: str = 'value'):
+    def get_batch(self,
+                  ids,
+                  extra_properties: Union[list, str] = None,
+                  property_mode: str = 'value'):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
         properties = set(self.default_batch_properties)
