@@ -114,7 +114,9 @@ class ContactsClient(BaseClient):
         "associatedcompanyid",
     ]
 
-    def get_batch(self, ids, extra_properties: Union[list, str] = None):
+    property_mode_list = ['value', 'value_and_history']    
+
+    def get_batch(self, ids, extra_properties: Union[list, str] = None, property_mode: str = 'value'):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
         properties = set(self.default_batch_properties)
@@ -126,15 +128,23 @@ class ContactsClient(BaseClient):
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
 
-        batch = self._call(
-            "contact/vids/batch",
-            method="GET",
-            doseq=True,
-            params={"vid": ids, "property": list(properties)},
-        )
-        # It returns a dict with IDs as keys
-        return [prettify(batch[contact], id_key="vid") for contact in batch]
-
+        if property_mode in property_mode_list:
+            if property_mode == 'value_and_history':
+                return self._call(
+                                "contact/vids/batch",
+                                method="GET",
+                                doseq=True,
+                                params={"vid": ids, "property": list(properties), "propertyMode": property_mode},
+                            )
+            batch = self._call(
+                "contact/vids/batch",
+                method="GET",
+                doseq=True,
+                params={"vid": ids, "property": list(properties)},
+            )
+            # It returns a dict with IDs as keys
+            return [prettify(batch[contact], id_key="vid") for contact in batch]
+        
     def link_contact_to_company(self, contact_id, company_id):
         associations_client = CRMAssociationsClient(**self.credentials)
         return associations_client.link_contact_to_company(contact_id, company_id)
