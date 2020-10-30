@@ -25,7 +25,7 @@ def get_config_from_file(filename):
     return config
 
 
-class Hubspot3CLIWrapper:
+class Hubspot3CLIWrapper:  # pylint: disable=empty-docstring
     __doc__ = """
         Hubspot3 CLI
 
@@ -91,7 +91,7 @@ class Hubspot3CLIWrapper:
         return clients
 
 
-class ClientCLIWrapper:
+class ClientCLIWrapper:  # pylint: disable=empty-docstring
     __doc__ = Hubspot3CLIWrapper.__doc__
 
     # Mapping (client class to attribute names) to define methods that should
