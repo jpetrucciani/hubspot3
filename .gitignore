@@ -4,6 +4,7 @@ tmp.py
 .coverage
 .mypy_cache
 .pytest_cache
+.direnv
 
 
 # Created by https://www.gitignore.io/api/python
