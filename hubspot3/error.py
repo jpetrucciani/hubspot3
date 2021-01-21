@@ -55,7 +55,7 @@ class HubspotError(ValueError):
         """tests if the given item text is in the error text"""
         return item in self.__str__()
 
-    def __init__(self, result, request=None, err=None):
+    def __init__(self, result, request, err=None):
         super(HubspotError, self).__init__(result and result.reason or "Unknown Reason")
         if result is None:
             self.result = EmptyResult()
