@@ -338,7 +338,7 @@ class BaseClient:
                 result = self._execute_request_raw(connection, request_info)
                 break
             except HubspotUnauthorized:
-                self.log.warning("401 Unauthorized response to API request.")
+                self.log.debug("401 Unauthorized response to API request.")
                 if (
                     self.access_token
                     and self.refresh_token
@@ -354,7 +354,7 @@ class BaseClient:
 
                     from hubspot3.oauth2 import OAuth2Client
 
-                    self.log.info("Refreshing access token")
+                    self.log.debug("Refreshing access token")
                     try:
                         client = OAuth2Client(**self.options)
                         refresh_result = client.refresh_tokens(
@@ -364,8 +364,8 @@ class BaseClient:
                         )
                         self.access_token = refresh_result["access_token"]
                         self.refresh_token = refresh_result["refresh_token"]
-                        self.log.info(
-                            "Retrying with new token {}".format(self.access_token)
+                        self.log.debug(
+                            "Retrying with new token"
                         )
                     except Exception as exception:
                         self.log.error(
