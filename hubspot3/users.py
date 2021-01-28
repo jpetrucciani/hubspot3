@@ -10,6 +10,7 @@ USERS_API_VERSION = "v3"
 # Pylint erroneously thinks that `Union` is unsubscriptable.
 # pylint: disable=unsubscriptable-object
 
+
 class UsersClient(BaseClient):
     """
     hubspot3 Users client
@@ -21,7 +22,11 @@ class UsersClient(BaseClient):
         return "settings/{}/users/{}".format(USERS_API_VERSION, subpath)
 
     def create(
-        self, email: str, role_id: Union[int, str], send_welcome_email: bool = False, **options
+        self,
+        email: str,
+        role_id: Union[int, str],
+        send_welcome_email: bool = False,
+        **options
     ):
         """Create a new user with minimal contacts-base permissions."""
         data = {
@@ -59,7 +64,9 @@ class UsersClient(BaseClient):
         params = {"idProperty": "EMAIL"}
         return self._call(email, data=data, method="PUT", params=params, **options)
 
-    def update_by_id(self, user_id: Union[int, str], role_id: Union[int, str], **options):
+    def update_by_id(
+        self, user_id: Union[int, str], role_id: Union[int, str], **options
+    ):
         """Update the user with the specified user ID."""
         data = {"roleId": str(role_id)}
         return self._call(str(user_id), data=data, method="PUT", **options)
