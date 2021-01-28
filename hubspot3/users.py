@@ -7,6 +7,8 @@ from hubspot3.base import BaseClient
 
 USERS_API_VERSION = "v3"
 
+# Pylint erroneously thinks that `Union` is unsubscriptable.
+# pylint: disable=unsubscriptable-object
 
 class UsersClient(BaseClient):
     """
