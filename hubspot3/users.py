@@ -34,6 +34,15 @@ class UsersClient(BaseClient):
             **options,
         )
 
+    def delete_by_email(self, email: str, **options):
+        """Delete the user with the specified email address."""
+        params = {"idProperty": "EMAIL"}
+        return self._call(email, params=params, method="DELETE", **options)
+
+    def delete_by_id(self, user_id: Union[int, str], **options):
+        """Delete the user with the specified ID."""
+        return self._call(str(user_id), method="DELETE", **options)
+
     def get_by_id(self, user_id: Union[int, str], **options):
         """Get user specified by ID."""
         return self._call(str(user_id), method="GET", **options)
