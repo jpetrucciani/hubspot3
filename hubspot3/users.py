@@ -50,3 +50,14 @@ class UsersClient(BaseClient):
     def get_roles(self, **options):
         """Get all existing user roles."""
         return self._call("roles", method="GET", **options)
+
+    def update_by_email(self, email: str, role_id: Union[int, str], **options):
+        """Update the user with the specified email address."""
+        data = {"roleId": str(role_id)}
+        params = {"idProperty": "EMAIL"}
+        return self._call(email, data=data, method="PUT", params=params, **options)
+
+    def update_by_id(self, user_id: Union[int, str], role_id: Union[int, str], **options):
+        """Update the user with the specified user ID."""
+        data = {"roleId": str(role_id)}
+        return self._call(str(user_id), data=data, method="PUT", **options)
