@@ -355,6 +355,13 @@ class Hubspot3:
         return TicketsClient(**self.auth, **self.options)
 
     @property
+    def users(self):
+        """returns a hubspot3 users client"""
+        from hubspot3.users import UsersClient
+
+        return UsersClient(**self.auth, **self.options)
+
+    @property
     def workflows(self):
         """returns a hubspot3 workflows client"""
         from hubspot3.workflows import WorkflowsClient
