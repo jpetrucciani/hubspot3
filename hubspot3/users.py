@@ -47,6 +47,11 @@ class UsersClient(BaseClient):
         """Delete the user with the specified user ID."""
         return self._call(str(user_id), method="DELETE", **options)
 
+    def get_by_email(self, email: str, **options):
+        """Get user with the specified email address."""
+        params = {"idProperty": "EMAIL"}
+        return self._call(email, params=params, method="GET", **options)
+
     def get_by_id(self, user_id: Union[int, str], **options):
         """Get user with the specified user ID."""
         return self._call(str(user_id), method="GET", **options)
