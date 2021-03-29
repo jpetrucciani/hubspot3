@@ -4,6 +4,7 @@ base utils for the hubspot3 library
 import logging
 import sys
 from collections import OrderedDict
+from urllib import parse
 from typing import Dict, Union
 
 
@@ -48,6 +49,26 @@ def prettify(obj_with_props, id_key):
         pass
 
     return prettified
+
+
+def uglify_hapikey(url: str) -> str:
+    """
+    Uglifies the API key on a HubSpot URL
+    """
+    url_parse = parse.urlparse(url)
+    parse_query = parse.parse_qs(url_parse.query)
+    if "hapikey" not in parse_query:
+        return url
+    parse_query["hapikey"][0] = "{}****".format(parse_query["hapikey"][0][0:4])
+    parse_result = parse.ParseResult(
+        scheme=url_parse.scheme,
+        netloc=url_parse.netloc,
+        path=url_parse.path,
+        params=url_parse.params,
+        query=parse.urlencode(parse_query, doseq=True, safe="*"),
+        fragment=url_parse.fragment,
+    )
+    return parse.urlunparse(parse_result)
 
 
 def ordered_dict(dictionary: Dict) -> Union[Dict, OrderedDict]:
