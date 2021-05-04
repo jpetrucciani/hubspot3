@@ -11,7 +11,10 @@ import urllib.parse
 import urllib.error
 import zlib
 from typing import Callable, List, Optional, Union
-from typing_extensions import Literal
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 from hubspot3 import utils
 from hubspot3.utils import force_utf8
 from hubspot3.error import (
