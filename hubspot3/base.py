@@ -11,6 +11,7 @@ import urllib.parse
 import urllib.error
 import zlib
 from typing import Callable, List, Optional, Union
+
 try:
     from typing import Literal
 except ImportError:
