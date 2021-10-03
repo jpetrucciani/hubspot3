@@ -25,7 +25,8 @@ jobs:
     needs: [mypy, prospector, black]
     strategy:
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9']
+        # '3.6', '3.7', '3.8', - need to figure out how to get around rate limiting
+        python-version: ['3.9']
     name: python ${{ matrix.python-version }} tests
     steps:
       - uses: actions/checkout@v2
