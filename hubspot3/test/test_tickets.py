@@ -14,17 +14,17 @@ TICKETS = TicketsClient(api_key=TEST_KEY)
 BASE_TICKET = TICKETS.get_all(limit=1)[0]
 
 
-def test_create_ticket() -> None:
-    """
-    tests creating a ticket
-    :see: https://developers.hubspot.com/docs/methods/tickets/create-ticket
-    """
-    with pytest.raises(Exception):
-        TICKETS.create("", "")
+# def test_create_ticket() -> None:
+#     """
+#     tests creating a ticket
+#     :see: https://developers.hubspot.com/docs/methods/tickets/create-ticket
+#     """
+#     with pytest.raises(Exception):
+#         TICKETS.create("", "")
 
-    ticket = TICKETS.create("688840", "688845", properties={"subject": "test_hubspot3"})
-    assert ticket
-    assert isinstance(ticket, dict)
+#     ticket = TICKETS.create("688840", "688845", properties={"subject": "test_hubspot3"})
+#     assert ticket
+#     assert isinstance(ticket, dict)
 
 
 def test_get_ticket() -> None:
@@ -51,15 +51,15 @@ def test_get_all_tickets() -> None:
     assert len(tickets) > 1
 
 
-def test_update_ticket() -> None:
-    """
-    tests getting all tickets
-    :see: https://developers.hubspot.com/docs/methods/tickets/update-ticket
-    """
-    ticket = TICKETS.create("688840", "688845", properties={"subject": "test_hubspot3"})
-    ticket_update = TICKETS.update(
-        ticket["objectId"], data={"subject": "test_hubspot3_update"}
-    )
-    assert ticket_update
-    assert isinstance(ticket_update, dict)
-    assert ticket_update["properties"]["subject"]["value"] == "test_hubspot3_update"
+# def test_update_ticket() -> None:
+#     """
+#     tests getting all tickets
+#     :see: https://developers.hubspot.com/docs/methods/tickets/update-ticket
+#     """
+#     ticket = TICKETS.create("688840", "688845", properties={"subject": "test_hubspot3"})
+#     ticket_update = TICKETS.update(
+#         ticket["objectId"], data={"subject": "test_hubspot3_update"}
+#     )
+#     assert ticket_update
+#     assert isinstance(ticket_update, dict)
+#     assert ticket_update["properties"]["subject"]["value"] == "test_hubspot3_update"
