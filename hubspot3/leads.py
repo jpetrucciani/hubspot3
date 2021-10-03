@@ -4,12 +4,13 @@ hubspot leads api
 import time
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
+from typing import Dict, List
 
 
 LEADS_API_VERSION = "1"
 
 
-def list_to_snake_dict(list_):
+def list_to_snake_dict(list_: List) -> Dict:
     dictionary = {}
     for item in list_:
         dictionary[item] = item
@@ -126,9 +127,8 @@ class LeadsClient(BaseClient):
 
     def retrieve_lead(self, *guid, **options):
         cur_guid = guid or ""
-        params = {}
-        for key in options:
-            params[key] = options[key]
+        params = options.copy()
+
         # Set guid to -1 as default for not finding a user
         lead = {"guid": "-1"}
         # wrap lead call so that it doesn't error out when not finding a lead

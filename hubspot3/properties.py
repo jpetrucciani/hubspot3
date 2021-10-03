@@ -46,7 +46,9 @@ class PropertiesClient(BaseClient):
 
     @staticmethod
     def _validate(
-        data_type: Optional[str], widget_type: Optional[str], extra_params: dict
+        data_type: Optional[str],
+        widget_type: Optional[str],
+        extra_params: Optional[Dict],
     ) -> None:
         if data_type:
             if data_type not in VALID_PROPERTY_DATA_TYPES:
@@ -80,7 +82,7 @@ class PropertiesClient(BaseClient):
         group_code: str,
         data_type: str,
         widget_type: str,
-        extra_params: dict = None,
+        extra_params: Optional[Dict] = None,
     ) -> Dict:
         """
         Create a new custom property on hubspot.
@@ -115,7 +117,7 @@ class PropertiesClient(BaseClient):
         group_code: str = None,
         data_type: str = None,
         widget_type: str = None,
-        extra_params: dict = None,
+        extra_params: Optional[Dict] = None,
     ) -> Dict:
         """
         Update a custom property on hubspot.

@@ -154,7 +154,7 @@ class BroadcastClient(BaseClient):
         Type filter can be 'scheduled', 'published' or 'failed'
         """
         if remote_content_id:
-            return self.get_broadcasts_by_remote(remote_content_id)  # type: ignore - TODO
+            return self.get_broadcasts_by_remote(remote_content_id)  # type: ignore
 
         params = {"type": broadcast_type}
         if page:
