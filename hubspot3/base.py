@@ -231,8 +231,8 @@ class BaseClient:
     def _execute_request_raw(self, conn, request):
         try:
             result = conn.getresponse()
-        except Exception:
-            raise HubspotTimeout(None, request, traceback.format_exc())
+        except Exception as exception:
+            raise HubspotTimeout(None, request, traceback.format_exc()) from exception
 
         encoding = [i[1] for i in result.getheaders() if i[0] == "content-encoding"]
         possibly_encoded = result.read()
@@ -323,8 +323,7 @@ class BaseClient:
         # Never retry a POST, PUT, or DELETE unless explicitly told to
         if method != "GET" and not opts.get("retry_on_post"):
             num_retries = 0
-        if num_retries > 6:
-            num_retries = 6
+        num_retries = min(num_retries, 6)
 
         emergency_brake = 10
         try_count = 0

@@ -26,6 +26,9 @@ pylint:
     - import-outside-toplevel
     - unnecessary-comprehension
     - unsubscriptable-object
+    # TODO the two below should be removed after some time
+    - consider-using-f-string
+    - super-with-arguments
 
   options:
     max-args: 12

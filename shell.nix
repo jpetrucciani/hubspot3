@@ -12,8 +12,8 @@ let
     fetchTarball
       {
         name = "pypi-deps-db-src";
-        url = "https://github.com/DavHau/pypi-deps-db/archive/2bdc61dafdac938419948ad3cfa8c8b0e02c9016.tar.gz";
-        sha256 = "1ixc9hg5mlnr7mzmyjzqsvqk5kqy5p4lidbdzfvp1q6rkyqfj23c";
+        url = "https://github.com/DavHau/pypi-deps-db/archive/6a8fd687982db22d0290360611567a5534ef23a5.tar.gz";
+        sha256 = "1x0fh1h94vv7zr8xd96555aw8k81hh98abj25jswf8cyxznprgwj";
       };
   mach-nix = import
     (builtins.fetchGit {
