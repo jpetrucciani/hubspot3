@@ -11,11 +11,6 @@ import urllib.parse
 import urllib.error
 import zlib
 from typing import Callable, List, Optional, Union
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 from hubspot3 import utils
 from hubspot3.utils import force_utf8, uglify_hapikey
 from hubspot3.error import (
@@ -30,6 +25,11 @@ from hubspot3.error import (
     HubspotTimeout,
     HubspotUnauthorized,
 )
+
+try:
+    from typing import Literal  # type: ignore
+except ImportError:
+    from typing_extensions import Literal  # type: ignore
 
 
 class BaseClient:

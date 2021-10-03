@@ -3,6 +3,7 @@ testing hubspot3.properties
 """
 import json
 from unittest.mock import Mock
+from typing import Dict
 
 import pytest
 
@@ -20,14 +21,14 @@ from hubspot3.globals import (
 
 
 @pytest.fixture
-def properties_client(mock_connection):
+def properties_client(mock_connection) -> properties.PropertiesClient:
     client = properties.PropertiesClient(disable_auth=True)
     client.options["connection_type"] = Mock(return_value=mock_connection)
     return client
 
 
 @pytest.fixture
-def properties_input_data():
+def properties_input_data() -> Dict:
     return dict(
         code="my_field",
         label="My Label",
@@ -48,20 +49,21 @@ class TestPropertiesClient(object):
             (OBJECT_TYPE_PRODUCTS, 2),
         ],
     )
-    def test_get_path(self, object_type, api_version):
+    def test_get_path(self, object_type: str, api_version: str) -> None:
         client = properties.PropertiesClient(disable_auth=True)
         client._object_type = object_type
-        assert client._get_path("") == "properties/v{}/{}/properties/".format(
-            api_version, object_type
+        assert (
+            client._get_path("")
+            == f"properties/v{api_version}/{object_type}/properties/"
         )
 
-    def test_validate_data_type(self):
+    def test_validate_data_type(self) -> None:
         client = properties.PropertiesClient(disable_auth=True)
         with pytest.raises(ValueError) as value_error:
             client._validate(data_type="xy", widget_type=None, extra_params=None)
         assert "Invalid data type for property" in str(value_error)
 
-    def test_validate_widget_type(self):
+    def test_validate_widget_type(self) -> None:
         client = properties.PropertiesClient(disable_auth=True)
         with pytest.raises(ValueError) as value_error:
             client._validate(
@@ -69,7 +71,7 @@ class TestPropertiesClient(object):
             )
         assert "Invalid widget type for property" in str(value_error)
 
-    def test_validate_enum_type(self):
+    def test_validate_enum_type(self) -> None:
         client = properties.PropertiesClient(disable_auth=True)
         with pytest.raises(ValueError) as value_error:
             client._validate(

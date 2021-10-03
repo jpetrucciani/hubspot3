@@ -14,7 +14,7 @@ TICKETS = TicketsClient(api_key=TEST_KEY)
 BASE_TICKET = TICKETS.get_all(limit=1)[0]
 
 
-def test_create_ticket():
+def test_create_ticket() -> None:
     """
     tests creating a ticket
     :see: https://developers.hubspot.com/docs/methods/tickets/create-ticket
@@ -27,7 +27,7 @@ def test_create_ticket():
     assert isinstance(ticket, dict)
 
 
-def test_get_ticket():
+def test_get_ticket() -> None:
     """
     tests getting a ticket by id
     :see: https://developers.hubspot.com/docs/methods/tickets/get_ticket_by_id
@@ -40,7 +40,7 @@ def test_get_ticket():
     assert isinstance(ticket, dict)
 
 
-def test_get_all_tickets():
+def test_get_all_tickets() -> None:
     """
     tests getting all tickets
     :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets
@@ -51,7 +51,7 @@ def test_get_all_tickets():
     assert len(tickets) > 1
 
 
-def test_update_ticket():
+def test_update_ticket() -> None:
     """
     tests getting all tickets
     :see: https://developers.hubspot.com/docs/methods/tickets/update-ticket

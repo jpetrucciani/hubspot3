@@ -25,6 +25,7 @@ pylint:
     - cyclic-import
     - import-outside-toplevel
     - unnecessary-comprehension
+    - unsubscriptable-object
 
   options:
     max-args: 12

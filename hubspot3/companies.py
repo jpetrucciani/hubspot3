@@ -53,7 +53,11 @@ class CompaniesClient(BaseClient):
         return self._call("companies/{}".format(company_id), method="GET", **options)
 
     def search_domain(
-        self, domain: str, limit: int = 1, extra_properties: Union[List, str, None] = None, **options
+        self,
+        domain: str,
+        limit: int = 1,
+        extra_properties: Union[List, str, None] = None,
+        **options
     ) -> Dict:
         """searches for companies by domain name. limit is max'd at 100"""
         # default properties to fetch
