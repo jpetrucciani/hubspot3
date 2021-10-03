@@ -367,9 +367,7 @@ class BaseClient:
                         )
                         self.access_token = refresh_result["access_token"]
                         self.refresh_token = refresh_result["refresh_token"]
-                        self.log.debug(
-                            "Retrying with new token"
-                        )
+                        self.log.debug("Retrying with new token")
                     except Exception as exception:
                         self.log.error(
                             "Unable to refresh access_token: {}".format(exception)
