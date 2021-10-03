@@ -17,7 +17,7 @@ try:
 except ImportError:
     from typing_extensions import Literal
 from hubspot3 import utils
-from hubspot3.utils import force_utf8
+from hubspot3.utils import force_utf8, uglify_hapikey
 from hubspot3.error import (
     HubspotBadConfig,
     HubspotBadRequest,
@@ -395,14 +395,18 @@ class BaseClient:
                 raise
             except HubspotError as exception:
                 if try_count > num_retries:
-                    logging.warning("Too many retries for {}".format(url))
+                    logging.warning(
+                        "Too many retries for {}".format(uglify_hapikey(url))
+                    )
                     raise
                 # Don't retry errors from 300 to 499
                 if exception.result and 300 <= exception.result.status < 500:
                     raise
                 self._prepare_request_retry(method, url, headers, data)
                 self.log.warning(
-                    "HubspotError {} calling {}, retrying".format(exception, url)
+                    "HubspotError {} calling {}, retrying".format(
+                        exception, uglify_hapikey(url)
+                    )
                 )
             # exponential back off
             # wait 0 seconds, 1 second, 3 seconds, 7 seconds, 15 seconds, etc
