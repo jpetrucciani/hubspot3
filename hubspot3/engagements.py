@@ -64,6 +64,12 @@ class EngagementsClient(BaseClient):
             "engagements/{}".format(key), data=data, method="PUT", **options
         )
 
+    def patch(self, key, data=None, **options):
+        data = data or {}
+        return self._call(
+            "engagements/{}".format(key), data=data, method="PATCH", **options
+        )
+
     def get_all(self, **options) -> List[Dict]:
         """get all engagements"""
         finished = False
