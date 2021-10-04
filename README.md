@@ -1,4 +1,3 @@
-[![image](https://travis-ci.org/jpetrucciani/hubspot3.svg?branch=master)](https://travis-ci.org/jpetrucciani/hubspot3)
 [![PyPI
 version](https://badge.fury.io/py/hubspot3.svg)](https://badge.fury.io/py/hubspot3)
 [![Code style:
