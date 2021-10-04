@@ -2,6 +2,7 @@
 hubspot broadcast api
 """
 from hubspot3.base import BaseClient
+from typing import Any, Dict, List
 
 
 HUBSPOT_BROADCAST_API_VERSION = "1"
@@ -10,7 +11,7 @@ HUBSPOT_BROADCAST_API_VERSION = "1"
 class BaseSocialObject:
     """base social object"""
 
-    def _camel_case_to_underscores(self, text):
+    def _camel_case_to_underscores(self, text: str) -> str:
         result = []
         pos = 0
         while pos < len(text):
@@ -30,7 +31,7 @@ class BaseSocialObject:
             pos += 1
         return "".join(result)
 
-    def _underscores_to_camel_case(self, text):
+    def _underscores_to_camel_case(self, text: str) -> str:
         result = []
         pos = 0
         while pos < len(text):
@@ -42,13 +43,16 @@ class BaseSocialObject:
             pos += 1
         return "".join(result)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict:
         dict_self = {}
         for key in vars(self):
             dict_self[self._underscores_to_camel_case(key)] = getattr(self, key)
         return dict_self
 
-    def from_dict(self, data):
+    def accepted_fields(self) -> List[str]:
+        return []
+
+    def from_dict(self, data: Dict) -> None:
         accepted_fields = self.accepted_fields()
         for key in data:
             if key in accepted_fields:
@@ -64,10 +68,10 @@ class Broadcast(BaseSocialObject):
     LEGACY_LP = "cmslp"
     LEGACY_BLOG = "cmsblog"
 
-    def __init__(self, broadcast_data):
+    def __init__(self, broadcast_data: Dict) -> None:
         self.data_parse(broadcast_data)
 
-    def accepted_fields(self):
+    def accepted_fields(self) -> List[str]:
         return [
             "broadcastGuid",
             "campaignGuid",
@@ -93,17 +97,17 @@ class Broadcast(BaseSocialObject):
             "updatedBy",
         ]
 
-    def data_parse(self, broadcast_data):
+    def data_parse(self, broadcast_data: Dict) -> None:
         self.from_dict(broadcast_data)
 
 
 class Channel(BaseSocialObject):
     """Defines the social media channel for the broadcast api"""
 
-    def __init__(self, channel_data):
+    def __init__(self, channel_data: Dict) -> None:
         self.data_parse(channel_data)
 
-    def accepted_fields(self):
+    def accepted_fields(self) -> List[str]:
         return [
             "channelGuid",
             "accountGuid",
@@ -115,37 +119,42 @@ class Channel(BaseSocialObject):
             "settings",
         ]
 
-    def data_parse(self, channel_data):
+    def data_parse(self, channel_data: Dict) -> None:
         self.from_dict(channel_data)
 
 
 class BroadcastClient(BaseClient):
     """Broadcast API to manage messages published to social networks"""
 
-    def _get_path(self, subpath):
-        return "broadcast/v{}/{}".format(HUBSPOT_BROADCAST_API_VERSION, subpath)
+    def _get_path(self, subpath: str) -> str:
+        return f"broadcast/v{HUBSPOT_BROADCAST_API_VERSION}/{subpath}"
 
-    def get_broadcast(self, broadcast_guid, **kwargs):
+    def get_broadcast(self, broadcast_guid: str, **kwargs: Any) -> Broadcast:
         """
         Get a specific broadcast by guid
         """
         params = kwargs
         broadcast = self._call(
-            "broadcasts/{}".format(broadcast_guid),
+            f"broadcasts/{broadcast_guid}",
             params=params,
             content_type="application/json",
         )
         return Broadcast(broadcast)
 
     def get_broadcasts(
-        self, broadcast_type="", page=None, remote_content_id=None, limit=None, **kwargs
-    ):
+        self,
+        broadcast_type: str = "",
+        page: str = None,
+        remote_content_id: str = None,
+        limit: int = None,
+        **kwargs: Any,
+    ) -> List[Broadcast]:
         """
         Get all broadcasts, with optional paging and limits.
         Type filter can be 'scheduled', 'published' or 'failed'
         """
         if remote_content_id:
-            return self.get_broadcasts_by_remote(remote_content_id)
+            return self.get_broadcasts_by_remote(remote_content_id)  # type: ignore
 
         params = {"type": broadcast_type}
         if page:
@@ -162,7 +171,7 @@ class BroadcastClient(BaseClient):
             return broadcasts[:limit]
         return broadcasts
 
-    def create_broadcast(self, broadcast):
+    def create_broadcast(self, broadcast: Dict) -> Dict:
         if not isinstance(broadcast, dict):
             return self._call(
                 "broadcasts",
@@ -174,7 +183,7 @@ class BroadcastClient(BaseClient):
             "broadcasts", data=broadcast, method="POST", content_type="application/json"
         )
 
-    def cancel_broadcast(self, broadcast_guid):
+    def cancel_broadcast(self, broadcast_guid: str) -> Dict:
         """
         Cancel a broadcast specified by guid
         """
@@ -185,13 +194,15 @@ class BroadcastClient(BaseClient):
         )
         return bcast_dict
 
-    def get_channel(self, channel_guid):
+    def get_channel(self, channel_guid: str) -> Channel:
         channel = self._call(
             "channels/{}".format(channel_guid), content_type="application/json"
         )
         return Channel(channel)
 
-    def get_channels(self, current=True, publish_only=False, settings=False):
+    def get_channels(
+        self, current: bool = True, publish_only: bool = False, settings: bool = False
+    ) -> List[Channel]:
         """
         if "current" is false it will return all channels that a user
         has published to in the past.

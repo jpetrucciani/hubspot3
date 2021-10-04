@@ -11,11 +11,6 @@ import urllib.parse
 import urllib.error
 import zlib
 from typing import Callable, List, Optional, Union
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 from hubspot3 import utils
 from hubspot3.utils import force_utf8, uglify_hapikey
 from hubspot3.error import (
@@ -30,6 +25,11 @@ from hubspot3.error import (
     HubspotTimeout,
     HubspotUnauthorized,
 )
+
+try:
+    from typing import Literal  # type: ignore
+except ImportError:
+    from typing_extensions import Literal  # type: ignore
 
 
 class BaseClient:
@@ -231,8 +231,8 @@ class BaseClient:
     def _execute_request_raw(self, conn, request):
         try:
             result = conn.getresponse()
-        except Exception:
-            raise HubspotTimeout(None, request, traceback.format_exc())
+        except Exception as exception:
+            raise HubspotTimeout(None, request, traceback.format_exc()) from exception
 
         encoding = [i[1] for i in result.getheaders() if i[0] == "content-encoding"]
         possibly_encoded = result.read()
@@ -323,8 +323,7 @@ class BaseClient:
         # Never retry a POST, PUT, or DELETE unless explicitly told to
         if method != "GET" and not opts.get("retry_on_post"):
             num_retries = 0
-        if num_retries > 6:
-            num_retries = 6
+        num_retries = min(num_retries, 6)
 
         emergency_brake = 10
         try_count = 0
@@ -368,9 +367,7 @@ class BaseClient:
                         )
                         self.access_token = refresh_result["access_token"]
                         self.refresh_token = refresh_result["refresh_token"]
-                        self.log.debug(
-                            "Retrying with new token"
-                        )
+                        self.log.debug("Retrying with new token")
                     except Exception as exception:
                         self.log.error(
                             "Unable to refresh access_token: {}".format(exception)

@@ -12,7 +12,7 @@ from hubspot3.leads import LeadsClient
 from typing import Callable, Dict, List, Tuple
 
 
-def get_config_from_file(filename):
+def get_config_from_file(filename: str) -> Dict:
     """Return the content of a JSON config file as a dictionary."""
     with open(filename, "r", encoding="utf-8") as file:
         config = json.load(file)
@@ -45,7 +45,7 @@ class Hubspot3CLIWrapper:  # pylint: disable=empty-docstring
     # the Hubspot3 class.
     IGNORED_PROPERTIES = ("me", "usage_limits")
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         # If no arguments were supplied at all, the desired outcome is likely
         # the list of operations/clients. Therefore disable authentication to
         # stop the Hubspot3 initializer from raising an exception since there
@@ -70,7 +70,7 @@ class Hubspot3CLIWrapper:  # pylint: disable=empty-docstring
     def __dir__(self):
         return self._clients  # Let Fire only discover the client attributes.
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Hubspot3 CLI"
 
     def _discover_clients(self, hubspot3: Hubspot3) -> Dict[str, BaseClient]:

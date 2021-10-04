@@ -10,7 +10,7 @@ from hubspot3 import products
 
 
 @pytest.fixture
-def products_client(mock_connection):
+def products_client(mock_connection) -> products.ProductsClient:
     client = products.ProductsClient(disable_auth=True)
     client.options["connection_type"] = Mock(return_value=mock_connection)
     return client
@@ -23,7 +23,7 @@ HUBSPOT_PRODUCT_ID = 1642767
 class TestProductsClient(object):
     """Performs few tests on the Hubspot ProductsClient."""
 
-    def test_get_path(self):
+    def test_get_path(self) -> None:
         client = products.ProductsClient(disable_auth=True)
         assert (
             client._get_path("objects/products/42")
@@ -34,7 +34,7 @@ class TestProductsClient(object):
             == "crm-objects/v1/objects/products/paged"
         )
 
-    def test_get_product(self, products_client, mock_connection):
+    def test_get_product(self, products_client, mock_connection) -> None:
         """Test to retrieve a product from Hubspot by using the ProductsClient."""
         response_body = {"objectType": "PRODUCT", "objectId": HUBSPOT_PRODUCT_ID}
 
@@ -50,7 +50,9 @@ class TestProductsClient(object):
         )
         assert response == response_body
 
-    def test_get_product_with_extra_properties(self, products_client, mock_connection):
+    def test_get_product_with_extra_properties(
+        self, products_client, mock_connection
+    ) -> None:
         """
         Test to retrieve a product from Hubspot by using the ProductsClient.
 
@@ -73,7 +75,7 @@ class TestProductsClient(object):
         )
         assert response == response_body
 
-    def test_get_all_products(self, products_client, mock_connection):
+    def test_get_all_products(self, products_client, mock_connection) -> None:
         """Test to retrieve all the products from Hubspot with the default properties."""
         response_body = {
             "objects": [
@@ -145,7 +147,7 @@ class TestProductsClient(object):
             {"id": 1642796},
         ]
 
-    def test_create_product(self, products_client, mock_connection):
+    def test_create_product(self, products_client, mock_connection) -> None:
         """Test to create a new product on Hubspot."""
         product_name = "A new product"
         product_description = "A product to be created"
@@ -188,7 +190,7 @@ class TestProductsClient(object):
         )
         assert response == response_body
 
-    def test_update_product(self, products_client, mock_connection):
+    def test_update_product(self, products_client, mock_connection) -> None:
         """Test to update an existing product on Hubspot."""
         product_name = "An updated product"
         product_description = "A product to be updated"

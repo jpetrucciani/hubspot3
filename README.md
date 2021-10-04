@@ -5,10 +5,10 @@ version](https://badge.fury.io/py/hubspot3.svg)](https://badge.fury.io/py/hubspo
 black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![Documentation
 Status](https://readthedocs.org/projects/hubspot3/badge/?version=latest)](https://hubspot3.readthedocs.io/en/latest/?badge=latest)
-[![Python 3.5+
-supported](https://img.shields.io/badge/python-3.5+-blue.svg)](https://www.python.org/downloads/release/python-350/)
+[![Python 3.6+
+supported](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
-A python wrapper around HubSpot's APIs, _for python 3.5+_.
+A python wrapper around HubSpot's APIs, _for python 3.6+_.
 
 Built initially around hapipy, but heavily modified.
 
@@ -107,13 +107,13 @@ API requests:
 
 Free & Starter:
 
--   10 requests per second
--   250,000 requests per day.
+- 10 requests per second
+- 250,000 requests per day.
 
 Professional & Enterprise:
 
--   10 requests per second
--   500,000 requests per day.
+- 10 requests per second
+- 500,000 requests per day.
 
 This daily limit resets at midnight based on the time zone setting of
 the HubSpot account. There is also an additional addon you can purchase

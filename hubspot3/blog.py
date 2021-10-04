@@ -3,7 +3,7 @@ hubspot blog api client
 """
 import json
 from hubspot3.base import BaseClient
-from typing import Dict
+from typing import Any, Dict
 
 
 BLOG_API_VERSION = "2"
@@ -17,12 +17,12 @@ class BlogClient(BaseClient):
     """
 
     def _get_path(self, subpath: str) -> str:
-        return "content/api/v{}/{}".format(BLOG_API_VERSION, subpath)
+        return f"content/api/v{BLOG_API_VERSION}/{subpath}"
 
-    def get_blogs(self, **options):
+    def get_blogs(self, **options: Any) -> Dict:
         return self._call("blogs", **options)
 
-    def get_blog_info(self, blog_guid, **options):
+    def get_blog_info(self, blog_guid: str, **options: Any) -> Dict:
         return self._call("blogs/{}".format(blog_guid), **options)
 
     def get_posts(self, blog_guid: str, **options) -> Dict:
@@ -69,7 +69,7 @@ class BlogClient(BaseClient):
             method="POST",
             content_type="application/json",
             raw_output=True,
-            **options
+            **options,
         )
         return raw_response
 
@@ -80,7 +80,7 @@ class BlogClient(BaseClient):
         summary=None,
         content=None,
         meta_desc=None,
-        **options
+        **options,
     ):
         update_param_translation = dict(
             title="name",
@@ -101,7 +101,7 @@ class BlogClient(BaseClient):
             method="PUT",
             content_type="application/json",
             raw_output=True,
-            **options
+            **options,
         )
         return raw_response
 
@@ -113,7 +113,7 @@ class BlogClient(BaseClient):
             method="PUT",
             content_type="application/json",
             raw_output=True,
-            **options
+            **options,
         )
         return raw_response
 
@@ -146,7 +146,7 @@ class BlogCommentsClient(BaseClient):
         author_email,
         author_uri,
         content,
-        **options
+        **options,
     ):
         post = dict(
             collectionId=blog_guid,
@@ -162,7 +162,7 @@ class BlogCommentsClient(BaseClient):
             method="POST",
             content_type="application/json",
             raw_output=True,
-            **options
+            **options,
         )
         return raw_response
 

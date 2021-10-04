@@ -7,6 +7,10 @@ import re
 from setuptools import setup
 
 
+__library__ = "hubspot3"
+__user__ = "https://github.com/jpetrucciani"
+
+
 with open("README.md") as readme:
     LONG_DESCRIPTION = readme.read()
 
@@ -39,17 +43,18 @@ setup(
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     author="HubSpot Dev Team, Jacobi Petrucciani",
-    author_email="jacobi@mimirhq.com",
-    url="https://github.com/jpetrucciani/hubspot3.git",
-    download_url="https://github.com/jpetrucciani/hubspot3.git",
+    author_email="j@cobi.dev",
+    url=f"{__user__}/{__library__}.git",
+    download_url=f"{__user__}/{__library__}.git",
     license="LICENSE",
     packages=["hubspot3"],
     install_requires=["typing_extensions; python_version < '3.8'"],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     zip_safe=False,
     extras_require={"cli": ["fire==0.1.3"]},
