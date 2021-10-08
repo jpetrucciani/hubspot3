@@ -23,7 +23,7 @@ class UsersClient(BaseClient):
         email: str,
         role_id: Union[int, str],
         send_welcome_email: bool = False,
-        **options
+        **options,
     ):
         """Create a new user with minimal contacts-base permissions."""
         data = {

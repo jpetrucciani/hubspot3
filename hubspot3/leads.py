@@ -116,9 +116,11 @@ class LeadsClient(BaseClient):
                 params[k] = options[k]
                 del options[k]
         leads = self._call("list/", params, **options)
+        guids_str = guids and f"guids={guids}"
         self.log.info(
-            "retrieved {} leads through API ( {}options={} )".format(
-                len(leads), guids and "guids={}, ".format(guids or ""), original_options
+            (
+                f"retrieved {len(leads)} leads through API ( "
+                f"{guids_str} options={original_options} )"
             )
         )
         return leads
@@ -140,9 +142,7 @@ class LeadsClient(BaseClient):
     def update_lead(self, guid, update_data=None, **options):
         update_data = update_data or {}
         update_data["guid"] = guid
-        return self._call(
-            f"lead/{guid}/", data=update_data, method="PUT", **options
-        )
+        return self._call(f"lead/{guid}/", data=update_data, method="PUT", **options)
 
     def get_webhook(self, **options):  # WTF are these 2 methods for?
         return self._call("callback-url", **options)
@@ -153,7 +153,7 @@ class LeadsClient(BaseClient):
             params={"url": url},
             data={"url": url},
             method="POST",
-            **options
+            **options,
         )
 
     def close_lead(self, guid, close_time=None, **options):

@@ -21,15 +21,11 @@ class EngagementsClient(BaseClient):
 
     def _get_path(self, subpath: str) -> str:
         """get full subpath"""
-        return "engagements/v{}/{}".format(
-            self.options.get("version") or ENGAGEMENTS_API_VERSION, subpath
-        )
+        return f"engagements/v{self.options.get('version') or ENGAGEMENTS_API_VERSION}/{subpath}"
 
     def get(self, engagement_id, **options):
         """Get a HubSpot engagement."""
-        return self._call(
-            f"engagements/{engagement_id}", method="GET", **options
-        )
+        return self._call(f"engagements/{engagement_id}", method="GET", **options)
 
     def get_associated(self, object_type, object_id, **options) -> List[Dict]:
         """
@@ -46,7 +42,7 @@ class EngagementsClient(BaseClient):
                 f"engagements/associated/{object_type}/{object_id}/paged",
                 method="GET",
                 params={"limit": query_limit, "offset": offset},
-                **options
+                **options,
             )
             output.extend(batch["results"])
             finished = not batch["hasMore"]
@@ -60,15 +56,11 @@ class EngagementsClient(BaseClient):
 
     def update(self, key, data=None, **options):
         data = data or {}
-        return self._call(
-            f"engagements/{key}", data=data, method="PUT", **options
-        )
+        return self._call(f"engagements/{key}", data=data, method="PUT", **options)
 
     def patch(self, key, data=None, **options):
         data = data or {}
-        return self._call(
-            f"engagements/{key}", data=data, method="PATCH", **options
-        )
+        return self._call(f"engagements/{key}", data=data, method="PATCH", **options)
 
     def get_all(self, **options) -> List[Dict]:
         """get all engagements"""
@@ -81,7 +73,7 @@ class EngagementsClient(BaseClient):
                 "engagements/paged",
                 method="GET",
                 params={"limit": query_limit, "offset": offset},
-                **options
+                **options,
             )
             output.extend(batch["results"])
             finished = not batch["hasMore"]
@@ -100,7 +92,7 @@ class EngagementsClient(BaseClient):
                 "engagements/recent/modified",
                 method="GET",
                 params={"limit": query_limit, "offset": offset, "since": since},
-                **options
+                **options,
             )
             output.extend(batch["results"])
             finished = not batch["hasMore"]

@@ -21,9 +21,7 @@ class CompaniesClient(BaseClient):
 
     def _get_path(self, subpath: str) -> str:
         """get the full api url for the given subpath on this client"""
-        return "companies/v{}/{}".format(
-            self.options.get("version") or COMPANIES_API_VERSION, subpath
-        )
+        return f"companies/v{self.options.get('version') or COMPANIES_API_VERSION}/{subpath}"
 
     def create(self, data: Dict = None, **options) -> Dict:
         """create a new company"""
@@ -33,9 +31,7 @@ class CompaniesClient(BaseClient):
     def update(self, company_id: str, data: Dict = None, **options) -> Dict:
         """update the given company with data"""
         data = data or {}
-        return self._call(
-            f"companies/{company_id}", data=data, method="PUT", **options
-        )
+        return self._call(f"companies/{company_id}", data=data, method="PUT", **options)
 
     def delete(self, company_id: str, **options) -> Dict:
         """delete a company"""
@@ -57,7 +53,7 @@ class CompaniesClient(BaseClient):
         domain: str,
         limit: int = 1,
         extra_properties: Union[List, str, None] = None,
-        **options
+        **options,
     ) -> Dict:
         """searches for companies by domain name. limit is max'd at 100"""
         # default properties to fetch
@@ -82,14 +78,14 @@ class CompaniesClient(BaseClient):
             f"domains/{domain}/companies",
             method="POST",
             data={"limit": limit, "requestOptions": {"properties": properties}},
-            **options
+            **options,
         )
 
     def get_all(
         self,
         prettify_output: bool = True,
         extra_properties: Union[str, List] = None,
-        **options
+        **options,
     ) -> Optional[List]:
         """
         get all companies, including extra properties if they are passed in
@@ -130,7 +126,7 @@ class CompaniesClient(BaseClient):
                     "propertiesWithHistory": properties,
                     "includeMergeAudits": "true",
                 },
-                **options
+                **options,
             )
             output.extend(
                 [
@@ -152,7 +148,7 @@ class CompaniesClient(BaseClient):
         limit: int = 250,
         offset: int = 0,
         since: int = None,
-        **options
+        **options,
     ) -> Optional[List]:
         """
         Returns either list of recently modified companies or recently created companies,
@@ -174,7 +170,7 @@ class CompaniesClient(BaseClient):
                 method="GET",
                 doseq=True,
                 params=params,
-                **options
+                **options,
             )
             output.extend(
                 [
@@ -217,6 +213,4 @@ class CompaniesClient(BaseClient):
 
         :see: https://developers.hubspot.com/docs/methods/companies/get_company_contacts
         """
-        return self._call(
-            f"companies/{company_id}/contacts", method="GET", **options
-        )
+        return self._call(f"companies/{company_id}/contacts", method="GET", **options)

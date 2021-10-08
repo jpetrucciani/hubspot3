@@ -39,6 +39,4 @@ class KeywordsClient(BaseClient):
         return self._call("keywords", data=data, method="PUT", **options)["keywords"]
 
     def delete_keyword(self, keyword_guid, **options):
-        return self._call(
-            f"keywords/{keyword_guid}", method="DELETE", **options
-        )
+        return self._call(f"keywords/{keyword_guid}", method="DELETE", **options)

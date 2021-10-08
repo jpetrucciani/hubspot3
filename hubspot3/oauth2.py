@@ -38,7 +38,7 @@ class OAuth2Client(BaseClient):
         redirect_uri: str,
         client_id: str = None,
         client_secret: str = None,
-        **options
+        **options,
     ):
         """
         Request an initial token pair using the provided credentials.
@@ -69,7 +69,7 @@ class OAuth2Client(BaseClient):
         client_id: str = None,
         client_secret: str = None,
         refresh_token: str = None,
-        **options
+        **options,
     ):
         """
         Request a new token pair using the provided refresh token and credentials.

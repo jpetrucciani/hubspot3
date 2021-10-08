@@ -39,7 +39,7 @@ class FormSubmissionClient(BaseClient):
         form_guid: str,
         data: dict,
         context: dict = None,
-        **options
+        **options,
     ) -> HTTPResponse:
         """
         submit to a form on hubspot

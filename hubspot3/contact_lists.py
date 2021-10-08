@@ -19,9 +19,7 @@ class ContactListsClient(BaseClient):
         self.log = get_log("hubspot3.contact_lists")
 
     def _get_path(self, subpath):
-        return "contacts/v{}/{}".format(
-            self.options.get("version") or CONTACT_LISTS_API_VERSION, subpath
-        )
+        return f"contacts/v{self.options.get('version') or CONTACT_LISTS_API_VERSION}/{subpath}"
 
     def get_contact_lists(self, **options):
         """Returns all of the contact lists"""
@@ -31,12 +29,7 @@ class ContactListsClient(BaseClient):
         """Adds a list of contact vids to the specified list."""
         data = data or {}
         data["vids"] = vids
-        return self._call(
-            f"lists/{list_id}/add",
-            data=data,
-            method="POST",
-            **options
-        )
+        return self._call(f"lists/{list_id}/add", data=data, method="POST", **options)
 
     def create_a_contact_list(
         self, list_name, portal_id, dynamic=True, data=None, **options
@@ -50,6 +43,4 @@ class ContactListsClient(BaseClient):
 
     def delete_a_contact_list(self, list_id, **options):
         """Deletes the contact list by list_id."""
-        return self._call(
-            f"lists/{list_id}", method="DELETE", **options
-        )
+        return self._call(f"lists/{list_id}", method="DELETE", **options)

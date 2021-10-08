@@ -18,25 +18,22 @@ def get_config_from_file(filename: str) -> Dict:
         config = json.load(file)
     if not isinstance(config, dict):
         raise RuntimeError(
-            'Config file content must be an object, got "{}" instead.'.format(
-                type(config).__name__
-            )
+            f'Config file content must be an object, got "{type(config).__name__}" instead.'
         )
     return config
 
 
 class Hubspot3CLIWrapper:  # pylint: disable=empty-docstring
-    __doc__ = """
+    hubspot3_cli_flags = build_usage_string(Hubspot3).split("\n")[-1]
+    __doc__ = f"""
         Hubspot3 CLI
 
         To get a list of supported operations, call this CLI without the "--help" option.
 
         The API client can be configured by providing options BEFORE specifying the operation to
         execute. KWARGS are:
-        [--config CONFIG_FILE_PATH] {}
-    """.format(
-        build_usage_string(Hubspot3).split("\n")[-1]
-    )
+        [--config CONFIG_FILE_PATH] {hubspot3_cli_flags}
+    """
 
     # Properties to ignore during discovery. The "me" property must be ignored
     # as it would already perform an API request while being discovered and the
@@ -160,10 +157,9 @@ class ClientCLIWrapper:  # pylint: disable=empty-docstring
                 "Supported ARGS/KWARGS are:",
                 build_usage_string(method),
                 "",
-                'The token "{}" may be used as an argument value, which will cause JSON data to be '
-                "read from stdin and used as the actual argument value.".format(
-                    self.STDIN_TOKEN
-                ),
+                f'The token "{self.STDIN_TOKEN}" may be used as an argument'
+                " value, which will cause JSON data to be "
+                "read from stdin and used as the actual argument value.",
             )
         )
 

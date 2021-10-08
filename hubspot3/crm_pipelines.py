@@ -19,8 +19,9 @@ class PipelinesClient(BaseClient):
         self.log = get_log("hubspot3.crm-pipelines")
 
     def _get_path(self, subpath):
-        return "crm-pipelines/v{}/{}".format(
-            self.options.get("version") or CRM_PIPELINES_API_VERSION, subpath
+        return (
+            f"crm-pipelines/v{self.options.get('version') or CRM_PIPELINES_API_VERSION}"
+            f"/{subpath}"
         )
 
     def create(self, object_type, data=None, **options):
@@ -32,10 +33,7 @@ class PipelinesClient(BaseClient):
     def update(self, object_type, key, data=None, **options):
         data = data or {}
         return self._call(
-            f"pipelines/{object_type}/{key}",
-            data=data,
-            method="PUT",
-            **options
+            f"pipelines/{object_type}/{key}", data=data, method="PUT", **options
         )
 
     def get_all(self, object_type="deals", offset=0, extra_properties=None, **options):

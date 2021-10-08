@@ -62,7 +62,7 @@ class EmailSubscriptionClient(BaseClient):
         subscriptions: Iterable,
         portal_legal_basis: str = None,
         portal_legal_basis_explanation: str = None,
-        **options
+        **options,
     ) -> None:
         """
         Convenience method to update the individual email subscriptions for a given email address.

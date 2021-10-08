@@ -71,7 +71,7 @@ class DealsClient(BaseClient):
             f"deal/{deal_id}/associations/{object_type}",
             method="PUT",
             query=query,
-            **options
+            **options,
         )
 
     def get_all(
@@ -79,7 +79,7 @@ class DealsClient(BaseClient):
         offset: int = 0,
         extra_properties: Union[list, str] = None,
         limit: int = -1,
-        **options
+        **options,
     ):
         """
         get all deals in the hubspot account.
@@ -125,7 +125,7 @@ class DealsClient(BaseClient):
                     "includeAssociations": True,
                 },
                 doseq=True,
-                **options
+                **options,
             )
             output.extend(
                 [
@@ -146,7 +146,7 @@ class DealsClient(BaseClient):
         offset: int = 0,
         since: int = None,
         include_versions: bool = False,
-        **options
+        **options,
     ):
         """
         returns a list of either recently created or recently modified deals
@@ -173,7 +173,7 @@ class DealsClient(BaseClient):
                 method="GET",
                 params=params,
                 doseq=True,
-                **options
+                **options,
             )
             output.extend(
                 [
@@ -193,7 +193,7 @@ class DealsClient(BaseClient):
         offset: int = 0,
         since: int = None,
         include_versions: bool = False,
-        **options
+        **options,
     ):
         """
         get recently created deals
@@ -207,7 +207,7 @@ class DealsClient(BaseClient):
             offset=offset,
             since=since,
             include_versions=include_versions,
-            **options
+            **options,
         )
 
     def get_recently_modified(
@@ -216,7 +216,7 @@ class DealsClient(BaseClient):
         offset: int = 0,
         since: int = None,
         include_versions: bool = False,
-        **options
+        **options,
     ):
         """
         get recently modified deals
@@ -230,5 +230,5 @@ class DealsClient(BaseClient):
             offset=offset,
             since=since,
             include_versions=include_versions,
-            **options
+            **options,
         )

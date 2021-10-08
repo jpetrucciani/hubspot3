@@ -35,8 +35,9 @@ class PropertyGroupsClient(BaseClient):
         self.log = get_log("hubspot3.properties")
 
     def _get_path(self, subpath):
-        return "properties/v{}/{}/groups/{}".format(
-            PROPERTY_GROUPS_API_VERSION[self._object_type], self._object_type, subpath
+        return (
+            f"properties/v{PROPERTY_GROUPS_API_VERSION[self._object_type]}"
+            f"/{self._object_type}/groups/{subpath}"
         )
 
     def create(self, object_type, code, label, extra_params=None):

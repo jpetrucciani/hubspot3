@@ -21,8 +21,9 @@ class LinesClient(BaseClient):
         self.log = get_log("hubspot3.lines")
 
     def _get_path(self, subpath: str):
-        return "crm-objects/v{}/objects/line_items/{}".format(
-            self.options.get("version") or LINES_API_VERSION, subpath
+        return (
+            f"crm-objects/v{self.options.get('version') or LINES_API_VERSION}"
+            f"/objects/line_items/{subpath}"
         )
 
     def create(self, data=None, **options) -> Dict:
@@ -59,7 +60,7 @@ class LinesClient(BaseClient):
         offset: int = 0,
         extra_properties: Union[list, str] = None,
         limit: int = -1,
-        **options
+        **options,
     ):
         """
         Retrieve all the line items in the Hubspot account.
@@ -94,7 +95,7 @@ class LinesClient(BaseClient):
                 method="GET",
                 params=ordered_dict({"offset": offset, "properties": properties}),
                 doseq=True,
-                **options
+                **options,
             )
             output.extend(
                 [

@@ -290,9 +290,6 @@ class TestContactsClient(object):
                 assert len(warning_instance) == 1
                 assert issubclass(warning_instance[-1].category, DeprecationWarning)
                 message = str(warning_instance[-1].message)
-                assert (
-                    f"{deprecated_name} is deprecated"
-                    in message
-                )
+                assert f"{deprecated_name} is deprecated" in message
                 new_name_part = message.find("favor of")
                 assert new_name in message[new_name_part:]

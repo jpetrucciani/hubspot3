@@ -55,9 +55,9 @@ def mock_connection():
             print("failed", url, request_url)
             raise AssertionError(
                 (
-                    "No {method} request to URL '{url}' with data '{data}' and with parameters "
-                    "'{params}' was performed.'"
-                ).format(method=method, url=url, data=data, params=params)
+                    f"No {method} request to URL '{url}' with data '{data}' and with parameters "
+                    f"'{params}' was performed.'"
+                )
             )
 
     connection.assert_has_request = assert_has_request

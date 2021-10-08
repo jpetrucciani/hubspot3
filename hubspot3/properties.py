@@ -40,8 +40,9 @@ class PropertiesClient(BaseClient):
         self.log = get_log("hubspot3.properties")
 
     def _get_path(self, subpath):
-        return "properties/v{}/{}/properties/{}".format(
-            PROPERTIES_API_VERSION[self._object_type], self._object_type, subpath
+        return (
+            f"properties/v{PROPERTIES_API_VERSION[self._object_type]}"
+            f"/{self._object_type}/properties/{subpath}"
         )
 
     @staticmethod
@@ -53,9 +54,8 @@ class PropertiesClient(BaseClient):
         if data_type:
             if data_type not in VALID_PROPERTY_DATA_TYPES:
                 raise ValueError(
-                    "Invalid data type for property. Valid data types are: {}".format(
-                        VALID_PROPERTY_DATA_TYPES
-                    )
+                    "Invalid data type for property. Valid data "
+                    f"types are: {VALID_PROPERTY_DATA_TYPES}"
                 )
 
             if data_type == DATA_TYPE_ENUM and (
@@ -68,8 +68,9 @@ class PropertiesClient(BaseClient):
 
         if widget_type and widget_type not in VALID_PROPERTY_WIDGET_TYPES:
             raise ValueError(
-                "Invalid widget type for property. Valid widget types are: {}".format(
-                    VALID_PROPERTY_WIDGET_TYPES
+                (
+                    "Invalid widget type for property. Valid widget "
+                    f"types are: {VALID_PROPERTY_WIDGET_TYPES}"
                 )
             )
 

@@ -60,7 +60,7 @@ class BaseClient:
         api_base: str = "api.hubapi.com",
         debug: bool = False,
         disable_auth: bool = False,
-        **extra_options
+        **extra_options,
     ) -> None:
         super(BaseClient, self).__init__()
         # reverse so that the first one in the list because the first parent
@@ -187,8 +187,9 @@ class BaseClient:
             query = query[1:]
         if query and not query.startswith("&"):
             query = "&" + query
-        url = opts.get("url") or "/{}?{}{}".format(
-            self._get_path(subpath), urllib.parse.urlencode(params, doseq), query
+        url = (
+            opts.get("url")
+            or f"/{self._get_path(subpath)}?{urllib.parse.urlencode(params, doseq)}{query}"
         )
         headers = opts.get("headers") or {}
         headers.update(
@@ -289,7 +290,7 @@ class BaseClient:
         query="",
         retried=False,
         properties=None,
-        **options
+        **options,
     ):
         opts = self.options.copy()
         opts.update(options)
@@ -369,9 +370,7 @@ class BaseClient:
                         self.refresh_token = refresh_result["refresh_token"]
                         self.log.debug("Retrying with new token")
                     except Exception as exception:
-                        self.log.error(
-                            f"Unable to refresh access_token: {exception}"
-                        )
+                        self.log.error(f"Unable to refresh access_token: {exception}")
                         raise
                     return self._call_raw(
                         subpath,
@@ -381,7 +380,7 @@ class BaseClient:
                         doseq=doseq,
                         query=query,
                         retried=True,
-                        **options
+                        **options,
                     )
                 if self.access_token:
                     self.log.warning(
@@ -392,9 +391,7 @@ class BaseClient:
                 raise
             except HubspotError as exception:
                 if try_count > num_retries:
-                    logging.warning(
-                        f"Too many retries for {uglify_hapikey(url)}"
-                    )
+                    logging.warning(f"Too many retries for {uglify_hapikey(url)}")
                     raise
                 # Don't retry errors from 300 to 499
                 if exception.result and 300 <= exception.result.status < 500:
@@ -418,7 +415,7 @@ class BaseClient:
         query: str = "",
         raw: bool = False,
         properties: list = None,
-        **options
+        **options,
     ):
         result = self._call_raw(
             subpath,
@@ -429,6 +426,6 @@ class BaseClient:
             query=query,
             retried=False,
             properties=properties,
-            **options
+            **options,
         )
         return result if raw else self._digest_result(result.body)

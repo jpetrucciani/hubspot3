@@ -85,7 +85,7 @@ class EcommerceBridgeClient(BaseClient):
         object_type: str = None,
         limit: int = None,
         starting_page: int = None,
-        **options
+        **options,
     ) -> List:
         """Internal method to retrieve sync errors from an endpoint."""
         # Build the common parameters for all requests.
@@ -131,7 +131,7 @@ class EcommerceBridgeClient(BaseClient):
         object_type: str = None,
         limit: int = None,
         starting_page: int = None,
-        **options
+        **options,
     ) -> List:
         """
         Retrieve a list of error dictionaries for an account, optionally filtered/limited, and
@@ -154,7 +154,7 @@ class EcommerceBridgeClient(BaseClient):
             object_type=object_type,
             limit=limit,
             starting_page=starting_page,
-            **options
+            **options,
         )
 
     def get_sync_errors_for_app(
@@ -165,7 +165,7 @@ class EcommerceBridgeClient(BaseClient):
         object_type: str = None,
         limit: int = None,
         starting_page: int = None,
-        **options
+        **options,
     ) -> List:
         """
         Retrieve a list of error dictionaries for the app with the given ID, optionally
@@ -188,7 +188,7 @@ class EcommerceBridgeClient(BaseClient):
             object_type=object_type,
             limit=limit,
             starting_page=starting_page,
-            **options
+            **options,
         )
 
     def get_sync_errors_for_app_and_account(
@@ -198,7 +198,7 @@ class EcommerceBridgeClient(BaseClient):
         object_type: str = None,
         limit: int = None,
         starting_page: int = None,
-        **options
+        **options,
     ):
         """
         Retrieve a list of error dictionaries for an app in specific portal, optionally
@@ -221,7 +221,7 @@ class EcommerceBridgeClient(BaseClient):
             object_type=object_type,
             limit=limit,
             starting_page=starting_page,
-            **options
+            **options,
         )
 
     def create_or_update_settings(
@@ -231,7 +231,7 @@ class EcommerceBridgeClient(BaseClient):
         enabled: bool = True,
         app_id: int = None,
         show_provided_mappings: bool = False,
-        **options
+        **options,
     ):
         """
         Create or update the ecommerce settings for a portal or app.
@@ -265,7 +265,7 @@ class EcommerceBridgeClient(BaseClient):
         object_type: str,
         external_object_id: str,
         store_id: str = "default",
-        **options
+        **options,
     ) -> Dict:
         """
         Get the synchronization status of a object by its external ID.
@@ -274,5 +274,5 @@ class EcommerceBridgeClient(BaseClient):
         return self._call(
             f"sync/status/{store_id}/{object_type}/{external_object_id}",
             method="GET",
-            **options
+            **options,
         )

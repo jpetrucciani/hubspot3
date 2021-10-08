@@ -49,10 +49,7 @@ class TicketsClient(BaseClient):
         """
         ticket_data = [{"name": x, "value": y} for x, y in data.items()]
         return self._call(
-            f"objects/tickets/{ticket_id}",
-            method="PUT",
-            data=ticket_data,
-            **options
+            f"objects/tickets/{ticket_id}", method="PUT", data=ticket_data, **options
         )
 
     def get(
@@ -60,7 +57,7 @@ class TicketsClient(BaseClient):
         ticket_id: str,
         properties: List[str] = None,
         include_deleted: bool = False,
-        **options
+        **options,
     ) -> Dict:
         """
         get a ticket by its ticket_id
@@ -81,7 +78,7 @@ class TicketsClient(BaseClient):
             f"objects/tickets/{ticket_id}",
             method="GET",
             properties=properties,
-            **options
+            **options,
         )
 
     def get_all(self, properties: List[str] = None, limit: int = -1, **options) -> list:
@@ -106,7 +103,7 @@ class TicketsClient(BaseClient):
                 method="GET",
                 params={"offset": offset},
                 properties=properties,
-                **options
+                **options,
             )
             output.extend(batch["objects"])
             finished = not batch["hasMore"]
