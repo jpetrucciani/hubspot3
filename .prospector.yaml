@@ -54,6 +54,7 @@ pep8:
     - N807
     - N813
     - W503
+    - N818
   options:
     max-line-length: 100
     single-line-if-stmt: n
