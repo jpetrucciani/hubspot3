@@ -198,13 +198,13 @@ class BaseClient:
             }
         )
         if self.access_token:
-            headers.update({"Authorization": "Bearer {}".format(self.access_token)})
+            headers.update({"Authorization": f"Bearer {self.access_token}"})
 
         if data and headers["Content-Type"] == "application/json" and not retried:
             data = json.dumps(data)
 
         for hs_property in properties:
-            url += "&properties={}".format(hs_property)
+            url += f"&properties={hs_property}"
 
         return url, headers, data
 
@@ -370,7 +370,7 @@ class BaseClient:
                         self.log.debug("Retrying with new token")
                     except Exception as exception:
                         self.log.error(
-                            "Unable to refresh access_token: {}".format(exception)
+                            f"Unable to refresh access_token: {exception}"
                         )
                         raise
                     return self._call_raw(
@@ -393,7 +393,7 @@ class BaseClient:
             except HubspotError as exception:
                 if try_count > num_retries:
                     logging.warning(
-                        "Too many retries for {}".format(uglify_hapikey(url))
+                        f"Too many retries for {uglify_hapikey(url)}"
                     )
                     raise
                 # Don't retry errors from 300 to 499
@@ -401,9 +401,7 @@ class BaseClient:
                     raise
                 self._prepare_request_retry(method, url, headers, data)
                 self.log.warning(
-                    "HubspotError {} calling {}, retrying".format(
-                        exception, uglify_hapikey(url)
-                    )
+                    f"HubspotError {exception} calling {uglify_hapikey(url)}, retrying"
                 )
             # exponential back off
             # wait 0 seconds, 1 second, 3 seconds, 7 seconds, 15 seconds, etc

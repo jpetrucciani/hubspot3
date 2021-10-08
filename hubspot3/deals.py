@@ -28,16 +28,14 @@ class DealsClient(BaseClient):
 
     def _get_path(self, subpath):
         """get the full api url for the given subpath on this client"""
-        return "deals/v{}/{}".format(
-            self.options.get("version") or DEALS_API_VERSION, subpath
-        )
+        return f"deals/v{self.options.get('version') or DEALS_API_VERSION}/{subpath}"
 
     def get(self, deal_id: str, **options):
         """
         get a single deal by id
         :see: https://developers.hubspot.com/docs/methods/deals/get_deal
         """
-        return self._call("deal/{}".format(deal_id), method="GET", **options)
+        return self._call(f"deal/{deal_id}", method="GET", **options)
 
     def create(self, data: dict = None, **options):
         """
@@ -53,14 +51,14 @@ class DealsClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/deals/update_deal
         """
         data = data or {}
-        return self._call("deal/{}".format(deal_id), data=data, method="PUT", **options)
+        return self._call(f"deal/{deal_id}", data=data, method="PUT", **options)
 
     def delete(self, deal_id: str, **options) -> Dict:
         """
         Delete a deal.
         :see: https://developers.hubspot.com/docs/methods/deals/delete_deal
         """
-        return self._call("deal/{}".format(deal_id), method="DELETE", **options)
+        return self._call(f"deal/{deal_id}", method="DELETE", **options)
 
     def associate(self, deal_id, object_type, object_ids, **options):
         # Encoding the query string here since HubSpot is expecting the "id" parameter to be
@@ -70,7 +68,7 @@ class DealsClient(BaseClient):
         query = urllib.parse.urlencode(object_ids)
 
         return self._call(
-            "deal/{}/associations/{}".format(deal_id, object_type),
+            f"deal/{deal_id}/associations/{object_type}",
             method="PUT",
             query=query,
             **options
@@ -171,7 +169,7 @@ class DealsClient(BaseClient):
             if since:
                 params["since"] = since
             batch = self._call(
-                "deal/recent/{}".format(recency_type),
+                f"deal/recent/{recency_type}",
                 method="GET",
                 params=params,
                 doseq=True,

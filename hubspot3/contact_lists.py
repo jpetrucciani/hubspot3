@@ -32,7 +32,7 @@ class ContactListsClient(BaseClient):
         data = data or {}
         data["vids"] = vids
         return self._call(
-            "lists/{list_id}/add".format(list_id=list_id),
+            f"lists/{list_id}/add",
             data=data,
             method="POST",
             **options
@@ -51,5 +51,5 @@ class ContactListsClient(BaseClient):
     def delete_a_contact_list(self, list_id, **options):
         """Deletes the contact list by list_id."""
         return self._call(
-            "lists/{list_id}".format(list_id=list_id), method="DELETE", **options
+            f"lists/{list_id}", method="DELETE", **options
         )

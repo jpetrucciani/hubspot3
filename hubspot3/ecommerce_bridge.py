@@ -54,7 +54,7 @@ class EcommerceBridgeClient(BaseClient):
         self.log = get_log("hubspot3.ecommerce_bridge")
 
     def _get_path(self, subpath):
-        return "extensions/ecomm/v{}/{}".format(ECOMMERCE_BRIDGE_API_VERSION, subpath)
+        return f"extensions/ecomm/v{ECOMMERCE_BRIDGE_API_VERSION}/{subpath}"
 
     def send_sync_messages(
         self, object_type: str, messages: Sequence, store_id: str = "default", **options
@@ -182,7 +182,7 @@ class EcommerceBridgeClient(BaseClient):
                 "retrieved using the corresponding developer API key."
             )
         return self._get_sync_errors(
-            "sync/errors/app/{app_id}".format(app_id=app_id),
+            f"sync/errors/app/{app_id}",
             include_resolved=include_resolved,
             error_type=error_type,
             object_type=object_type,
@@ -272,7 +272,7 @@ class EcommerceBridgeClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/check-sync-status
         """
         return self._call(
-            "sync/status/{}/{}/{}".format(store_id, object_type, external_object_id),
+            f"sync/status/{store_id}/{object_type}/{external_object_id}",
             method="GET",
             **options
         )

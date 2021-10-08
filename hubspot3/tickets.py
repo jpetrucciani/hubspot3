@@ -22,7 +22,7 @@ class TicketsClient(BaseClient):
 
     def _get_path(self, subpath):
         """tickets subpath generator"""
-        return "crm-objects/v{}/{}".format(TICKETS_API_VERSION, subpath)
+        return f"crm-objects/v{TICKETS_API_VERSION}/{subpath}"
 
     def create(
         self, pipeline: str, stage: str, properties: Dict = None, **options
@@ -49,7 +49,7 @@ class TicketsClient(BaseClient):
         """
         ticket_data = [{"name": x, "value": y} for x, y in data.items()]
         return self._call(
-            "objects/tickets/{}".format(ticket_id),
+            f"objects/tickets/{ticket_id}",
             method="PUT",
             data=ticket_data,
             **options
@@ -78,7 +78,7 @@ class TicketsClient(BaseClient):
         options.update({"params": params})
 
         return self._call(
-            "objects/tickets/{}".format(ticket_id),
+            f"objects/tickets/{ticket_id}",
             method="GET",
             properties=properties,
             **options

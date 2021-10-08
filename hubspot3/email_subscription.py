@@ -37,9 +37,7 @@ class EmailSubscriptionClient(BaseClient):
         self.log = get_log("hubspot3.email_subscription")
 
     def _get_path(self, subpath):
-        return "email/public/v{}/subscriptions/{}".format(
-            EMAIL_SUBSCRIPTION_API_VERSION, subpath
-        )
+        return f"email/public/v{EMAIL_SUBSCRIPTION_API_VERSION}/subscriptions/{subpath}"
 
     def get_status(self, email: str, portal_id: int = None, **options) -> Dict:
         """

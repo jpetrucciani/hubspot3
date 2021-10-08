@@ -37,14 +37,14 @@ class LinesClient(BaseClient):
         Delete a line item by its ID.
         :see: https://developers.hubspot.com/docs/methods/line-items/delete-line-item
         """
-        return self._call("{}".format(line_id), method="DELETE", **options)
+        return self._call(f"{line_id}", method="DELETE", **options)
 
     def get(self, line_id: int, **options) -> Dict:
         """
         Retrieve a line by its ID.
         :see: https://developers.hubspot.com/docs/methods/line-items/get_line_item_by_id
         """
-        return self._call("{}".format(line_id), **options)
+        return self._call(f"{line_id}", **options)
 
     def update(self, line_id: int, data=None, **options) -> Dict:
         """
@@ -52,7 +52,7 @@ class LinesClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/line-items/update-line-item
         """
         data = data or {}
-        return self._call("{}".format(line_id), data=data, method="PUT", **options)
+        return self._call(f"{line_id}", data=data, method="PUT", **options)
 
     def get_all(
         self,

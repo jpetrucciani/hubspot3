@@ -13,22 +13,22 @@ class CMSLayoutsClient(BaseClient):
     """
 
     def _get_path(self, subpath: str) -> str:
-        return "content/api/v{}/layouts/{}".format(LAYOUTS_API_VERSION, subpath)
+        return f"content/api/v{LAYOUTS_API_VERSION}/layouts/{subpath}"
 
     def get_layouts(self, **options):
         return self._call("", **options)
 
     def get_layout_info(self, layout_id: str, **options):
-        return self._call("{}".format(layout_id), **options)
+        return self._call(f"{layout_id}", **options)
 
     def get_layout_buffer(self, layout_id: str, **options):
-        return self._call("{}/buffer".format(layout_id), **options)
+        return self._call(f"{layout_id}/buffer", **options)
 
     def get_layout_has_buffered_changes(self, layout_id: str, **options):
-        return self._call("{}/has_buffered_changes".format(layout_id), **options)
+        return self._call(f"{layout_id}/has_buffered_changes", **options)
 
     def get_layout_versions(self, layout_id: str, **options):
-        return self._call("{}/versions".format(layout_id), **options)
+        return self._call(f"{layout_id}/versions", **options)
 
     def get_layout_version_info(self, layout_id: str, version_id: str, **options):
-        return self._call("{}/versions/{}".format(layout_id, version_id), **options)
+        return self._call(f"{layout_id}/versions/{version_id}", **options)

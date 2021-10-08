@@ -56,7 +56,7 @@ class PropertyGroupsClient(BaseClient):
     def delete(self, object_type, code):
         self._object_type = object_type
 
-        return self._call("named/{}".format(code), method="DELETE")
+        return self._call(f"named/{code}", method="DELETE")
 
     def delete_all_custom(self, object_type):
         groups_data = self.get_all(object_type)

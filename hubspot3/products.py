@@ -24,7 +24,7 @@ class ProductsClient(BaseClient):
         """get single product based on product ID in the hubspot account"""
         properties = properties or []
         return self._call(
-            "objects/products/{product_id}".format(product_id=product_id),
+            f"objects/products/{product_id}",
             method="GET",
             params={"properties": ["name", "description", *properties]},
             doseq=True,
@@ -79,7 +79,7 @@ class ProductsClient(BaseClient):
         """Update a product based on its product ID."""
         data = data or {}
         return self._call(
-            "objects/products/{product_id}".format(product_id=product_id),
+            f"objects/products/{product_id}",
             data=data,
             method="PUT",
             **options
@@ -88,7 +88,7 @@ class ProductsClient(BaseClient):
     def delete(self, product_id: str, **options):
         """Delete a product based on its product ID."""
         return self._call(
-            "objects/products/{product_id}".format(product_id=product_id),
+            f"objects/products/{product_id}",
             method="DELETE",
             **options
         )

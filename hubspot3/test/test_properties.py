@@ -151,7 +151,7 @@ class TestPropertiesClient(object):
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
             "PUT",
-            "/properties/v1/contacts/properties/named/{}?".format(input_data["code"]),
+            f"/properties/v1/contacts/properties/named/{input_data['code']}?",
             data,
         )
         assert resp == response_body
@@ -174,6 +174,6 @@ class TestPropertiesClient(object):
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
             "GET",
-            "/properties/v1/deals/properties/named/{}?".format(input_data["code"]),
+            f"/properties/v1/deals/properties/named/{input_data['code']}?",
         )
         assert resp == response_body

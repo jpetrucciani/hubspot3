@@ -140,7 +140,7 @@ class PropertiesClient(BaseClient):
         }
         data = {key: value for key, value in fields.items() if value is not None}
 
-        return self._call("named/{}".format(code), method="PUT", data=data)
+        return self._call(f"named/{code}", method="PUT", data=data)
 
     def get_all(self, object_type):
         """Retrieve all the custom properties."""
@@ -158,7 +158,7 @@ class PropertiesClient(BaseClient):
         # Save the current object type.
         self._object_type = object_type
 
-        return self._call("named/{}".format(code), method="GET")
+        return self._call(f"named/{code}", method="GET")
 
     def delete(self, object_type, code):
         """Delete a custom property."""
@@ -166,7 +166,7 @@ class PropertiesClient(BaseClient):
         # Save the current object type.
         self._object_type = object_type
 
-        return self._call("named/{}".format(code), method="DELETE")
+        return self._call(f"named/{code}", method="DELETE")
 
     def delete_all(self, object_type):
         """Delete all the custom properties. Please use it carefully."""

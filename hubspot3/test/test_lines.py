@@ -50,7 +50,7 @@ class TestLinesClient(object):
         resp = lines_client.delete(line_item_id)
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            "DELETE", "/crm-objects/v1/objects/line_items/{}?".format(line_item_id)
+            "DELETE", f"/crm-objects/v1/objects/line_items/{line_item_id}?"
         )
         assert resp == response_body
 
@@ -61,7 +61,7 @@ class TestLinesClient(object):
         resp = lines_client.get(line_item_id)
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
-            "GET", "/crm-objects/v1/objects/line_items/{}?".format(line_item_id)
+            "GET", f"/crm-objects/v1/objects/line_items/{line_item_id}?"
         )
         assert resp == response_body
 
@@ -76,7 +76,7 @@ class TestLinesClient(object):
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
             method="PUT",
-            url="/crm-objects/v1/objects/line_items/{}?".format(line_item_id),
+            url=f"/crm-objects/v1/objects/line_items/{line_item_id}?",
             data=data,
         )
         assert response == response_body

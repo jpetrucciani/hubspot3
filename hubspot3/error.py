@@ -85,7 +85,7 @@ class HubspotError(ValueError):
         for key in request_keys:
             params[key] = self.request.get(key)
         for attr in result_attrs:
-            params["result_{}".format(attr)] = getattr(self.result, attr, "")
+            params[f"result_{attr}"] = getattr(self.result, attr, "")
 
         params = self._dict_vals_to_str(params)
         return self.as_str_template.format(**params)

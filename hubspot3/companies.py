@@ -34,12 +34,12 @@ class CompaniesClient(BaseClient):
         """update the given company with data"""
         data = data or {}
         return self._call(
-            "companies/{}".format(company_id), data=data, method="PUT", **options
+            f"companies/{company_id}", data=data, method="PUT", **options
         )
 
     def delete(self, company_id: str, **options) -> Dict:
         """delete a company"""
-        return self._call("companies/{}".format(company_id), method="DELETE", **options)
+        return self._call(f"companies/{company_id}", method="DELETE", **options)
 
     def delete_all(self, **options):
         """
@@ -50,7 +50,7 @@ class CompaniesClient(BaseClient):
 
     def get(self, company_id: str, **options) -> Dict:
         """get a single company by it's ID"""
-        return self._call("companies/{}".format(company_id), method="GET", **options)
+        return self._call(f"companies/{company_id}", method="GET", **options)
 
     def search_domain(
         self,
@@ -79,7 +79,7 @@ class CompaniesClient(BaseClient):
                 raise TypeError("extra_properties must be a list or str if provided")
 
         return self._call(
-            "domains/{}/companies".format(domain),
+            f"domains/{domain}/companies",
             method="POST",
             data={"limit": limit, "requestOptions": {"properties": properties}},
             **options
@@ -170,7 +170,7 @@ class CompaniesClient(BaseClient):
             if since:
                 params["since"] = since
             batch = self._call(
-                "companies/recent/{}".format(recency_type),
+                f"companies/recent/{recency_type}",
                 method="GET",
                 doseq=True,
                 params=params,
@@ -218,5 +218,5 @@ class CompaniesClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/companies/get_company_contacts
         """
         return self._call(
-            "companies/{}/contacts".format(company_id), method="GET", **options
+            f"companies/{company_id}/contacts", method="GET", **options
         )

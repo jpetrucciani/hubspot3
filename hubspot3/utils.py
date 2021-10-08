@@ -59,7 +59,7 @@ def uglify_hapikey(url: str) -> str:
     parse_query = parse.parse_qs(url_parse.query)
     if "hapikey" not in parse_query:
         return url
-    parse_query["hapikey"][0] = "{}****".format(parse_query["hapikey"][0][0:4])
+    parse_query["hapikey"][0] = f"{parse_query['hapikey'][0][0:4]}****"
     parse_result = parse.ParseResult(
         scheme=url_parse.scheme,
         netloc=url_parse.netloc,

@@ -113,7 +113,7 @@ class ClientCLIWrapper:  # pylint: disable=empty-docstring
         return self._methods  # Let Fire only discover the API methods.
 
     def __str__(self):
-        return "Hubspot3 {} CLI".format(self._client_name)
+        return f"Hubspot3 {self._client_name} CLI"
 
     def _discover_methods(self, client: BaseClient) -> Dict[str, types.MethodType]:
         """Find all API methods on the given client object."""

@@ -226,9 +226,7 @@ class TestProductsClient(object):
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
             method="PUT",
-            url="/crm-objects/v1/objects/products/{product_id}?".format(
-                product_id=HUBSPOT_PRODUCT_ID
-            ),
+            url=f"/crm-objects/v1/objects/products/{HUBSPOT_PRODUCT_ID}?",
             data=[
                 {"name": "name", "value": product_name},
                 {"name": "description", "value": product_description},

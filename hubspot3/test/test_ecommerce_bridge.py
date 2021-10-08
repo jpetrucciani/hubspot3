@@ -69,7 +69,7 @@ def test_send_sync_messages(
         {
             "action": "UPSERT",
             "externalObjectId": str(i),
-            "properties": {"email": "test{}@test.com".format(i)},
+            "properties": {"email": f"test{i}@test.com"},
         }
         for i in range(1, num_messages + 1)
     ]
@@ -192,7 +192,7 @@ def test_get_sync_errors(
     for page in expected_pages:
         mock_connection.assert_has_request(
             "GET",
-            "/extensions/ecomm/v2/{}".format(subpath),
+            f"/extensions/ecomm/v2/{subpath}",
             **dict(common_params, page=page)
         )
 
@@ -259,7 +259,7 @@ def test_get_sync_errors_for_app(ecommerce_bridge_client, app_id, kwargs):
         kwargs.setdefault("limit", None)
         kwargs.setdefault("starting_page", None)
         mock_get_sync_errors.assert_called_once_with(
-            "sync/errors/app/{}".format(app_id), **kwargs
+            f"sync/errors/app/{app_id}", **kwargs
         )
 
 
@@ -424,8 +424,6 @@ def test_check_sync_status_for_object(
     mock_connection.assert_num_requests(1)
     mock_connection.assert_has_request(
         "GET",
-        "/extensions/ecomm/v2/sync/status/{}/{}/{}?".format(
-            store_id, object_type, object_id
-        ),
+        f"/extensions/ecomm/v2/sync/status/{store_id}/{object_type}/{object_id}?",
     )
     assert result == response_data

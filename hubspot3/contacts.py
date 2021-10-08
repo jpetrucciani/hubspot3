@@ -31,18 +31,18 @@ class ContactsClient(BaseClient):
 
     def _get_path(self, subpath: str) -> str:
         """get path"""
-        return "contacts/v{}/{}".format(CONTACTS_API_VERSION, subpath)
+        return f"contacts/v{CONTACTS_API_VERSION}/{subpath}"
 
     def get_by_id(self, contact_id: str, **options):
         """Get contact specified by ID"""
         return self._call(
-            "contact/vid/{}/profile".format(contact_id), method="GET", **options
+            f"contact/vid/{contact_id}/profile", method="GET", **options
         )
 
     def get_by_email(self, email: str, **options):
         """Get contact specified by email address."""
         return self._call(
-            "contact/email/{email}/profile".format(email=email), method="GET", **options
+            f"contact/email/{email}/profile", method="GET", **options
         )
 
     def create(self, data: Dict = None, **options):
@@ -54,7 +54,7 @@ class ContactsClient(BaseClient):
         """Create or Updates a client with the supplied data."""
         data = data or {}
         return self._call(
-            "contact/createOrUpdate/email/{email}".format(email=email),
+            f"contact/createOrUpdate/email/{email}",
             data=data,
             method="POST",
             **options
@@ -64,7 +64,7 @@ class ContactsClient(BaseClient):
         """Update the contact by contact_id with the given data."""
         data = data or {}
         return self._call(
-            "contact/vid/{contact_id}/profile".format(contact_id=contact_id),
+            f"contact/vid/{contact_id}/profile",
             data=data,
             method="POST",
             **options
@@ -75,7 +75,7 @@ class ContactsClient(BaseClient):
         data = data or {}
 
         return self._call(
-            "contact/email/{}/profile".format(email),
+            f"contact/email/{email}/profile",
             data=data,
             method="POST",
             **options
@@ -84,7 +84,7 @@ class ContactsClient(BaseClient):
     def delete_by_id(self, contact_id: str, **options):
         """Delete a contact by contact_id."""
         return self._call(
-            "contact/vid/{contact_id}".format(contact_id=contact_id),
+            f"contact/vid/{contact_id}",
             method="DELETE",
             **options
         )
@@ -94,7 +94,7 @@ class ContactsClient(BaseClient):
         data = dict(vidToMerge=secondary_id)
 
         self._call(
-            "contact/merge-vids/{}/".format(primary_id),
+            f"contact/merge-vids/{primary_id}/",
             data=data,
             method="POST",
             **options
@@ -161,7 +161,7 @@ class ContactsClient(BaseClient):
             query_limit = limit
         while not finished:
             batch = self._call(
-                "lists/{}/contacts/all".format(list_id),
+                f"lists/{list_id}/contacts/all",
                 method="GET",
                 params={"count": query_limit, "vidOffset": offset},
                 **options
@@ -206,7 +206,7 @@ class ContactsClient(BaseClient):
                 params["vidOffset"] = vid_offset
                 params["timeOffset"] = time_offset
             batch = self._call(
-                "lists/{}/contacts/recent".format(recency_string),
+                f"lists/{recency_string}/contacts/recent",
                 method="GET",
                 params=params,
                 doseq=True,
@@ -250,7 +250,7 @@ class ContactsClient(BaseClient):
                 params["vidOffset"] = vid_offset
                 params["timeOffset"] = time_offset
             batch = self._call(
-                "lists/{}/contacts/all".format(list_id),
+                f"lists/{list_id}/contacts/all",
                 method="GET",
                 params=params,
                 doseq=True,

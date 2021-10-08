@@ -71,9 +71,7 @@ class CRMAssociationsClient(BaseClient):
 
         while not finished:
             batch = self._call(
-                "associations/{}/{}/{}".format(
-                    object_id, "HUBSPOT_DEFINED", definition_id
-                ),
+                f"associations/{object_id}/HUBSPOT_DEFINED/{definition_id}",
                 method="GET",
                 params={"limit": query_limit, "offset": offset},
             )
@@ -97,9 +95,7 @@ class CRMAssociationsClient(BaseClient):
 
         while not finished:
             batch = self._call(
-                "associations/{}/{}/{}".format(
-                    object_id, "HUBSPOT_DEFINED", definition_id
-                ),
+                f"associations/{object_id}/HUBSPOT_DEFINED/{definition_id}",
                 method="GET",
                 params={"limit": query_limit, "offset": offset},
             )

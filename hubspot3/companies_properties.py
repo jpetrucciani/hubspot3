@@ -21,9 +21,7 @@ class CompaniesPropertiesClient(BaseClient):
         self.log = get_log("hubspot3.companies_properties")
 
     def _get_path(self, subpath: str) -> str:
-        return "properties/v{}/companies/{}".format(
-            COMPANIES_PROPERTIES_API_VERSION, subpath
-        )
+        return f"properties/v{COMPANIES_PROPERTIES_API_VERSION}/companies/{subpath}"
 
     def get_all_companies_properties(
         self, extra_properties: Union[str, List] = None, **options

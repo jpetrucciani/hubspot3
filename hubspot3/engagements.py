@@ -28,7 +28,7 @@ class EngagementsClient(BaseClient):
     def get(self, engagement_id, **options):
         """Get a HubSpot engagement."""
         return self._call(
-            "engagements/{}".format(engagement_id), method="GET", **options
+            f"engagements/{engagement_id}", method="GET", **options
         )
 
     def get_associated(self, object_type, object_id, **options) -> List[Dict]:
@@ -43,7 +43,7 @@ class EngagementsClient(BaseClient):
         offset = 0
         while not finished:
             batch = self._call(
-                "engagements/associated/{}/{}/paged".format(object_type, object_id),
+                f"engagements/associated/{object_type}/{object_id}/paged",
                 method="GET",
                 params={"limit": query_limit, "offset": offset},
                 **options
@@ -61,13 +61,13 @@ class EngagementsClient(BaseClient):
     def update(self, key, data=None, **options):
         data = data or {}
         return self._call(
-            "engagements/{}".format(key), data=data, method="PUT", **options
+            f"engagements/{key}", data=data, method="PUT", **options
         )
 
     def patch(self, key, data=None, **options):
         data = data or {}
         return self._call(
-            "engagements/{}".format(key), data=data, method="PATCH", **options
+            f"engagements/{key}", data=data, method="PATCH", **options
         )
 
     def get_all(self, **options) -> List[Dict]:
