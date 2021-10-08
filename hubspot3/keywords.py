@@ -21,7 +21,7 @@ class KeywordsClient(BaseClient):
         return self._call("keywords", **options)["keywords"]
 
     def get_keyword(self, keyword_guid, **options):
-        return self._call("keywords/{}".format(keyword_guid, **options))
+        return self._call(f"keywords/{keyword_guid}", **options)
 
     def add_keyword(self, keyword, **options):
         return self._call(
