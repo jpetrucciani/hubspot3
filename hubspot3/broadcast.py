@@ -23,7 +23,7 @@ class BaseSocialObject:
                     and pos + 1 < len(text)
                     and text[pos + 1].islower()
                 ):
-                    result.append("_{}".format(text[pos].lower()))
+                    result.append(f"_{text[pos].lower()}")
                 else:
                     result.append(text[pos].lower())
             else:
@@ -36,7 +36,7 @@ class BaseSocialObject:
         pos = 0
         while pos < len(text):
             if text[pos] == "_" and pos + 1 < len(text):
-                result.append("{}".format(text[pos + 1].upper()))
+                result.append(f"{text[pos + 1].upper()}")
                 pos += 1
             else:
                 result.append(text[pos])
@@ -187,7 +187,7 @@ class BroadcastClient(BaseClient):
         """
         Cancel a broadcast specified by guid
         """
-        subpath = "broadcasts/{}/update".format(broadcast_guid)
+        subpath = f"broadcasts/{broadcast_guid}/update"
         broadcast = {"status": "CANCELED"}
         bcast_dict = self._call(
             subpath, method="POST", data=broadcast, content_type="application/json"
@@ -196,7 +196,7 @@ class BroadcastClient(BaseClient):
 
     def get_channel(self, channel_guid: str) -> Channel:
         channel = self._call(
-            "channels/{}".format(channel_guid), content_type="application/json"
+            f"channels/{channel_guid}", content_type="application/json"
         )
         return Channel(channel)
 

@@ -20,7 +20,7 @@ class EmailEventsClient(BaseClient):
         self.log = get_log("hubspot3.email_events")
 
     def _get_path(self, subpath):
-        return "email/public/v{}/campaigns/{}".format(EMAIL_EVENTS_API_VERSION, subpath)
+        return f"email/public/v{EMAIL_EVENTS_API_VERSION}/campaigns/{subpath}"
 
     def get_all_campaigns_ids(self, **options):
         """

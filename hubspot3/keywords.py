@@ -10,7 +10,7 @@ class KeywordsClient(BaseClient):
     """allows access to the keywords api"""
 
     def _get_path(self, subpath):
-        return "keywords/{}/{}".format(KEYWORDS_API_VERSION, subpath)
+        return f"keywords/{KEYWORDS_API_VERSION}/{subpath}"
 
     # Contains both list of keywords and metadata
     def get_keywords_info(self, **options):
@@ -21,7 +21,7 @@ class KeywordsClient(BaseClient):
         return self._call("keywords", **options)["keywords"]
 
     def get_keyword(self, keyword_guid, **options):
-        return self._call("keywords/{}".format(keyword_guid, **options))
+        return self._call(f"keywords/{keyword_guid}", **options)
 
     def add_keyword(self, keyword, **options):
         return self._call(
@@ -39,6 +39,4 @@ class KeywordsClient(BaseClient):
         return self._call("keywords", data=data, method="PUT", **options)["keywords"]
 
     def delete_keyword(self, keyword_guid, **options):
-        return self._call(
-            "keywords/{}".format(keyword_guid), method="DELETE", **options
-        )
+        return self._call(f"keywords/{keyword_guid}", method="DELETE", **options)

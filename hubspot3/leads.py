@@ -16,7 +16,7 @@ def list_to_snake_dict(list_: List) -> Dict:
         dictionary[item] = item
         if item.lower() != item:
             python_variant = item[0].lower() + "".join(
-                [c if c.lower() == c else "_{}".format(c.lower()) for c in item[1:]]
+                [c if c.lower() == c else f"_{c.lower()}" for c in item[1:]]
             )
             dictionary[python_variant] = item
     return dictionary
@@ -99,9 +99,7 @@ class LeadsClient(BaseClient):
 
     def _get_path(self, subpath):
         """get the full api url for the given subpath on this client"""
-        return "leads/v{}/{}".format(
-            self.options.get("version") or LEADS_API_VERSION, subpath
-        )
+        return f"leads/v{self.options.get('version') or LEADS_API_VERSION}/{subpath}"
 
     def get_lead(self, guid, **options):
         return self.get_leads(guid, **options)[0]
@@ -112,15 +110,17 @@ class LeadsClient(BaseClient):
         options = self.camelcase_search_options(options.copy())
         params = {}
         for i, guid in enumerate(guids):
-            params["guids[{}]".format(i)] = guid
+            params[f"guids[{i}]"] = guid
         for k in list(options.keys()):
             if k in SEARCH_OPTIONS:
                 params[k] = options[k]
                 del options[k]
         leads = self._call("list/", params, **options)
+        guids_str = guids and f"guids={guids}"
         self.log.info(
-            "retrieved {} leads through API ( {}options={} )".format(
-                len(leads), guids and "guids={}, ".format(guids or ""), original_options
+            (
+                f"retrieved {len(leads)} leads through API ( "
+                f"{guids_str} options={original_options} )"
             )
         )
         return leads
@@ -133,7 +133,7 @@ class LeadsClient(BaseClient):
         lead = {"guid": "-1"}
         # wrap lead call so that it doesn't error out when not finding a lead
         try:
-            lead = self._call("lead/{}".format(cur_guid), params, **options)
+            lead = self._call(f"lead/{cur_guid}", params, **options)
         except Exception:
             # no lead here
             pass
@@ -142,9 +142,7 @@ class LeadsClient(BaseClient):
     def update_lead(self, guid, update_data=None, **options):
         update_data = update_data or {}
         update_data["guid"] = guid
-        return self._call(
-            "lead/{}/".format(guid), data=update_data, method="PUT", **options
-        )
+        return self._call(f"lead/{guid}/", data=update_data, method="PUT", **options)
 
     def get_webhook(self, **options):  # WTF are these 2 methods for?
         return self._call("callback-url", **options)
@@ -155,7 +153,7 @@ class LeadsClient(BaseClient):
             params={"url": url},
             data={"url": url},
             method="POST",
-            **options
+            **options,
         )
 
     def close_lead(self, guid, close_time=None, **options):

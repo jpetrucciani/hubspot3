@@ -34,13 +34,9 @@ class Hubspot3UsageLimits:
     def __str__(self) -> str:
         """string representation"""
         return (
-            "<Hubspot3UsageLimits: {}/{} ({}%) [reset in {}s, cached for {}s]>".format(
-                self.current_usage,
-                self.usage_limit,
-                self.calls_used,
-                self.until_reset,
-                self.until_cache_expire,
-            )
+            f"<Hubspot3UsageLimits: {self.current_usage}/{self.usage_limit}"
+            f"({self.calls_used}%) [reset in {self.until_reset}s, cached "
+            f"for {self.until_cache_expire}s]>"
         )
 
     def __repr__(self) -> str:
@@ -99,7 +95,7 @@ class Hubspot3:
         api_base: str = "api.hubapi.com",
         debug: bool = False,
         disable_auth: bool = False,
-        **extra_options: Any
+        **extra_options: Any,
     ) -> None:
         """full client constructor"""
         self.api_key = api_key

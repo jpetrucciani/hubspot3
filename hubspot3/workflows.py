@@ -19,7 +19,7 @@ class WorkflowsClient(BaseClient):
         self.log = get_log("hubspot3.workflows")
 
     def _get_path(self, subpath):
-        return "automation/v{}/{}".format(WORKFLOWS_API_VERSION, subpath)
+        return f"automation/v{WORKFLOWS_API_VERSION}/{subpath}"
 
     def get_all_workflow_ids(self, **options):
         """
@@ -34,5 +34,5 @@ class WorkflowsClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/workflows/v3/get_workflow
         """
         if workflow_id is not None:
-            return self._call("workflows/{}".format(workflow_id))
+            return self._call(f"workflows/{workflow_id}")
         return None

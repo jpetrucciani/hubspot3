@@ -16,7 +16,7 @@ class OwnersClient(BaseClient):
 
     def _get_path(self, subpath):
         """get the full api url for the given subpath on this client"""
-        return "owners/{}/owners".format(OWNERS_API_VERSION)
+        return f"owners/{OWNERS_API_VERSION}/owners"
 
     def get_owners(self, **options):
         """Only returns the list of owners, does not include additional metadata"""
@@ -28,7 +28,7 @@ class OwnersClient(BaseClient):
         owners = self.get_owners(**options)
         for owner in owners:
             if int(owner["ownerId"]) == int(owner_id):
-                owner_name = "{} {}".format(owner["firstName"], owner["lastName"])
+                owner_name = f"{owner['firstName']} {owner['lastName']}"
         return owner_name
 
     def get_owner_email_by_id(self, owner_id: str, **options) -> str:

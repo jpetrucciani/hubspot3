@@ -13,22 +13,22 @@ class CMSTemplatesClient(BaseClient):
     """
 
     def _get_path(self, subpath: str) -> str:
-        return "content/api/v{}/templates/{}".format(TEMPLATES_API_VERSION, subpath)
+        return f"content/api/v{TEMPLATES_API_VERSION}/templates/{subpath}"
 
     def get_templates(self, **options):
         return self._call("", **options)
 
     def get_template_info(self, template_id: str, **options):
-        return self._call("{}".format(template_id), **options)
+        return self._call(f"{template_id}", **options)
 
     def get_template_buffer(self, template_id: str, **options):
-        return self._call("{}/buffer".format(template_id), **options)
+        return self._call(f"{template_id}/buffer", **options)
 
     def get_template_has_buffered_changes(self, template_id: str, **options):
-        return self._call("{}/has_buffered_changes".format(template_id), **options)
+        return self._call(f"{template_id}/has_buffered_changes", **options)
 
     def get_template_versions(self, template_id: str, **options):
-        return self._call("{}/versions".format(template_id), **options)
+        return self._call(f"{template_id}/versions", **options)
 
     def get_template_version_info(self, template_id: str, version_id: str, **options):
-        return self._call("{}/versions/{}".format(template_id, version_id), **options)
+        return self._call(f"{template_id}/versions/{version_id}", **options)

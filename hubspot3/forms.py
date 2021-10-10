@@ -31,7 +31,7 @@ class FormSubmissionClient(BaseClient):
 
     def _get_path(self, subpath: str) -> str:
         """api path for submitting to a form"""
-        return "/uploads/form/v{}/{}".format(FORMS_API_VERSION, subpath)
+        return f"/uploads/form/v{FORMS_API_VERSION}/{subpath}"
 
     def submit_form(
         self,
@@ -39,7 +39,7 @@ class FormSubmissionClient(BaseClient):
         form_guid: str,
         data: dict,
         context: dict = None,
-        **options
+        **options,
     ) -> HTTPResponse:
         """
         submit to a form on hubspot
@@ -53,7 +53,7 @@ class FormSubmissionClient(BaseClient):
         """
         if context:
             data["hs_context"] = json.dumps(context)
-        subpath = "{}/{}".format(portal_id, form_guid)
+        subpath = f"{portal_id}/{form_guid}"
         opts = {"content_type": "application/x-www-form-urlencoded"}
         options.update(opts)
         response = self._call(
@@ -82,14 +82,14 @@ class FormsClient(BaseClient):
 
     def _get_path(self, subpath) -> str:
         """api path for the forms related calls"""
-        return "forms/v{}/{}".format(FORMS_API_VERSION, subpath)
+        return f"forms/v{FORMS_API_VERSION}/{subpath}"
 
     def get(self, form_id: str, **options) -> Dict:
         """
         get a form by its form_id
         :see: https://developers.hubspot.com/docs/methods/forms/v2/get_form
         """
-        return self._call("forms/{}".format(form_id), method="GET", **options)
+        return self._call(f"forms/{form_id}", method="GET", **options)
 
     def get_all(self, limit: int = -1, offset: int = 0, **options) -> list:
         """

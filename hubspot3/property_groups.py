@@ -35,8 +35,9 @@ class PropertyGroupsClient(BaseClient):
         self.log = get_log("hubspot3.properties")
 
     def _get_path(self, subpath):
-        return "properties/v{}/{}/groups/{}".format(
-            PROPERTY_GROUPS_API_VERSION[self._object_type], self._object_type, subpath
+        return (
+            f"properties/v{PROPERTY_GROUPS_API_VERSION[self._object_type]}"
+            f"/{self._object_type}/groups/{subpath}"
         )
 
     def create(self, object_type, code, label, extra_params=None):
@@ -56,7 +57,7 @@ class PropertyGroupsClient(BaseClient):
     def delete(self, object_type, code):
         self._object_type = object_type
 
-        return self._call("named/{}".format(code), method="DELETE")
+        return self._call(f"named/{code}", method="DELETE")
 
     def delete_all_custom(self, object_type):
         groups_data = self.get_all(object_type)

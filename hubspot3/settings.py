@@ -18,7 +18,7 @@ class SettingsClient(BaseClient):
 
     def _get_path(self, subpath: str) -> str:
         """get the full api url for the given subpath on this client"""
-        return "settings/{}/{}".format(SETTINGS_API_VERSION, subpath)
+        return f"settings/{SETTINGS_API_VERSION}/{subpath}"
 
     def get_settings(self, **options):
         """Returns the settings we know about for this API key."""

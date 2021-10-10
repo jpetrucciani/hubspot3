@@ -37,9 +37,7 @@ class EmailSubscriptionClient(BaseClient):
         self.log = get_log("hubspot3.email_subscription")
 
     def _get_path(self, subpath):
-        return "email/public/v{}/subscriptions/{}".format(
-            EMAIL_SUBSCRIPTION_API_VERSION, subpath
-        )
+        return f"email/public/v{EMAIL_SUBSCRIPTION_API_VERSION}/subscriptions/{subpath}"
 
     def get_status(self, email: str, portal_id: int = None, **options) -> Dict:
         """
@@ -64,7 +62,7 @@ class EmailSubscriptionClient(BaseClient):
         subscriptions: Iterable,
         portal_legal_basis: str = None,
         portal_legal_basis_explanation: str = None,
-        **options
+        **options,
     ) -> None:
         """
         Convenience method to update the individual email subscriptions for a given email address.

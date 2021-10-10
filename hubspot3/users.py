@@ -16,14 +16,14 @@ class UsersClient(BaseClient):
 
     def _get_path(self, subpath: str):
         """Get the full api url for the given subpath on this client."""
-        return "settings/{}/users/{}".format(USERS_API_VERSION, subpath)
+        return f"settings/{USERS_API_VERSION}/users/{subpath}"
 
     def create(
         self,
         email: str,
         role_id: Union[int, str],
         send_welcome_email: bool = False,
-        **options
+        **options,
     ):
         """Create a new user with minimal contacts-base permissions."""
         data = {

@@ -53,8 +53,9 @@ class CRMAssociationsClient(BaseClient):
         self.log = get_log("hubspot3.crm_associations")
 
     def _get_path(self, subpath: str) -> str:
-        return "crm-associations/v{}/{}".format(
-            self.options.get("version") or ASSOCIATIONS_API_VERSION, subpath
+        return (
+            "crm-associations/v"
+            f"{self.options.get('version') or ASSOCIATIONS_API_VERSION}/{subpath}"
         )
 
     def get(self, object_id: str, definition: Union[Definitions, int]):
@@ -71,9 +72,7 @@ class CRMAssociationsClient(BaseClient):
 
         while not finished:
             batch = self._call(
-                "associations/{}/{}/{}".format(
-                    object_id, "HUBSPOT_DEFINED", definition_id
-                ),
+                f"associations/{object_id}/HUBSPOT_DEFINED/{definition_id}",
                 method="GET",
                 params={"limit": query_limit, "offset": offset},
             )
@@ -97,9 +96,7 @@ class CRMAssociationsClient(BaseClient):
 
         while not finished:
             batch = self._call(
-                "associations/{}/{}/{}".format(
-                    object_id, "HUBSPOT_DEFINED", definition_id
-                ),
+                f"associations/{object_id}/HUBSPOT_DEFINED/{definition_id}",
                 method="GET",
                 params={"limit": query_limit, "offset": offset},
             )
@@ -114,7 +111,7 @@ class CRMAssociationsClient(BaseClient):
         from_object: str,
         to_object: str,
         definition: Union[Definitions, int],
-        **options
+        **options,
     ):
         """
         create a hubspot association
@@ -133,7 +130,7 @@ class CRMAssociationsClient(BaseClient):
                 "category": "HUBSPOT_DEFINED",
                 "definitionId": definition_id,
             },
-            **options
+            **options,
         )
 
     def delete(
@@ -141,7 +138,7 @@ class CRMAssociationsClient(BaseClient):
         from_object: str,
         to_object: str,
         definition: Union[Definitions, int],
-        **options
+        **options,
     ):
         """
         delete a hubspot association
@@ -160,7 +157,7 @@ class CRMAssociationsClient(BaseClient):
                 "category": "HUBSPOT_DEFINED",
                 "definitionId": definition_id,
             },
-            **options
+            **options,
         )
 
     def get_deal_to_lines_items(self, deal_id: str):

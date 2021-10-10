@@ -36,9 +36,7 @@ The following code block shows an example (provided by `guysoft <https://github.
             return self._call("pipelines", method="GET", params=params)
 
         def _get_path(self, subpath):
-            return "deals/v{}/{}".format(
-                self.options.get("version") or PIPELINES_API_VERSION, subpath
-            )
+            return f"deals/v{self.options.get('version') or PIPELINES_API_VERSION}/{subpath}"
 
 
     if __name__ == "__main__":

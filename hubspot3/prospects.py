@@ -16,7 +16,7 @@ class ProspectsClient(BaseClient):
 
     def _get_path(self, subpath):
         """get the full api url for the given subpath on this client"""
-        return "prospects/{}/{}".format(PROSPECTS_API_VERSION, subpath)
+        return f"prospects/{PROSPECTS_API_VERSION}/{subpath}"
 
     def get_prospects(self, offset=None, orgoffset=None, limit=None):
         """
@@ -39,7 +39,7 @@ class ProspectsClient(BaseClient):
 
     def get_company(self, company_slug):
         """Return the specific named organization for the given API key, if we find a match."""
-        return self._call("timeline/{}".format(company_slug))
+        return self._call(f"timeline/{company_slug}")
 
     def get_options_for_query(self, query):
         """This method allows for discovery of prospects with partial names."""
@@ -59,7 +59,7 @@ class ProspectsClient(BaseClient):
             params["orgOffset"] = orgoffset
             params["timeOffset"] = offset
 
-        return self._call("search/{}".format(search_type), params)
+        return self._call(f"search/{search_type}", params)
 
     def get_hidden_prospects(self):
         """Return the list of prospects hidden by the customer (or this API), if any."""
@@ -69,7 +69,7 @@ class ProspectsClient(BaseClient):
         """Hides the given prospect from the user interface."""
         return self._call(
             "filters",
-            data=("organization={}".format(company_name)),
+            data=f"organization={company_name}",
             method="POST",
             content_type="application/x-www-form-urlencoded",
         )

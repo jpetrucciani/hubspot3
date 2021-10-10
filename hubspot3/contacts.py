@@ -31,19 +31,15 @@ class ContactsClient(BaseClient):
 
     def _get_path(self, subpath: str) -> str:
         """get path"""
-        return "contacts/v{}/{}".format(CONTACTS_API_VERSION, subpath)
+        return f"contacts/v{CONTACTS_API_VERSION}/{subpath}"
 
     def get_by_id(self, contact_id: str, **options):
         """Get contact specified by ID"""
-        return self._call(
-            "contact/vid/{}/profile".format(contact_id), method="GET", **options
-        )
+        return self._call(f"contact/vid/{contact_id}/profile", method="GET", **options)
 
     def get_by_email(self, email: str, **options):
         """Get contact specified by email address."""
-        return self._call(
-            "contact/email/{email}/profile".format(email=email), method="GET", **options
-        )
+        return self._call(f"contact/email/{email}/profile", method="GET", **options)
 
     def create(self, data: Dict = None, **options):
         """create a contact"""
@@ -54,20 +50,14 @@ class ContactsClient(BaseClient):
         """Create or Updates a client with the supplied data."""
         data = data or {}
         return self._call(
-            "contact/createOrUpdate/email/{email}".format(email=email),
-            data=data,
-            method="POST",
-            **options
+            f"contact/createOrUpdate/email/{email}", data=data, method="POST", **options
         )
 
     def update_by_id(self, contact_id: str, data: Dict = None, **options):
         """Update the contact by contact_id with the given data."""
         data = data or {}
         return self._call(
-            "contact/vid/{contact_id}/profile".format(contact_id=contact_id),
-            data=data,
-            method="POST",
-            **options
+            f"contact/vid/{contact_id}/profile", data=data, method="POST", **options
         )
 
     def update_by_email(self, email: str, data=None, **options):
@@ -75,29 +65,19 @@ class ContactsClient(BaseClient):
         data = data or {}
 
         return self._call(
-            "contact/email/{}/profile".format(email),
-            data=data,
-            method="POST",
-            **options
+            f"contact/email/{email}/profile", data=data, method="POST", **options
         )
 
     def delete_by_id(self, contact_id: str, **options):
         """Delete a contact by contact_id."""
-        return self._call(
-            "contact/vid/{contact_id}".format(contact_id=contact_id),
-            method="DELETE",
-            **options
-        )
+        return self._call(f"contact/vid/{contact_id}", method="DELETE", **options)
 
     def merge(self, primary_id: int, secondary_id: int, **options):
         """merge the data from the secondary_id into the data of the primary_id"""
         data = dict(vidToMerge=secondary_id)
 
         self._call(
-            "contact/merge-vids/{}/".format(primary_id),
-            data=data,
-            method="POST",
-            **options
+            f"contact/merge-vids/{primary_id}/", data=data, method="POST", **options
         )
 
     default_batch_properties = [
@@ -144,7 +124,7 @@ class ContactsClient(BaseClient):
         extra_properties: Union[list, str] = None,
         limit: int = -1,
         list_id: str = "all",
-        **options
+        **options,
     ) -> List[Dict]:
         """
         get all contacts in hubspot, fetching additional properties if passed in
@@ -161,10 +141,10 @@ class ContactsClient(BaseClient):
             query_limit = limit
         while not finished:
             batch = self._call(
-                "lists/{}/contacts/all".format(list_id),
+                f"lists/{list_id}/contacts/all",
                 method="GET",
                 params={"count": query_limit, "vidOffset": offset},
-                **options
+                **options,
             )
             output.extend(
                 self.get_batch(
@@ -183,7 +163,7 @@ class ContactsClient(BaseClient):
         limit: int = 100,
         vid_offset: int = 0,
         time_offset: int = 0,
-        **options
+        **options,
     ) -> List[Dict]:
         """
         return a list of either recently created or recently modified/created contacts
@@ -206,11 +186,11 @@ class ContactsClient(BaseClient):
                 params["vidOffset"] = vid_offset
                 params["timeOffset"] = time_offset
             batch = self._call(
-                "lists/{}/contacts/recent".format(recency_string),
+                f"lists/{recency_string}/contacts/recent",
                 method="GET",
                 params=params,
                 doseq=True,
-                **options
+                **options,
             )
             output.extend([contact for contact in batch["contacts"]])
             finished = not batch["has-more"] or len(output) >= limit
@@ -232,7 +212,7 @@ class ContactsClient(BaseClient):
         limit: int = 100,
         vid_offset: int = 0,
         time_offset: int = 0,
-        **options
+        **options,
     ) -> List[Dict]:
         """
         return contacts in a list
@@ -250,11 +230,11 @@ class ContactsClient(BaseClient):
                 params["vidOffset"] = vid_offset
                 params["timeOffset"] = time_offset
             batch = self._call(
-                "lists/{}/contacts/all".format(list_id),
+                f"lists/{list_id}/contacts/all",
                 method="GET",
                 params=params,
                 doseq=True,
-                **options
+                **options,
             )
             output.extend([contact for contact in batch["contacts"]])
             finished = not batch["has-more"] or len(output) >= limit
@@ -344,7 +324,7 @@ class ContactsClient(BaseClient):
                 "search/query",
                 method="GET",
                 params={"count": query_limit, "offset": offset, "q": search_query},
-                **options
+                **options,
             )
 
             output += batch["contacts"]

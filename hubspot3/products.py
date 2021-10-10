@@ -24,11 +24,11 @@ class ProductsClient(BaseClient):
         """get single product based on product ID in the hubspot account"""
         properties = properties or []
         return self._call(
-            "objects/products/{product_id}".format(product_id=product_id),
+            f"objects/products/{product_id}",
             method="GET",
             params={"properties": ["name", "description", *properties]},
             doseq=True,
-            **options
+            **options,
         )
 
     def get_all_products(
@@ -51,7 +51,7 @@ class ProductsClient(BaseClient):
                     }
                 ),
                 doseq=True,
-                **options
+                **options,
             )
             output.extend(
                 [
@@ -66,9 +66,7 @@ class ProductsClient(BaseClient):
         return output
 
     def _get_path(self, subpath: str):
-        return "crm-objects/v{}/{}".format(
-            self.options.get("version") or PRODUCTS_API_VERSION, subpath
-        )
+        return f"crm-objects/v{self.options.get('version') or PRODUCTS_API_VERSION}/{subpath}"
 
     def create(self, data: Dict = None, **options):
         """Create a new product."""
@@ -79,16 +77,9 @@ class ProductsClient(BaseClient):
         """Update a product based on its product ID."""
         data = data or {}
         return self._call(
-            "objects/products/{product_id}".format(product_id=product_id),
-            data=data,
-            method="PUT",
-            **options
+            f"objects/products/{product_id}", data=data, method="PUT", **options
         )
 
     def delete(self, product_id: str, **options):
         """Delete a product based on its product ID."""
-        return self._call(
-            "objects/products/{product_id}".format(product_id=product_id),
-            method="DELETE",
-            **options
-        )
+        return self._call(f"objects/products/{product_id}", method="DELETE", **options)

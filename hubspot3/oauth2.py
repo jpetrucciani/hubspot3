@@ -30,7 +30,7 @@ class OAuth2Client(BaseClient):
         self.access_token = None
 
     def _get_path(self, subpath: str) -> str:
-        return "oauth/v{}/{}".format(OAUTH2_API_VERSION, subpath)
+        return f"oauth/v{OAUTH2_API_VERSION}/{subpath}"
 
     def get_tokens(
         self,
@@ -38,7 +38,7 @@ class OAuth2Client(BaseClient):
         redirect_uri: str,
         client_id: str = None,
         client_secret: str = None,
-        **options
+        **options,
     ):
         """
         Request an initial token pair using the provided credentials.
@@ -69,7 +69,7 @@ class OAuth2Client(BaseClient):
         client_id: str = None,
         client_secret: str = None,
         refresh_token: str = None,
-        **options
+        **options,
     ):
         """
         Request a new token pair using the provided refresh token and credentials.
@@ -100,7 +100,7 @@ class OAuth2Client(BaseClient):
 
         :see: https://developers.hubspot.com/docs/methods/oauth2/get-access-token-information
         """
-        return self._call("access-tokens/{}".format(access_token), **options)
+        return self._call(f"access-tokens/{access_token}", **options)
 
     def get_refresh_token_data(self, refresh_token: str = None, **options):
         """
@@ -112,7 +112,7 @@ class OAuth2Client(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/oauth2/get-refresh-token-information
         """
         return self._call(
-            "refresh-tokens/{}".format(refresh_token or self.refresh_token), **options
+            f"refresh-tokens/{refresh_token or self.refresh_token}", **options
         )
 
     def delete_refresh_token(self, refresh_token: str = None):
@@ -126,6 +126,6 @@ class OAuth2Client(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/oauth2/delete-refresh-token
         """
         return self._call(
-            "refresh-tokens/{}".format(refresh_token or self.refresh_token),
+            f"refresh-tokens/{refresh_token or self.refresh_token}",
             method="DELETE",
         )

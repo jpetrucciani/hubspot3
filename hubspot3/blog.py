@@ -23,7 +23,7 @@ class BlogClient(BaseClient):
         return self._call("blogs", **options)
 
     def get_blog_info(self, blog_guid: str, **options: Any) -> Dict:
-        return self._call("blogs/{}".format(blog_guid), **options)
+        return self._call(f"blogs/{blog_guid}", **options)
 
     def get_posts(self, blog_guid: str, **options) -> Dict:
         if "params" not in options:
@@ -48,7 +48,7 @@ class BlogClient(BaseClient):
         return self.get_published_posts(blog_guid, **options)
 
     def get_post(self, post_guid: str, **options) -> Dict:
-        return self._call("blog-posts/{}".format(post_guid), **options)
+        return self._call(f"blog-posts/{post_guid}", **options)
 
     def create_post(
         self, blog_guid, author_id, title, summary, content, meta_desc, **options
@@ -96,7 +96,7 @@ class BlogClient(BaseClient):
 
         post = json.dumps(posts)
         raw_response = self._call(
-            "blog-posts/{}".format(post_guid),
+            f"blog-posts/{post_guid}",
             data=post,
             method="PUT",
             content_type="application/json",
@@ -108,7 +108,7 @@ class BlogClient(BaseClient):
     def publish_post(self, post_guid: str, **options) -> Dict:
         post = json.dumps(dict(action="schedule-publish"))
         raw_response = self._call(
-            "blog-posts/{}/publish-action".format(post_guid),
+            f"blog-posts/{post_guid}/publish-action",
             data=post,
             method="PUT",
             content_type="application/json",
@@ -124,7 +124,7 @@ class BlogCommentsClient(BaseClient):
     """
 
     def _get_path(self, subpath: str) -> str:
-        return "comments/v{}/{}".format(COMMENTS_API_VERSION, subpath)
+        return f"comments/v{COMMENTS_API_VERSION}/{subpath}"
 
     def get_comments(self, **options):
         return self._call("comments", **options)
@@ -136,7 +136,7 @@ class BlogCommentsClient(BaseClient):
         return self._call("comments", **options)
 
     def get_comment(self, comment_guid: str, **options) -> Dict:
-        return self._call("comments/{}".format(comment_guid), **options)
+        return self._call(f"comments/{comment_guid}", **options)
 
     def create_comment(
         self,
@@ -173,7 +173,7 @@ class BlogTopicsClient(BaseClient):
     """
 
     def _get_path(self, subpath: str) -> str:
-        return "blogs/v{}/{}".format(TOPICS_API_VERSION, subpath)
+        return f"blogs/v{TOPICS_API_VERSION}/{subpath}"
 
     def get_topics(self, **options):
         return self._call("topics", **options)

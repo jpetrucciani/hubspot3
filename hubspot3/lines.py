@@ -21,8 +21,9 @@ class LinesClient(BaseClient):
         self.log = get_log("hubspot3.lines")
 
     def _get_path(self, subpath: str):
-        return "crm-objects/v{}/objects/line_items/{}".format(
-            self.options.get("version") or LINES_API_VERSION, subpath
+        return (
+            f"crm-objects/v{self.options.get('version') or LINES_API_VERSION}"
+            f"/objects/line_items/{subpath}"
         )
 
     def create(self, data=None, **options) -> Dict:
@@ -37,14 +38,14 @@ class LinesClient(BaseClient):
         Delete a line item by its ID.
         :see: https://developers.hubspot.com/docs/methods/line-items/delete-line-item
         """
-        return self._call("{}".format(line_id), method="DELETE", **options)
+        return self._call(f"{line_id}", method="DELETE", **options)
 
     def get(self, line_id: int, **options) -> Dict:
         """
         Retrieve a line by its ID.
         :see: https://developers.hubspot.com/docs/methods/line-items/get_line_item_by_id
         """
-        return self._call("{}".format(line_id), **options)
+        return self._call(f"{line_id}", **options)
 
     def update(self, line_id: int, data=None, **options) -> Dict:
         """
@@ -52,14 +53,14 @@ class LinesClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/line-items/update-line-item
         """
         data = data or {}
-        return self._call("{}".format(line_id), data=data, method="PUT", **options)
+        return self._call(f"{line_id}", data=data, method="PUT", **options)
 
     def get_all(
         self,
         offset: int = 0,
         extra_properties: Union[list, str] = None,
         limit: int = -1,
-        **options
+        **options,
     ):
         """
         Retrieve all the line items in the Hubspot account.
@@ -94,7 +95,7 @@ class LinesClient(BaseClient):
                 method="GET",
                 params=ordered_dict({"offset": offset, "properties": properties}),
                 doseq=True,
-                **options
+                **options,
             )
             output.extend(
                 [
