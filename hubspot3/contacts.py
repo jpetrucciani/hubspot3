@@ -254,10 +254,9 @@ class ContactsClient(BaseClient):
     def get_recently_modified(
             self,
             extra_properties: Union[list, str] = None,
-        limit: int = 100,
-        vid_offset: int = 0,
-        time_offset: int = 0,end_date: int=0,start_date:int=0,
-        **options
+            start_date: int = 0,
+            end_date: int = 0,
+            **options
     ):
         """
         return a list of either recently created or recently modified/created contacts
@@ -274,16 +273,11 @@ class ContactsClient(BaseClient):
                 properties.update(extra_properties)
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
-
-        limited = limit > 0
-        if limited and limit < query_limit:
-            query_limit = limit
+        
+        time_offset = end_date
 
         while not finished:
-            params = {"count": query_limit,"property": properties}
-            if vid_offset and time_offset:
-                params["vidOffset"] = vid_offset
-                params["timeOffset"] = time_offset
+            params = {"count": query_limit, "property": properties, "timeOffset": time_offset}
             batch = self._call(
                 "lists/recently_updated/contacts/recent",
                 method="GET",
@@ -292,14 +286,9 @@ class ContactsClient(BaseClient):
                 **options
             )
             contacts = batch["contacts"]
-            contacts_count += len(contacts)
-            reached_limit = time_offset <= end_date or time_offset >= start_date
+            reached_time_limit = time_offset < start_date
 
-            if reached_limit:
-                contacts = contacts[:limit]
-
-            finished = not batch["has-more"] or reached_limit
-            vid_offset = batch["vid-offset"]
+            finished = not batch["has-more"] or reached_time_limit
             time_offset = batch["time-offset"]
 
             yield from contacts
@@ -317,7 +306,7 @@ class ContactsClient(BaseClient):
         get recently modified and created contacts
         :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
         """
-        return self._get_recent_new(ContactsClient.Recency.MODIFIED, limit=limit)
+        return self._get_recent(ContactsClient.Recency.MODIFIED, limit=limit)
 
     def get_contact_by_id(self, contact_id: str, **options):
         warnings.warn(
