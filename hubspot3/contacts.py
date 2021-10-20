@@ -254,12 +254,13 @@ class ContactsClient(BaseClient):
     def get_recently_modified(
             self,
             extra_properties: Union[list, str] = None,
-            start_date: int = 0,
-            end_date: int = 0,
+            start_date: int = 0,# data pull begin time
+            end_date: int = 0,# data pull end time
             **options
     ):
         """
-        return a list of either recently created or recently modified/created contacts
+        return a list of either recently created or recently modified/created contacts by timestamp
+        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
         """
         finished = False
         contacts_count = 0
