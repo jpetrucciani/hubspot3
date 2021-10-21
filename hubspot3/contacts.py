@@ -251,11 +251,11 @@ class ContactsClient(BaseClient):
 
         return output[:limit]
 
-    def get_recently_modified(
+    def get_recently_modified_in_interval(
             self,
             extra_properties: Union[list, str] = None,
-            start_date: int = 0,# data pull begin time
-            end_date: int = 0,# data pull end time
+            start_date: int = 0,  # data pull begin time
+            end_date: int = 0,  # data pull end time
             **options
     ):
         """
@@ -263,8 +263,6 @@ class ContactsClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
         """
         finished = False
-        contacts_count = 0
-        output = []
         query_limit = 100  # max according to the docs
         # default properties to fetch
         properties = set(self.default_batch_properties)
@@ -274,7 +272,6 @@ class ContactsClient(BaseClient):
                 properties.update(extra_properties)
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
-        
         time_offset = end_date
 
         while not finished:
@@ -292,8 +289,7 @@ class ContactsClient(BaseClient):
             finished = not batch["has-more"] or reached_time_limit
             time_offset = batch["time-offset"]
 
-            yield from contacts
-
+            yield from [contact for contact in contacts if contact['addedAt'] >= start_date and contact['addedAt'] <= end_date]
 
     def get_recently_created(self, limit: int = 100):
         """
@@ -302,7 +298,7 @@ class ContactsClient(BaseClient):
         """
         return self._get_recent(ContactsClient.Recency.CREATED, limit=limit)
 
-    def get_recently_modified_original(self, limit: int = 100):
+    def get_recently_modified(self, limit: int = 100):
         """
         get recently modified and created contacts
         :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
