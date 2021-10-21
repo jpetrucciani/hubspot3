@@ -5,9 +5,9 @@ import json
 import warnings
 from unittest.mock import Mock, patch
 
-import pytest
-
 from hubspot3 import contacts
+
+import pytest
 
 
 @pytest.fixture
@@ -269,3 +269,59 @@ class TestContactsClient(object):
                 )
                 new_name_part = message.find("favor of")
                 assert new_name in message[new_name_part:]
+
+    @pytest.mark.parametrize(
+        "start_date, end_date",
+        [
+            (1634841516000, 1634845117000)
+        ],
+    )
+    def test_get_recently_modified_in_interval(
+        self,
+        contacts_client,
+        mock_connection,
+        start_date,
+        end_date,
+    ):
+
+        properties = set(contacts_client.default_batch_properties.copy())
+        params = {"count": 100, "property": properties, "timeOffset": end_date}
+
+        response_body = {
+            "contacts": [
+                {
+                    "addedAt": 1634845116500,
+                    "vid": 3234574,
+                    "properties": {
+                        "firstname": {
+                            "value": "Victor"
+                        }
+                    }
+                },
+                {
+                    "addedAt": 1634841515000,
+                    "vid": 3234575,
+                    "properties": {
+                        "firstname": {
+                            "value": "Luis"
+                        }
+                    }
+                }
+            ],
+            "has-more": True,
+            "vid-offset": 3234576,
+            "time-offset": 1634841514000
+        }
+
+        mock_connection.set_response(200, json.dumps(response_body))
+        resp = list(contacts_client.get_recently_modified_in_interval(start_date=start_date,
+                                                                      end_date=end_date))
+
+        mock_connection.assert_num_requests(1)
+        mock_connection.assert_has_request(
+            "GET", "/contacts/v1/lists/recently_updated/contacts/recent", **params
+        )
+
+        assert len(resp) == 1
+        assert "vid" in resp[0]
+        assert 3234574 == resp[0]["vid"]
