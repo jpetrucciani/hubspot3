@@ -273,6 +273,13 @@ class ContactsClient(BaseClient):
                 default_properties.add(extra_properties)
         time_offset = end_date
 
+        def clean_result(contact_list, start_d, end_d):
+            output = []
+            for contact in contact_list:
+                if contact['addedAt'] >= start_d and contact['addedAt'] <= end_d:
+                    output.append(contact)
+            return output
+
         while not finished:
             params = {
                 "count": query_limit,
@@ -290,7 +297,7 @@ class ContactsClient(BaseClient):
             reached_time_limit = time_offset < start_date
             finished = not batch["has-more"] or reached_time_limit
 
-            yield from [contact for contact in contacts if contact['addedAt'] >= start_date and contact['addedAt'] <= end_date]
+            yield from clean_result(contacts, start_date, end_date)
 
     def get_recently_created(self, limit: int = 100):
         """
