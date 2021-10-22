@@ -259,7 +259,7 @@ class ContactsClient(BaseClient):
             **options
     ):
         """
-        return a list of either recently created or recently modified/created contacts by timestamp
+        Return a list of either recently created or recently modified contacts by timestamp
         :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
         """
         finished = False
@@ -275,7 +275,9 @@ class ContactsClient(BaseClient):
         time_offset = end_date
 
         while not finished:
-            params = {"count": query_limit, "property": properties, "timeOffset": time_offset}
+            params = {"count": query_limit, 
+                      "property": properties, 
+                      "timeOffset": time_offset}
             batch = self._call(
                 "lists/recently_updated/contacts/recent",
                 method="GET",
