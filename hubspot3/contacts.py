@@ -264,20 +264,20 @@ class ContactsClient(BaseClient):
         """
         finished = False
         query_limit = 100  # max according to the docs
-        # default properties to fetch
-        properties = set(self.default_batch_properties)
-        # append extras if they exist
+
+        default_properties = set(self.default_batch_properties)
         if extra_properties:
             if isinstance(extra_properties, list):
-                properties.update(extra_properties)
+                default_properties.update(extra_properties)
             if isinstance(extra_properties, str):
-                properties.add(extra_properties)
+                default_properties.add(extra_properties)
         time_offset = end_date
 
         while not finished:
-            params = {"count": query_limit, 
-                      "property": properties, 
-                      "timeOffset": time_offset}
+            params = {
+                "count": query_limit,
+                "property": default_properties,
+                "timeOffset": time_offset}
             batch = self._call(
                 "lists/recently_updated/contacts/recent",
                 method="GET",
@@ -286,10 +286,9 @@ class ContactsClient(BaseClient):
                 **options
             )
             contacts = batch["contacts"]
-            reached_time_limit = time_offset < start_date
-
-            finished = not batch["has-more"] or reached_time_limit
             time_offset = batch["time-offset"]
+            reached_time_limit = time_offset < start_date
+            finished = not batch["has-more"] or reached_time_limit
 
             yield from [contact for contact in contacts if contact['addedAt'] >= start_date and contact['addedAt'] <= end_date]
 
