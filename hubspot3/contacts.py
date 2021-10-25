@@ -251,6 +251,54 @@ class ContactsClient(BaseClient):
 
         return output[:limit]
 
+    def get_recently_modified_in_interval(
+            self,
+            extra_properties: Union[list, str] = None,
+            start_date: int = 0,  # data pull begin time
+            end_date: int = 0,  # data pull end time
+            **options
+    ):
+        """
+        Return a list of either recently created or recently modified contacts by timestamp
+        :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
+        """
+        finished = False
+        query_limit = 100  # max according to the docs
+
+        default_properties = set(self.default_batch_properties)
+        if extra_properties:
+            if isinstance(extra_properties, list):
+                default_properties.update(extra_properties)
+            if isinstance(extra_properties, str):
+                default_properties.add(extra_properties)
+        time_offset = end_date
+
+        def clean_result(contact_list, start_d, end_d):
+            output = []
+            for contact in contact_list:
+                if contact['addedAt'] >= start_d and contact['addedAt'] <= end_d:
+                    output.append(contact)
+            return output
+
+        while not finished:
+            params = {
+                "count": query_limit,
+                "property": default_properties,
+                "timeOffset": time_offset}
+            batch = self._call(
+                "lists/recently_updated/contacts/recent",
+                method="GET",
+                params=params,
+                doseq=True,
+                **options
+            )
+            contacts = batch["contacts"]
+            time_offset = batch["time-offset"]
+            reached_time_limit = time_offset < start_date
+            finished = not batch["has-more"] or reached_time_limit
+
+            yield from clean_result(contacts, start_date, end_date)
+
     def get_recently_created(self, limit: int = 100):
         """
         get recently created contacts
