@@ -293,6 +293,7 @@ class ContactsClient(BaseClient):
                 "property": default_properties,
                 "timeOffset": time_offset,
                 "propertyMode": property_mode}
+                
             batch = self._call(
                 "lists/recently_updated/contacts/recent",
                 method="GET",
