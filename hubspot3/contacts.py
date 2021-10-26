@@ -277,6 +277,7 @@ class ContactsClient(BaseClient):
             property_mode = "value_and_history"
         else:
             property_mode = "value_only"
+
         time_offset = end_date
 
         def clean_result(contact_list, start_d, end_d):
