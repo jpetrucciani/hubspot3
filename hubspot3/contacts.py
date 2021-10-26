@@ -253,10 +253,11 @@ class ContactsClient(BaseClient):
 
     def get_recently_modified_in_interval(
             self,
+            start_date: int,  # data pull begin time
+            end_date: int,  # data pull end time
             extra_properties: Union[list, str] = None,
-            start_date: int = 0,  # data pull begin time
-            end_date: int = 0,  # data pull end time
             with_history: bool = False,
+            query_limit: int = 100,
             **options
     ):
         """
@@ -264,7 +265,6 @@ class ContactsClient(BaseClient):
         :see: https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts
         """
         finished = False
-        query_limit = 100  # max according to the docs
 
         default_properties = set(self.default_batch_properties)
         if extra_properties:
