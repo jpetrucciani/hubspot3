@@ -119,11 +119,12 @@ class EngagementsClient(BaseClient):
             batch = self._call(
                 "engagements/recent/modified",
                 method="GET",
-                params={"limit": query_limit, "offset": offset, "since": since},
+                params={"limit": query_limit, "offset": offset, "since": start_date},
                 **options
             )
             output.extend(batch["results"])
             finished = not batch["hasMore"]
             offset = batch["offset"]
+            engagements = clean_result(output, start_date, end_date)
 
-            yield from clean_result(output, since, end_date)
+            yield from engagements

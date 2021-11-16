@@ -23,7 +23,7 @@ class TestEngagementsClient(object):
         assert client._get_path(subpath) == "engagements/v1/engagements"
 
     @pytest.mark.parametrize(
-        "since, end_date",
+        "start_date, end_date",
         [
             (500, 2000)
         ],
@@ -32,11 +32,11 @@ class TestEngagementsClient(object):
         self,
         engagements_client,
         mock_connection,
-        since,
+        start_date,
         end_date,
     ):
 
-        params = {"since": since}
+        params = {"since": start_date}
 
         response_body = {
             "results": [
@@ -79,7 +79,7 @@ class TestEngagementsClient(object):
         }
 
         mock_connection.set_response(200, json.dumps(response_body))
-        resp = list(engagements_client.get_recently_modified(since=since, end_date=end_date))
+        resp = list(engagements_client.get_recently_modified(start_date, end_date))
 
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
