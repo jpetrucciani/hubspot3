@@ -100,7 +100,7 @@ class EngagementsClient(BaseClient):
 
             yield from engagements
 
-    def get_recently_modified(self, since: int, end_date: int, **options):
+    def get_recently_modified(self, start_date: int, end_date: int, **options):
         """get recently modified engagements"""
         finished = False
         output = []
