@@ -109,10 +109,9 @@ class EngagementsClient(BaseClient):
 
         def clean_result(engagement_list, start_d, end_d):
             output = []
-            v1 = "engagement"
-            v2 = "lastUpdated"
             for eng in engagement_list:
-                if eng[v1][v2] >= start_d and eng[v1][v2] <= end_d:
+                eng_update_date = eng["engagement"]["lastUpdated"]
+                if eng_update_date >= start_d and eng_update_date <= end_d:
                     output.append(eng)
             return output
 
