@@ -1,5 +1,6 @@
 """
-testing hubspot3.deals
+Testing hubspot3.deals
+This file tests the methods in the hubspot3.deals file
 """
 import pytest
 from hubspot3.deals import DealsClient
@@ -84,18 +85,13 @@ def test_get_recently_modified():
     gets recently modified deals
     :see: https://developers.hubspot.com/docs/methods/deals/get_deals_modified
     """
-    modified_deals = DEALS.get_recently_created(limit=20)
+    modified_deals = DEALS.get_recently_modified(limit=20)
     # assert modified_deals
     assert len(modified_deals) <= 20
     # assert _is_deal(modified_deals[0])
 
 
-@pytest.mark.parametrize(
-    "start_date, end_date",
-    [
-        (20, 40)
-    ],
-)
+@pytest.mark.parametrize("start_date, end_date", [(20, 40)])
 def test_get_recently_modified_in_interval(
     deals_client,
     mock_connection,
@@ -103,7 +99,7 @@ def test_get_recently_modified_in_interval(
     end_date,
 ):
     """
-    gets recently modified deals
+    Gets recently modified deals.
     :see: https://developers.hubspot.com/docs/methods/deals/get_deals_modified
     """
     params = {"since": start_date}
@@ -180,95 +176,6 @@ def test_get_recently_modified_in_interval(
                                 "sourceVid": []
                             }
                         ]
-                    },
-                    "num_associated_contacts": {
-                        "value": "1",
-                        "timestamp": 0,
-                        "source": "CALCULATED",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "num_associated_contacts",
-                                "value": "1",
-                                "source": "CALCULATED",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "dealstage": {
-                        "value": "appointmentscheduled",
-                        "timestamp": 1463680280348,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "dealstage",
-                                "value": "appointmentscheduled",
-                                "timestamp": 1463680280348,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "hs_createdate": {
-                        "value": "1463680280357",
-                        "timestamp": 1463680280357,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "hs_createdate",
-                                "value": "1463680280357",
-                                "timestamp": 1463680280357,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "createdate": {
-                        "value": "1463680280357",
-                        "timestamp": 1463680280357,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "createdate",
-                                "value": "1463680280357",
-                                "timestamp": 1463680280357,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "source": {
-                        "value": "Unknown",
-                        "timestamp": 1463680280348,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "source",
-                                "value": "Unknown",
-                                "timestamp": 1463680280348,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "contact_number": {
-                        "value": "919000884201",
-                        "timestamp": 1463680280348,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "contact_number",
-                                "value": "919000884201",
-                                "timestamp": 1463680280348,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
                     }
                 },
                 "imports": []
@@ -338,95 +245,6 @@ def test_get_recently_modified_in_interval(
                                 "value": "1463676642456",
                                 "timestamp": 1463676642456,
                                 "source": "CALCULATED",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "num_associated_contacts": {
-                        "value": "1",
-                        "timestamp": 0,
-                        "source": "CALCULATED",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "num_associated_contacts",
-                                "value": "1",
-                                "source": "CALCULATED",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "dealstage": {
-                        "value": "appointmentscheduled",
-                        "timestamp": 1463676642448,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "dealstage",
-                                "value": "appointmentscheduled",
-                                "timestamp": 1463676642448,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "hs_createdate": {
-                        "value": "1463676642456",
-                        "timestamp": 1463676642456,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "hs_createdate",
-                                "value": "1463676642456",
-                                "timestamp": 1463676642456,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "createdate": {
-                        "value": "1463676642456",
-                        "timestamp": 1463676642456,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "createdate",
-                                "value": "1463676642456",
-                                "timestamp": 1463676642456,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "source": {
-                        "value": "Unknown",
-                        "timestamp": 1463676642448,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "source",
-                                "value": "Unknown",
-                                "timestamp": 1463676642448,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "contact_number": {
-                        "value": "919410249255",
-                        "timestamp": 1463676642448,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "contact_number",
-                                "value": "919410249255",
-                                "timestamp": 1463676642448,
-                                "source": "API",
                                 "sourceVid": []
                             }
                         ]

@@ -308,12 +308,12 @@ class DealsClient(BaseClient):
             property_name = "properties"
 
         def clean_result(deal_list, start_d, end_d):
-            output = []
+            deals_in_interval = []
             for deal in deal_list:
                 deal_update_date = int(deal["properties"]["hs_lastmodifieddate"]["value"])
                 if deal_update_date >= start_d and deal_update_date <= end_d:
-                    output.append(deal)
-            return output
+                    deals_in_interval.append(deal)
+            return deals_in_interval
 
         properties_groups = split_properties(properties, property_name=property_name)
 
