@@ -1,4 +1,4 @@
-"""Testing hubspot3.engagements 
+"""Testing hubspot3.engagements
 
 This file tests the methods in the hubspot3.engagements file
 """
@@ -23,7 +23,8 @@ class TestEngagementsClient(object):
         subpath = "engagements"
         assert client._get_path(subpath) == "engagements/v1/engagements"
 
-    @pytest.mark.parametrize("start_date, end_date", [(500, 2000)],)
+    @pytest.mark.parametrize("start_date, end_date", [(500, 2000)])
+    def test_get_recently_modified(
         self,
         engagements_client,
         mock_connection,

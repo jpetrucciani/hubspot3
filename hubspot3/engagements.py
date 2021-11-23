@@ -103,17 +103,17 @@ class EngagementsClient(BaseClient):
     def get_recently_modified(self, start_date: int, end_date: int, **options):
         """Get recently modified engagements."""
         finished = False
-        output = []
+        engagements = []
         query_limit = 100  # Max value according to docs
         offset = 0
 
         def clean_result(engagement_list, start_d, end_d):
-            output = []
+            engagements_in_interval = []
             for eng in engagement_list:
                 eng_update_date = eng["engagement"]["lastUpdated"]
                 if eng_update_date >= start_d and eng_update_date <= end_d:
-                    output.append(eng)
-            return output
+                    engagements_in_interval.append(eng)
+            return engagements_in_interval
 
         while not finished:
             batch = self._call(
@@ -122,9 +122,9 @@ class EngagementsClient(BaseClient):
                 params={"limit": query_limit, "offset": offset, "since": start_date},
                 **options
             )
-            output.extend(batch["results"])
+            engagements.extend(batch["results"])
             finished = not batch["hasMore"]
             offset = batch["offset"]
-            engagements = clean_result(output, start_date, end_date)
+            engagements = clean_result(engagements, start_date, end_date)
 
             yield from engagements
