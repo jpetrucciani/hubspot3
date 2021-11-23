@@ -266,3 +266,78 @@ class DealsClient(BaseClient):
             include_versions=include_versions,
             **options
         )
+
+    def get_recently_modified_in_interval(
+            self,
+            start_date: int,  # data pull begin time
+            end_date: int,  # data pull end time
+            offset: int = 0,
+            extra_properties: Union[list, str] = None,
+            with_history: bool = False,
+            query_limit: int = 100,
+            **options
+    ):
+        """
+        Return a list of either recently created or recently modified contacts by timestamp
+        :see: https://developers.hubspot.com/docs/methods/deals/get_deals_modified
+        """
+        finished = False
+        # default properties to fetch
+        properties = [
+            "associations",
+            "dealname",
+            "dealstage",
+            "pipeline",
+            "hubspot_owner_id",
+            "description",
+            "closedate",
+            "amount",
+            "dealtype",
+            "createdate",
+        ]
+
+        if extra_properties:
+            if isinstance(extra_properties, list):
+                properties += extra_properties
+            if isinstance(extra_properties, str):
+                properties.add(extra_properties)
+
+        if with_history:
+            property_name = "propertiesWithHistory"
+        else:
+            property_name = "properties"
+
+        def clean_result(deal_list, start_d, end_d):
+            output = []
+            for deal in deal_list:
+                deal_update_date = int(deal["properties"]["hs_lastmodifieddate"]["value"])
+                if deal_update_date >= start_d and deal_update_date <= end_d:
+                    output.append(deal)
+            return output
+
+        properties_groups = split_properties(properties, property_name=property_name)
+
+        while not finished:
+            unjoined_deals = []
+            for properties_group in properties_groups:
+                batch = self._call(
+                    "deal/recent/modified",
+                    method="GET",
+                    params={
+                        "since": start_date,
+                        "count": query_limit,
+                        "offset": offset,
+                        "includePropertyVersions": with_history,
+                        property_name: properties_group
+                    },
+                    doseq=True,
+                    **options
+                )
+                unjoined_deals.extend(batch["results"])
+
+            finished = not batch["hasMore"]
+            offset = batch["offset"]
+            deals = self._join_output_properties(unjoined_deals)
+            deals = clean_result(deals, start_date, end_date)
+
+            yield from deals
