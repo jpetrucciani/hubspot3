@@ -269,8 +269,8 @@ class DealsClient(BaseClient):
 
     def get_recently_modified_in_interval(
             self,
-            start_date: int,  # data pull begin time
-            end_date: int,  # data pull end time
+            start_date: int,
+            end_date: int,
             offset: int = 0,
             extra_properties: Union[list, str] = None,
             with_history: bool = False,
@@ -278,7 +278,11 @@ class DealsClient(BaseClient):
             **options
     ):
         """
-        Return a list of either recently created or recently modified contacts by timestamp
+        Get recently modified deals.
+        :param start_date: Data pull begin time
+        :param end_date: Data pull end time
+        :param extra_properties: A list used to extend the properties fetched
+
         :see: https://developers.hubspot.com/docs/methods/deals/get_deals_modified
         """
         finished = False
