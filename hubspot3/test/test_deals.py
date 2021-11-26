@@ -112,56 +112,7 @@ def test_get_recently_modified_in_interval(
                 "portalId": 62515,
                 "dealId": 38818613,
                 "isDeleted": False,
-                "associations": {
-                    "associatedVids": [1572024],
-                    "associatedCompanyIds": [],
-                    "associatedDealIds": []
-                },
                 "properties": {
-                    "pipeline": {
-                        "value": "default",
-                        "timestamp": 1463680280365,
-                        "source": None,
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "pipeline",
-                                "value": "default",
-                                "timestamp": 1463680280365,
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "dealname": {
-                        "value": "SELLERSQ-national",
-                        "timestamp": 1463680280348,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "dealname",
-                                "value": "SELLERSQ-national",
-                                "timestamp": 1463680280348,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "email_address": {
-                        "value": "sateesh@sellersq.com",
-                        "timestamp": 1463680280348,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "email_address",
-                                "value": "sateesh@sellersq.com",
-                                "timestamp": 1463680280348,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
                     "hs_lastmodifieddate": {
                         "value": "30",
                         "timestamp": 30,
@@ -184,56 +135,7 @@ def test_get_recently_modified_in_interval(
                 "portalId": 62515,
                 "dealId": 25922214,
                 "isDeleted": False,
-                "associations": {
-                    "associatedVids": [1571574],
-                    "associatedCompanyIds": [],
-                    "associatedDealIds": []
-                },
                 "properties": {
-                    "pipeline": {
-                        "value": "default",
-                        "timestamp": 1463676642461,
-                        "source": None,
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "pipeline",
-                                "value": "default",
-                                "timestamp": 1463676642461,
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "dealname": {
-                        "value": "sachin16495-national",
-                        "timestamp": 1463676642448,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "dealname",
-                                "value": "sachin16495-national",
-                                "timestamp": 1463676642448,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
-                    "email_address": {
-                        "value": "spsachinonspot@gmail.com",
-                        "timestamp": 1463676642448,
-                        "source": "API",
-                        "sourceId": None,
-                        "versions": [
-                            {
-                                "name": "email_address",
-                                "value": "spsachinonspot@gmail.com",
-                                "timestamp": 1463676642448,
-                                "source": "API",
-                                "sourceVid": []
-                            }
-                        ]
-                    },
                     "hs_lastmodifieddate": {
                         "value": "10",
                         "timestamp": 10,
@@ -261,3 +163,4 @@ def test_get_recently_modified_in_interval(
         "GET", "/deals/v1/deal/recent/modified", **params
     )
     assert len(modified_deals) == 1
+    assert modified_deals[0]["dealId"] == 38818613
