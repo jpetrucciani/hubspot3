@@ -91,3 +91,22 @@ def split_properties(properties: Set[str],
         properties_groups.append(current_properties_group)
 
     return properties_groups
+
+
+def clean_result(source_name, source_list, start_d, end_d):
+    source_in_interval = []
+
+    def date_format(source_name, item):
+        if source_name == "deals":
+            update_date = int(item["properties"]["hs_lastmodifieddate"]["value"])
+        elif source_name == "engagements":
+            update_date = item["engagement"]["lastUpdated"]
+        elif source_name == "contacts":
+            update_date = item["addedAt"]
+        return update_date
+
+    for item in source_list:
+        update_date = date_format(source_name, item)
+        if update_date >= start_d and update_date <= end_d:
+            source_in_interval.append(item)
+    return source_in_interval
