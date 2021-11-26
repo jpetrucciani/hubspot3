@@ -5,7 +5,7 @@ import urllib.parse
 from typing import Dict, Union, List
 
 from hubspot3.base import BaseClient
-from hubspot3.utils import get_log, prettify, split_properties
+from hubspot3.utils import get_log, prettify, split_properties, clean_result
 
 DEALS_API_VERSION = "1"
 
@@ -272,7 +272,6 @@ class DealsClient(BaseClient):
             start_date: int,
             end_date: int,
             offset: int = 0,
-            extra_properties: Union[list, str] = None,
             with_history: bool = False,
             query_limit: int = 100,
             **options
@@ -281,67 +280,30 @@ class DealsClient(BaseClient):
         Get recently modified deals.
         :param start_date: Data pull begin time
         :param end_date: Data pull end time
-        :param extra_properties: A list used to extend the properties fetched
 
         :see: https://developers.hubspot.com/docs/methods/deals/get_deals_modified
         """
         finished = False
-        # default properties to fetch
-        properties = [
-            "associations",
-            "dealname",
-            "dealstage",
-            "pipeline",
-            "hubspot_owner_id",
-            "description",
-            "closedate",
-            "amount",
-            "dealtype",
-            "createdate",
-        ]
-
-        if extra_properties:
-            if isinstance(extra_properties, list):
-                properties += extra_properties
-            if isinstance(extra_properties, str):
-                properties.add(extra_properties)
-
-        if with_history:
-            property_name = "propertiesWithHistory"
-        else:
-            property_name = "properties"
-
-        def clean_result(deal_list, start_d, end_d):
-            deals_in_interval = []
-            for deal in deal_list:
-                deal_update_date = int(deal["properties"]["hs_lastmodifieddate"]["value"])
-                if deal_update_date >= start_d and deal_update_date <= end_d:
-                    deals_in_interval.append(deal)
-            return deals_in_interval
-
-        properties_groups = split_properties(properties, property_name=property_name)
 
         while not finished:
             unjoined_deals = []
-            for properties_group in properties_groups:
-                batch = self._call(
-                    "deal/recent/modified",
-                    method="GET",
-                    params={
-                        "since": start_date,
-                        "count": query_limit,
-                        "offset": offset,
-                        "includePropertyVersions": with_history,
-                        property_name: properties_group
-                    },
-                    doseq=True,
-                    **options
-                )
-                unjoined_deals.extend(batch["results"])
+            batch = self._call(
+                "deal/recent/modified",
+                method="GET",
+                params={
+                    "since": start_date,
+                    "count": query_limit,
+                    "offset": offset,
+                    "includePropertyVersions": with_history
+                },
+                doseq=True,
+                **options
+            )
+            unjoined_deals.extend(batch["results"])
 
             finished = not batch["hasMore"]
             offset = batch["offset"]
             deals = self._join_output_properties(unjoined_deals)
-            deals = clean_result(deals, start_date, end_date)
+            deals = clean_result("deals", deals, start_date, end_date)
 
             yield from deals
