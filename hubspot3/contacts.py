@@ -5,7 +5,7 @@ import warnings
 from typing import Union
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify, get_log
+from hubspot3.utils import prettify, get_log, clean_result
 
 CONTACTS_API_VERSION = "1"
 
@@ -280,20 +280,13 @@ class ContactsClient(BaseClient):
 
         time_offset = end_date
 
-        def clean_result(contact_list, start_d, end_d):
-            output = []
-            for contact in contact_list:
-                if contact['addedAt'] >= start_d and contact['addedAt'] <= end_d:
-                    output.append(contact)
-            return output
-
         while not finished:
             params = {
                 "count": query_limit,
                 "property": default_properties,
                 "timeOffset": time_offset,
                 "propertyMode": property_mode}
-                
+
             batch = self._call(
                 "lists/recently_updated/contacts/recent",
                 method="GET",
@@ -305,8 +298,9 @@ class ContactsClient(BaseClient):
             time_offset = batch["time-offset"]
             reached_time_limit = time_offset < start_date
             finished = not batch["has-more"] or reached_time_limit
+            contacts = clean_result("contacts", contacts, start_date, end_date)
 
-            yield from clean_result(contacts, start_date, end_date)
+            yield from contacts
 
     def get_recently_created(self, limit: int = 100):
         """
