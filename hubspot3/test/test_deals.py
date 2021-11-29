@@ -10,7 +10,7 @@ from hubspot3 import deals
 import json
 from unittest.mock import Mock
 
-DEALS = DealsClient(api_key=TEST_KEY)
+deals_client = deals.DealsClient(api_key=TEST_KEY)
 
 
 @pytest.fixture
@@ -85,7 +85,7 @@ def test_get_recently_modified():
     gets recently modified deals
     :see: https://developers.hubspot.com/docs/methods/deals/get_deals_modified
     """
-    modified_deals = DEALS.get_recently_modified(limit=20)
+    modified_deals = deals_client.get_recently_modified(limit=20)
     # assert modified_deals
     assert len(modified_deals) <= 20
     # assert _is_deal(modified_deals[0])

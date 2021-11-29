@@ -5,7 +5,7 @@ import urllib.parse
 from typing import Dict, Union, List
 
 from hubspot3.base import BaseClient
-from hubspot3.utils import get_log, prettify, split_properties, clean_result
+from hubspot3.utils import clean_result, get_log, prettify, split_properties
 
 DEALS_API_VERSION = "1"
 

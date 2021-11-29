@@ -5,7 +5,7 @@ import warnings
 from typing import Union
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify, get_log, clean_result
+from hubspot3.utils import clean_result, get_log, prettify
 
 CONTACTS_API_VERSION = "1"
 

@@ -2,7 +2,7 @@
 hubspot engagements api
 """
 from hubspot3.base import BaseClient
-from hubspot3.utils import get_log, clean_result
+from hubspot3.utils import clean_result, get_log
 
 
 ENGAGEMENTS_API_VERSION = "1"
