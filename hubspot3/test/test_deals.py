@@ -4,10 +4,11 @@ This file tests the methods in the hubspot3.deals file
 """
 import json
 from unittest.mock import Mock
+
 import pytest
+from hubspot3 import deals
 from hubspot3.error import HubspotNotFound, HubspotBadRequest
 from hubspot3.test.globals import TEST_KEY
-from hubspot3 import deals
 
 
 deals_client = deals.DealsClient(api_key=TEST_KEY)
