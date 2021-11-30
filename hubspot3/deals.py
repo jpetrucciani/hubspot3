@@ -5,7 +5,7 @@ import urllib.parse
 from typing import Dict, Union, List
 
 from hubspot3.base import BaseClient
-from hubspot3.utils import get_log, prettify, split_properties
+from hubspot3.utils import clean_result, get_log, prettify, split_properties
 
 DEALS_API_VERSION = "1"
 
@@ -266,3 +266,44 @@ class DealsClient(BaseClient):
             include_versions=include_versions,
             **options
         )
+
+    def get_recently_modified_in_interval(
+            self,
+            start_date: int,
+            end_date: int,
+            offset: int = 0,
+            with_history: bool = False,
+            query_limit: int = 100,
+            **options
+    ):
+        """
+        Get recently modified deals.
+        :param start_date: Data pull begin time
+        :param end_date: Data pull end time
+
+        :see: https://developers.hubspot.com/docs/methods/deals/get_deals_modified
+        """
+        finished = False
+
+        while not finished:
+            unjoined_deals = []
+            batch = self._call(
+                "deal/recent/modified",
+                method="GET",
+                params={
+                    "since": start_date,
+                    "count": query_limit,
+                    "offset": offset,
+                    "includePropertyVersions": with_history
+                },
+                doseq=True,
+                **options
+            )
+            unjoined_deals.extend(batch["results"])
+
+            finished = not batch["hasMore"]
+            offset = batch["offset"]
+            deals = self._join_output_properties(unjoined_deals)
+            deals = clean_result("deals", deals, start_date, end_date)
+
+            yield from deals

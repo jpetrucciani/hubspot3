@@ -2,7 +2,7 @@
 hubspot engagements api
 """
 from hubspot3.base import BaseClient
-from hubspot3.utils import get_log
+from hubspot3.utils import clean_result, get_log
 
 
 ENGAGEMENTS_API_VERSION = "1"
@@ -107,14 +107,6 @@ class EngagementsClient(BaseClient):
         query_limit = 100  # Max value according to docs
         offset = 0
 
-        def clean_result(engagement_list, start_d, end_d):
-            engagements_in_interval = []
-            for eng in engagement_list:
-                eng_update_date = eng["engagement"]["lastUpdated"]
-                if eng_update_date >= start_d and eng_update_date <= end_d:
-                    engagements_in_interval.append(eng)
-            return engagements_in_interval
-
         while not finished:
             batch = self._call(
                 "engagements/recent/modified",
@@ -125,6 +117,6 @@ class EngagementsClient(BaseClient):
             engagements.extend(batch["results"])
             finished = not batch["hasMore"]
             offset = batch["offset"]
-            engagements = clean_result(engagements, start_date, end_date)
+            engagements = clean_result("engagements", engagements, start_date, end_date)
 
             yield from engagements
