@@ -120,3 +120,16 @@ class EngagementsClient(BaseClient):
             engagements = clean_result("engagements", engagements, start_date, end_date)
 
             yield from engagements
+
+    def check_request(self, start_date: int):
+        """check limit of request."""
+        query_limit = 100  # Max value according to docs
+        offset = 0
+
+        batch = self._call(
+            "engagements/recent/modified",
+            method="GET",
+            params={"limit": query_limit, "offset": offset, "since": start_date}
+        )
+        total = batch["total"]
+        return total
