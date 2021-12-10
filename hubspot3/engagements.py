@@ -121,7 +121,7 @@ class EngagementsClient(BaseClient):
 
             yield from engagements
 
-    def check_request(self, start_date: int):
+    def count_recently_modified_engagements(self, since: int):
         """check limit of request."""
         query_limit = 100  # Max value according to docs
         offset = 0
