@@ -129,7 +129,7 @@ class EngagementsClient(BaseClient):
         batch = self._call(
             "engagements/recent/modified",
             method="GET",
-            params={"limit": query_limit, "offset": offset, "since": start_date}
+            params={"limit": query_limit, "offset": offset, "since": since}
         )
         total = batch["total"]
         return total
