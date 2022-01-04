@@ -307,3 +307,16 @@ class DealsClient(BaseClient):
             deals = clean_result("deals", deals, start_date, end_date)
 
             yield from deals
+
+    def count_recently_modified_deals(self, start_date: int):
+        """check limit of request."""
+        query_limit = 100  # Max value according to docs
+        offset = 0
+
+        batch = self._call(
+            "deal/recent/modified",
+            method="GET",
+            params={"limit": query_limit, "offset": offset, "since": start_date}
+        )
+        total = batch["total"]
+        return total
