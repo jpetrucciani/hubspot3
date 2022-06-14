@@ -258,7 +258,7 @@ class ContactsClient(BaseClient):
             extra_properties: Union[list, str] = None,
             with_history: bool = False,
             query_limit: int = 100,
-            form_submission_mode: str = "newest"
+            form_submission_mode: str = "newest",
             **options
     ):
         """
