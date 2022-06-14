@@ -258,6 +258,7 @@ class ContactsClient(BaseClient):
             extra_properties: Union[list, str] = None,
             with_history: bool = False,
             query_limit: int = 100,
+            form_submission_mode: str = "newest"
             **options
     ):
         """
@@ -285,7 +286,8 @@ class ContactsClient(BaseClient):
                 "count": query_limit,
                 "property": default_properties,
                 "timeOffset": time_offset,
-                "propertyMode": property_mode}
+                "propertyMode": property_mode,
+                "formSubmissionMode": form_submission_mode}
 
             batch = self._call(
                 "lists/recently_updated/contacts/recent",
