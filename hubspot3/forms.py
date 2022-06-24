@@ -91,7 +91,7 @@ class FormsClient(BaseClient):
         """
         return self._call("forms/{}".format(form_id), method="GET", **options)
 
-    def get_all(self, limit: int = -1, offset: int = 0, **options) -> list:
+    def get_all(self, limit: int = -1, offset: int = 0, form_types: str = None, **options) -> list:
         """
         get all forms from this hubspot portal.
         :see: https://developers.hubspot.com/docs/methods/forms/v2/get_forms
@@ -99,4 +99,6 @@ class FormsClient(BaseClient):
         params = {"offset": offset}
         if limit > 0:
             params["limit"] = limit
+        if form_types is not None:
+            params["formTypes"] = form_types
         return self._call("forms", method="GET", params=params)
