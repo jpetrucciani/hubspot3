@@ -142,7 +142,7 @@ class ContactsClient(BaseClient):
         Join request properties to show only one object per contactId
         This will change the first object for each contactId
         """
-        joined_contact_dict = {}
+        joined_contacts_dict = {}
         for contact in contacts:
             # Converting the ID to str to make it compatible with API
             contact_id = str(contact["vid"])
