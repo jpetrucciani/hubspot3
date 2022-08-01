@@ -311,7 +311,7 @@ class ContactsClient(BaseClient):
             for group in properties_groups:
                 params = {
                     "count": query_limit,
-                    "property": default_properties,
+                    "property": group,
                     "timeOffset": time_offset,
                     "propertyMode": property_mode,
                     "formSubmissionMode": form_submission_mode
