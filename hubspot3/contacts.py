@@ -2,7 +2,7 @@
 hubspot contacts api
 """
 import warnings
-from typing import Union
+from typing import Union, List
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
 from hubspot3.utils import clean_result, get_log, prettify, split_properties
