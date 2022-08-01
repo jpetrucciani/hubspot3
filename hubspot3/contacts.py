@@ -5,7 +5,7 @@ import warnings
 from typing import Union
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
-from hubspot3.utils import clean_result, get_log, prettify
+from hubspot3.utils import clean_result, get_log, prettify, split_properties
 
 CONTACTS_API_VERSION = "1"
 
@@ -137,6 +137,9 @@ class ContactsClient(BaseClient):
         associations_client = CRMAssociationsClient(**self.credentials)
         return associations_client.link_contact_to_company(contact_id, company_id)
 
+    def _join_output_properties(self, deals: List[dict]) -> dict:
+        pass
+
     def get_all(
         self,
         extra_properties: Union[list, str] = None,
@@ -183,21 +186,29 @@ class ContactsClient(BaseClient):
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
 
+        properties_groups = split_properties(properties, property_name=property_mode)
         contacts_count = 0
         finished = False
         while not finished:
-            batch = self._call(
-                "lists/{}/contacts/all".format(list_id),
-                method="GET",
-                params={
+            unjoined_contacts = []
+            for group in properties_groups:
+                params= {
                     "count": query_limit,
                     "vidOffset": offset,
-                    "property": properties,
-                    "propertyMode": property_mode},
-                doseq=True,
-                **options
-            )
-            contacts = batch["contacts"]
+                    "property": group,
+                    "propertyMode": property_mode
+                }
+                batch = self._call(
+                    "lists/{}/contacts/all".format(list_id),
+                    method="GET",
+                    params=params,
+                    doseq=True,
+                    **options
+                )
+                unjoined_contacts.extend(batch["contacts"])            
+
+            contacts = self._join_output_properties(unjoined_contacts)
+
             contacts_count += len(contacts)
             reached_limit = limited and contacts_count >= limit
 
