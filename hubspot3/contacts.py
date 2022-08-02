@@ -2,10 +2,10 @@
 hubspot contacts api
 """
 import warnings
-from typing import Union
+from typing import Union, List
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
-from hubspot3.utils import clean_result, get_log, prettify
+from hubspot3.utils import clean_result, get_log, prettify, split_properties
 
 CONTACTS_API_VERSION = "1"
 
@@ -137,6 +137,22 @@ class ContactsClient(BaseClient):
         associations_client = CRMAssociationsClient(**self.credentials)
         return associations_client.link_contact_to_company(contact_id, company_id)
 
+    def _join_output_properties(self, contacts: List[dict]) -> dict:
+        """
+        Join request properties to show only one object per contactId
+        This will change the first object for each contactId
+        """
+        joined_contacts_dict = {}
+        for contact in contacts:
+            # Converting the ID to str to make it compatible with API
+            contact_id = str(contact["vid"])
+            if contact_id not in joined_contacts_dict:
+                joined_contacts_dict[contact_id] = contact
+            else:
+                joined_contacts_dict[contact_id]["properties"].update(contact["properties"])
+        joined_contacts = list(joined_contacts_dict.values())
+        return joined_contacts
+
     def get_all(
         self,
         extra_properties: Union[list, str] = None,
@@ -183,21 +199,29 @@ class ContactsClient(BaseClient):
             if isinstance(extra_properties, str):
                 properties.add(extra_properties)
 
+        properties_groups = split_properties(properties, property_name=property_mode)
         contacts_count = 0
         finished = False
         while not finished:
-            batch = self._call(
-                "lists/{}/contacts/all".format(list_id),
-                method="GET",
-                params={
+            unjoined_contacts = []
+            for group in properties_groups:
+                params= {
                     "count": query_limit,
                     "vidOffset": offset,
-                    "property": properties,
-                    "propertyMode": property_mode},
-                doseq=True,
-                **options
-            )
-            contacts = batch["contacts"]
+                    "property": group,
+                    "propertyMode": property_mode
+                }
+                batch = self._call(
+                    "lists/{}/contacts/all".format(list_id),
+                    method="GET",
+                    params=params,
+                    doseq=True,
+                    **options
+                )
+                unjoined_contacts.extend(batch["contacts"])
+
+            contacts = self._join_output_properties(unjoined_contacts)
+
             contacts_count += len(contacts)
             reached_limit = limited and contacts_count >= limit
 
@@ -281,22 +305,27 @@ class ContactsClient(BaseClient):
 
         time_offset = end_date
 
+        properties_groups = split_properties(default_properties, property_name=property_mode)
         while not finished:
-            params = {
-                "count": query_limit,
-                "property": default_properties,
-                "timeOffset": time_offset,
-                "propertyMode": property_mode,
-                "formSubmissionMode": form_submission_mode}
+            unjoined_contacts = []
+            for group in properties_groups:
+                params = {
+                    "count": query_limit,
+                    "property": group,
+                    "timeOffset": time_offset,
+                    "propertyMode": property_mode,
+                    "formSubmissionMode": form_submission_mode
+                }
+                batch = self._call(
+                    "lists/recently_updated/contacts/recent",
+                    method="GET",
+                    params=params,
+                    doseq=True,
+                    **options
+                )
+                unjoined_contacts.extend(batch["contacts"])
 
-            batch = self._call(
-                "lists/recently_updated/contacts/recent",
-                method="GET",
-                params=params,
-                doseq=True,
-                **options
-            )
-            contacts = batch["contacts"]
+            contacts = self._join_output_properties(unjoined_contacts)
             time_offset = batch["time-offset"]
             reached_time_limit = time_offset < start_date
             finished = not batch["has-more"] or reached_time_limit

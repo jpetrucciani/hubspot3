@@ -82,8 +82,8 @@ class DealsClient(BaseClient):
 
     def _join_output_properties(self, deals: List[dict]) -> dict:
         """
-        Join request properties to show only one object per ticketId
-        This will change the first object for each ticketId
+        Join request properties to show only one object per dealId
+        This will change the first object for each dealId
         """
         joined_deals_dict = {}
         for deal in deals:
