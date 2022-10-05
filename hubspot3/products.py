@@ -2,7 +2,7 @@
 hubspot products api
 """
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify, get_log, ordered_dict
+from hubspot3.utils import get_log, ordered_dict, prettify, split_properties
 from typing import List
 
 
@@ -14,6 +14,8 @@ class ProductsClient(BaseClient):
     Products extension for products API endpoint
     :see: https://developers.hubspot.com/docs/methods/products/products-overview
     """
+
+    default_batch_properties = []
 
     def __init__(self, *args, **kwargs) -> None:
         """initialize a products client"""
@@ -31,39 +33,90 @@ class ProductsClient(BaseClient):
             **options
         )
 
-    def get_all_products(
-        self, properties: List[str] = None, offset: int = 0, **options
-    ):
-        """get all products in the hubspot account"""
-        properties = properties or []
+    def _get_properties(self, extra_properties: Union[List[str], str] = None) -> Set[str]:
+        properties = set(self.default_batch_properties)
+
+        if extra_properties:
+            if isinstance(extra_properties, list):
+                properties.update(extra_properties)
+            if isinstance(extra_properties, str):
+                properties.add(extra_properties)
+
+        return properties
+    
+    def _join_output_properties(self, products: List[dict]) -> dict:
+        """
+        Join request properties to show only one object per productId
+        This will change the first object for each productId
+        """
+        joined_products_dict = {}
+        for product in products:
+            # Converting the ID to str to make it compatible with API
+            product_id = str(product["objectId"])
+            if product_id not in joined_products_dict:
+                joined_products_dict[product_id] = product
+            else:
+                joined_products_dict[product_id]["properties"].update(product["properties"])
+        return joined_products_dict
+
+    def get_all(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
+                with_history: bool = False, **options) -> list:
+        """
+        Get all products in hubspot
+        :see: https://developers.hubspot.com/docs/methods/products/get-all-products
+        """
+        generator = self.get_all_as_generator(limit=limit, extra_properties=extra_properties,
+                                              with_history=with_history, **options)
+        return list(generator)
+    
+    def get_all_as_generator(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
+                             with_history: bool = False, **options) -> Iterator[dict]:
+        """
+        Get all products in hubspot
+        :see: https://developers.hubspot.com/docs/methods/products/get-all-products
+        """
+
+        limited = limit > 0
+
+        properties = self._get_properties(extra_properties)
+
+        if with_history:
+            property_name = "propertiesWithHistory"
+        else:
+            property_name = "properties"
+
+        properties_groups = split_properties(properties, property_name=property_name)
+
+        offset = 0
+        total_products = 0
         finished = False
-        output = []
-        querylimit = 100  # Max value according to docs
         while not finished:
-            batch = self._call(
-                "objects/products/paged",
-                method="GET",
-                params=ordered_dict(
-                    {
-                        "limit": querylimit,
-                        "offset": offset,
-                        "properties": ["name", "description", *properties],
-                    }
-                ),
-                doseq=True,
-                **options
-            )
-            output.extend(
-                [
-                    prettify(obj, id_key="objectId")
-                    for obj in batch["objects"]
-                    if not obj["isDeleted"]
-                ]
-            )
-            finished = not batch["hasMore"]
+            # Since properties is added to the url there is a limiting amount that you can request
+            unjoined_outputs = []
+            for properties_group in properties_groups:
+                batch = self._call(
+                    "objects/products/paged",
+                    method="GET",
+                    doseq=True,
+                    params={"offset": offset, property_name: properties_group},
+                    **options
+                )
+                unjoined_outputs.extend(batch["objects"])
+
+            outputs_dict = self._join_output_properties(unjoined_outputs)
+            outputs = list(outputs_dict.values())
+
+            total_products += len(outputs)
             offset = batch["offset"]
 
-        return output
+            reached_limit = limited and total_products>= limit
+            finished = not batch["hasMore"] or reached_limit
+
+            # Since the API doesn't aways tries to return 100 products we may pass the desired limit
+            if reached_limit:
+                outputs = outputs[:limit]
+
+            yield from outputs   
 
     def _get_path(self, subpath: str):
         return "crm-objects/v{}/{}".format(
