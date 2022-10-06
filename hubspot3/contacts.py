@@ -5,7 +5,7 @@ import warnings
 from typing import Union, List
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
-from hubspot3.utils import clean_result, get_log, prettify, split_properties
+from hubspot3.utils import clean_result, get_log, join_output_properties, prettify, split_properties
 
 CONTACTS_API_VERSION = "1"
 
@@ -137,22 +137,6 @@ class ContactsClient(BaseClient):
         associations_client = CRMAssociationsClient(**self.credentials)
         return associations_client.link_contact_to_company(contact_id, company_id)
 
-    def _join_output_properties(self, contacts: List[dict]) -> dict:
-        """
-        Join request properties to show only one object per contactId
-        This will change the first object for each contactId
-        """
-        joined_contacts_dict = {}
-        for contact in contacts:
-            # Converting the ID to str to make it compatible with API
-            contact_id = str(contact["vid"])
-            if contact_id not in joined_contacts_dict:
-                joined_contacts_dict[contact_id] = contact
-            else:
-                joined_contacts_dict[contact_id]["properties"].update(contact["properties"])
-        joined_contacts = list(joined_contacts_dict.values())
-        return joined_contacts
-
     def get_all(
         self,
         extra_properties: Union[list, str] = None,
@@ -220,7 +204,7 @@ class ContactsClient(BaseClient):
                 )
                 unjoined_contacts.extend(batch["contacts"])
 
-            contacts = self._join_output_properties(unjoined_contacts)
+            contacts = join_output_properties(unjoined_contacts, "vid")
 
             contacts_count += len(contacts)
             reached_limit = limited and contacts_count >= limit

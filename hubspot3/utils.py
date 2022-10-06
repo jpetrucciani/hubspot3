@@ -110,3 +110,19 @@ def clean_result(source_name, source_list, start_d, end_d):
         if update_date >= start_d and update_date <= end_d:
             source_in_interval.append(item)
     return source_in_interval
+
+def join_output_properties(objs: List[dict], id_name: str) -> dict:
+        """
+        Join request properties to show only one object per objId
+        This will change the first object for each objId
+        """
+        joined_objs_dict = {}
+        for obj in objs:
+            # Converting the ID to str to make it compatible with API
+            obj_id = str(obj[id_name])
+            if obj_id not in joined_objs_dict:
+                joined_objs_dict[obj_id] = obj
+            else:
+                joined_objs_dict[obj_id]["properties"].update(obj["properties"])
+        joined_objs = list(joined_objs_dict.values())
+        return joined_objs
