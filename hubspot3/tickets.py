@@ -4,7 +4,7 @@ hubspot tickets api
 from typing import Dict, Iterator, List, Set, Union
 
 from hubspot3.base import BaseClient
-from hubspot3.utils import prettify, get_log, split_properties
+from hubspot3.utils import prettify, get_log, join_output_properties, split_properties
 
 
 TICKETS_API_VERSION = "1"
@@ -74,21 +74,6 @@ class TicketsClient(BaseClient):
             "objects/tickets/{}".format(ticket_id), method="GET", **options
         )
 
-    def _join_output_properties(self, tickets: List[dict]) -> dict:
-        """
-        Join request properties to show only one object per ticketId
-        This will change the first object for each ticketId
-        """
-        joined_tickets_dict = {}
-        for ticket in tickets:
-            # Converting the ID to str to make it compatible with API
-            ticket_id = str(ticket["objectId"])
-            if ticket_id not in joined_tickets_dict:
-                joined_tickets_dict[ticket_id] = ticket
-            else:
-                joined_tickets_dict[ticket_id]["properties"].update(ticket["properties"])
-        return joined_tickets_dict
-
     def get_all(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
                 with_history: bool = False, **options) -> list:
         """
@@ -133,8 +118,7 @@ class TicketsClient(BaseClient):
                 )
                 unjoined_outputs.extend(batch["objects"])
 
-            outputs_dict = self._join_output_properties(unjoined_outputs)
-            outputs = list(outputs_dict.values())
+            outputs = join_output_properties(unjoined_outputs, "objectId")
 
             total_tickets += len(outputs)
             offset = batch["offset"]

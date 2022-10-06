@@ -2,7 +2,7 @@
 hubspot products api
 """
 from hubspot3.base import BaseClient
-from hubspot3.utils import get_log, ordered_dict, prettify, split_properties
+from hubspot3.utils import get_log, join_output_properties, ordered_dict, prettify, split_properties
 from typing import List
 
 
@@ -30,21 +30,6 @@ class ProductsClient(BaseClient):
             doseq=True,
             **options
         )
-    
-    def _join_output_properties(self, products: List[dict]) -> dict:
-        """
-        Join request properties to show only one object per productId
-        This will change the first object for each productId
-        """
-        joined_products_dict = {}
-        for product in products:
-            # Converting the ID to str to make it compatible with API
-            product_id = str(product["objectId"])
-            if product_id not in joined_products_dict:
-                joined_products_dict[product_id] = product
-            else:
-                joined_products_dict[product_id]["properties"].update(product["properties"])
-        return joined_products_dict
 
     def get_all(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
                 with_history: bool = False, **options) -> list:
@@ -90,8 +75,7 @@ class ProductsClient(BaseClient):
                 )
                 unjoined_outputs.extend(batch["objects"])
 
-            outputs_dict = self._join_output_properties(unjoined_outputs)
-            outputs = list(outputs_dict.values())
+            outputs = join_output_properties(unjoined_outputs, "objectId")
 
             total_products += len(outputs)
             offset = batch["offset"]

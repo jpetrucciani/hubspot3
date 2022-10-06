@@ -5,7 +5,7 @@ import urllib.parse
 from typing import Dict, Union, List
 
 from hubspot3.base import BaseClient
-from hubspot3.utils import clean_result, get_log, prettify, split_properties
+from hubspot3.utils import clean_result, get_log, prettify, join_output_properties, split_properties
 
 DEALS_API_VERSION = "1"
 
@@ -80,22 +80,6 @@ class DealsClient(BaseClient):
         pretty_deals = [prettify(deal, id_key="dealId") for deal in deals if not deal["isDeleted"]]
         return pretty_deals
 
-    def _join_output_properties(self, deals: List[dict]) -> dict:
-        """
-        Join request properties to show only one object per dealId
-        This will change the first object for each dealId
-        """
-        joined_deals_dict = {}
-        for deal in deals:
-            # Converting the ID to str to make it compatible with API
-            deal_id = str(deal["dealId"])
-            if deal_id not in joined_deals_dict:
-                joined_deals_dict[deal_id] = deal
-            else:
-                joined_deals_dict[deal_id]["properties"].update(deal["properties"])
-        joined_deals = list(joined_deals_dict.values())
-        return joined_deals
-
     def get_all_as_generator(
         self,
         offset: int = 0,
@@ -159,7 +143,7 @@ class DealsClient(BaseClient):
                 )
                 unjoined_deals.extend(batch["deals"])
 
-            deals = self._join_output_properties(unjoined_deals)
+            deals = join_output_properties(unjoined_deals, "dealId")
 
             deal_counter += len(deals)
             reached_limit = limited and deal_counter >= limit
