@@ -309,7 +309,7 @@ class ContactsClient(BaseClient):
                 )
                 unjoined_contacts.extend(batch["contacts"])
 
-            contacts = self._join_output_properties(unjoined_contacts)
+            contacts = join_output_properties(unjoined_contacts)
             time_offset = batch["time-offset"]
             reached_time_limit = time_offset < start_date
             finished = not batch["has-more"] or reached_time_limit

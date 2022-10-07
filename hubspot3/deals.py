@@ -287,7 +287,7 @@ class DealsClient(BaseClient):
 
             finished = not batch["hasMore"]
             offset = batch["offset"]
-            deals = self._join_output_properties(unjoined_deals)
+            deals = join_output_properties(unjoined_deals)
             deals = clean_result("deals", deals, start_date, end_date)
 
             yield from deals
