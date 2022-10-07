@@ -3,8 +3,7 @@ hubspot products api
 """
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log, join_output_properties, ordered_dict, prettify, split_properties
-from typing import List, Union
-
+from typing import Iterator, List, Union
 
 PRODUCTS_API_VERSION = "1"
 
