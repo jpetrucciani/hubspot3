@@ -172,7 +172,7 @@ class TicketsClient(BaseClient):
                 )
                 unjoined_outputs.extend(partial_batch.values())
 
-            partial_batch = self._join_output_properties(unjoined_outputs)
+            partial_batch = join_output_properties(unjoined_outputs, "objectId")
             batch.update(partial_batch)
         return batch
 
