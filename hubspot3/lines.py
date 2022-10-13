@@ -1,10 +1,10 @@
 """
 hubspot lines api
 """
-from typing import Dict, Union
 from hubspot3.base import BaseClient
 from hubspot3.crm_associations import CRMAssociationsClient
-from hubspot3.utils import get_log, prettify, ordered_dict
+from hubspot3.utils import get_log, join_output_properties, ordered_dict, prettify
+from typing import Dict, Iterator, List, Union
 
 
 LINES_API_VERSION = "1"
@@ -53,60 +53,64 @@ class LinesClient(BaseClient):
         """
         data = data or {}
         return self._call("{}".format(line_id), data=data, method="PUT", **options)
-
-    def get_all(
-        self,
-        offset: int = 0,
-        extra_properties: Union[list, str] = None,
-        limit: int = -1,
-        **options
-    ):
+    
+    def get_all(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
+                with_history: bool = False, **options) -> list:
         """
-        Retrieve all the line items in the Hubspot account.
-
-        Cf: https://developers.hubspot.com/docs/methods/line-items/get-all-line-items
-
-        :param offset Used to get the next set of results.
-        :param extra_properties By default, only the ID, the hubspot product id (`hs_product_id`)
-        a few other system fields are returned for the line items. This method with also ask for
-        basic properties such as the 'name', the 'price' and the 'quantity'. More could be
-        retrieved by using 'extra_properties'.
-        :param limit: could be used to prevent to fetch the entire results. Default value is `-1`,
-        meaning unlimited.
+        Get all line items in hubspot
+        :see: https://legacydocs.hubspot.com/docs/methods/line-items/get-all-line-items
         """
-        finished = False
-        output = []
+        generator = self.get_all_as_generator(limit=limit, extra_properties=extra_properties,
+                                              with_history=with_history, **options)
+        return list(generator)
+    
+    def get_all_as_generator(self, limit: int = -1, extra_properties: Union[List[str], str] = None,
+                             with_history: bool = False, **options) -> Iterator[dict]:
+        """
+        Get all line items in hubspot
+        :see: https://legacydocs.hubspot.com/docs/methods/line-items/get-all-line-items
+        """
+
         limited = limit > 0
 
-        # Default properties to fetch
-        properties = ["name", "price", "quantity"]
+        properties = extra_properties
 
-        # append extras if they exist
-        if extra_properties:
-            if isinstance(extra_properties, list):
-                properties += extra_properties
-            if isinstance(extra_properties, str):
-                properties.append(extra_properties)
+        if with_history:
+            property_name = "propertiesWithHistory"
+        else:
+            property_name = "properties"
 
+        properties_groups = split_properties(properties, property_name=property_name)
+
+        offset = 0
+        total_line_items = 0
+        finished = False
         while not finished:
-            batch = self._call(
-                "paged",
-                method="GET",
-                params=ordered_dict({"offset": offset, "properties": properties}),
-                doseq=True,
-                **options
-            )
-            output.extend(
-                [
-                    prettify(line_item, id_key="objectId")
-                    for line_item in batch["objects"]
-                    if not line_item["isDeleted"]
-                ]
-            )
-            finished = not batch["hasMore"] or (limited and len(output) >= limit)
+            # Since properties is added to the url there is a limiting amount that you can request
+            unjoined_outputs = []
+            for properties_group in properties_groups:
+                batch = self._call(
+                    "objects/line_items/paged",
+                    method="GET",
+                    doseq=True,
+                    params={"offset": offset, property_name: properties_group},
+                    **options
+                )
+                unjoined_outputs.extend(batch["objects"])
+
+            outputs = join_output_properties(unjoined_outputs, "objectId")
+
+            total_line_items += len(outputs)
             offset = batch["offset"]
 
-        return output if not limited else output[:limit]
+            reached_limit = limited and total_line_items>= limit
+            finished = not batch["hasMore"] or reached_limit
+
+            # Since the API doesn't aways tries to return 100 line items we may pass the desired limit
+            if reached_limit:
+                outputs = outputs[:limit]
+
+            yield from outputs
 
     def link_line_item_to_deal(self, line_item_id, deal_id) -> Dict:
         """Link a line item to a deal."""
