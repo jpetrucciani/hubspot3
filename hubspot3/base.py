@@ -58,6 +58,7 @@ class BaseClient:
         timeout: int = 10,
         mixins: List = None,
         api_base: str = "api.hubapi.com",
+        app_id: Optional[int | str] = None,
         debug: bool = False,
         disable_auth: bool = False,
         **extra_options,
@@ -92,6 +93,7 @@ class BaseClient:
                 raise HubspotNoConfig("Missing required credentials.")
         self.options = {
             "api_base": api_base,
+            "app_id": app_id,
             "debug": debug,
             "disable_auth": disable_auth,
             "timeout": timeout,
