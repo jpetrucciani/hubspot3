@@ -2,7 +2,7 @@
 hubspot webhooks api
 """
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from hubspot3.base import BaseClient
 from hubspot3.error import HubspotBadConfig
@@ -87,7 +87,7 @@ class WebhooksClient(BaseClient):
         return self._call("settings", data=data, method="PUT", **options)
 
     def batch_update_subscriptions(
-        self, active_by_subscription_id: Dict[int | str, bool], **options
+        self, active_by_subscription_id: Dict[Union[int, str], bool], **options
     ):
         data = {
             "inputs": [
@@ -119,7 +119,7 @@ class WebhooksClient(BaseClient):
         for subscription in self.get_all_subscriptions():
             self.delete_subscription_by_id(subscription["id"])
 
-    def delete_subscription_by_id(self, subscription_id: int | str, **options):
+    def delete_subscription_by_id(self, subscription_id: Union[int, str], **options):
         return self._call(
             f"subscriptions/{subscription_id}", method="DELETE", **options
         )
@@ -127,11 +127,13 @@ class WebhooksClient(BaseClient):
     def get_all_subscriptions(self, **options) -> List[dict]:
         return self._call("subscriptions", **options)["results"]
 
-    def get_subscription_by_id(self, subscription_id: int | str, **options) -> dict:
+    def get_subscription_by_id(
+        self, subscription_id: Union[int, str], **options
+    ) -> dict:
         return self._call(f"subscriptions/{subscription_id}", **options)
 
     def update_subscription_by_id(
-        self, subscription_id: int | str, active: bool, **options
+        self, subscription_id: Union[int, str], active: bool, **options
     ) -> dict:
         data = {"active": active}
         return self._call(

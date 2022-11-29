@@ -3,7 +3,7 @@ hubspot3 module
 """
 from datetime import datetime, timedelta
 from hubspot3.error import HubspotBadConfig, HubspotNoConfig
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 
 class Hubspot3UsageLimits:
@@ -93,7 +93,7 @@ class Hubspot3:
         client_secret: str = None,
         timeout: int = 10,
         api_base: str = "api.hubapi.com",
-        app_id: Optional[int | str] = None,
+        app_id: Optional[Union[int, str]] = None,
         debug: bool = False,
         disable_auth: bool = False,
         **extra_options: Any,

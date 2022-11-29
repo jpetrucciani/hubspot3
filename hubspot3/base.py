@@ -58,7 +58,7 @@ class BaseClient:
         timeout: int = 10,
         mixins: List = None,
         api_base: str = "api.hubapi.com",
-        app_id: Optional[int | str] = None,
+        app_id: Optional[Union[int, str]] = None,
         debug: bool = False,
         disable_auth: bool = False,
         **extra_options,
