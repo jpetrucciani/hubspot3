@@ -3,7 +3,7 @@ hubspot3 module
 """
 from datetime import datetime, timedelta
 from hubspot3.error import HubspotBadConfig, HubspotNoConfig
-from typing import Any
+from typing import Any, Optional, Union
 
 
 class Hubspot3UsageLimits:
@@ -93,6 +93,7 @@ class Hubspot3:
         client_secret: str = None,
         timeout: int = 10,
         api_base: str = "api.hubapi.com",
+        app_id: Optional[Union[int, str]] = None,
         debug: bool = False,
         disable_auth: bool = False,
         **extra_options: Any,
@@ -117,6 +118,7 @@ class Hubspot3:
         }
         self.options = {
             "api_base": api_base,
+            "app_id": app_id,
             "debug": debug,
             "disable_auth": disable_auth,
             "timeout": timeout,
@@ -356,6 +358,13 @@ class Hubspot3:
         from hubspot3.users import UsersClient
 
         return UsersClient(**self.auth, **self.options)
+
+    @property
+    def webhooks(self):
+        """returns a hubspot3 webhooks client"""
+        from hubspot3.webhooks import WebhooksClient
+
+        return WebhooksClient(**self.auth, **self.options)
 
     @property
     def workflows(self):
