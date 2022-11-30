@@ -101,12 +101,16 @@ class WebhooksClient(BaseClient):
 
     def create_subscription(
         self,
-        object_type: WebhookObjectType,
-        event_type: WebhookEventType,
+        object_type: Union[WebhookObjectType , str],
+        event_type: Union[WebhookEventType , str],
         property_name: Optional[str] = None,
         active: bool = False,
         **options,
     ):
+        # Extract the values if enums are passed.
+        object_type = getattr(event_type, 'value', object_type)
+        event_type = getattr(event_type, 'value', event_type)
+
         data = {
             "eventType": f"{object_type}.{event_type}",
             "active": active,
