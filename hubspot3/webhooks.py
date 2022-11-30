@@ -108,7 +108,7 @@ class WebhooksClient(BaseClient):
         **options,
     ):
         # Extract the values if enums are passed.
-        object_type = getattr(event_type, 'value', object_type)
+        object_type = getattr(object_type, 'value', object_type)
         event_type = getattr(event_type, 'value', event_type)
 
         data = {
