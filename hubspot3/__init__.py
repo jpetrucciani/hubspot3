@@ -3,7 +3,7 @@ hubspot3 module
 """
 from datetime import datetime, timedelta
 from hubspot3.error import HubspotBadConfig, HubspotNoConfig
-from typing import Any
+from typing import Any, Optional
 
 
 class Hubspot3UsageLimits:
@@ -84,13 +84,13 @@ class Hubspot3UsageLimits:
 class Hubspot3:
     """hubspot3 full client class"""
 
-    def __init__(  # nosec
+    def __init__(
         self,
-        api_key: str = "",
-        access_token: str = "",
-        refresh_token: str = "",
-        client_id: str = "",
-        client_secret: str = "",
+        api_key: Optional[str] = None,
+        access_token: Optional[str] = None,
+        refresh_token: Optional[str] = None,
+        client_id: Optional[str] = None,
+        client_secret: Optional[str] = None,
         timeout: int = 10,
         api_base: str = "api.hubapi.com",
         debug: bool = False,

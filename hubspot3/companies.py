@@ -23,14 +23,12 @@ class CompaniesClient(BaseClient):
         """get the full api url for the given subpath on this client"""
         return f"companies/v{self.options.get('version') or COMPANIES_API_VERSION}/{subpath}"
 
-    def create(self, data: Union[Dict, None] = None, **options) -> Dict:
+    def create(self, data: Optional[Dict] = None, **options) -> Dict:
         """create a new company"""
         data = data or {}
         return self._call("companies/", data=data, method="POST", **options)
 
-    def update(
-        self, company_id: str, data: Union[Dict, None] = None, **options
-    ) -> Dict:
+    def update(self, company_id: str, data: Optional[Dict] = None, **options) -> Dict:
         """update the given company with data"""
         data = data or {}
         return self._call(f"companies/{company_id}", data=data, method="PUT", **options)
@@ -149,7 +147,7 @@ class CompaniesClient(BaseClient):
         recency_type: str,
         limit: int = 250,
         offset: int = 0,
-        since: Union[int, None] = None,
+        since: Optional[int] = None,
         **options,
     ) -> Optional[List]:
         """
@@ -190,7 +188,7 @@ class CompaniesClient(BaseClient):
         self,
         limit: int = 250,
         offset: int = 0,
-        since: Union[int, None] = None,
+        since: Optional[int] = None,
         **options,
     ) -> Optional[List]:
         """
@@ -205,7 +203,7 @@ class CompaniesClient(BaseClient):
         self,
         limit: int = 250,
         offset: int = 0,
-        since: Union[int, None] = None,
+        since: Optional[int] = None,
         **options,
     ) -> Optional[List]:
         """

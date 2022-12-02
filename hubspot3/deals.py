@@ -4,7 +4,7 @@ hubspot deals api
 import urllib.parse
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log, prettify
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 
 
 DEALS_API_VERSION = "1"
@@ -37,7 +37,7 @@ class DealsClient(BaseClient):
         """
         return self._call(f"deal/{deal_id}", method="GET", **options)
 
-    def create(self, data: Union[Dict, None] = None, **options):
+    def create(self, data: Optional[Dict] = None, **options):
         """
         create deal api call
         :see: https://developers.hubspot.com/docs/methods/deals/create_deal
@@ -45,7 +45,7 @@ class DealsClient(BaseClient):
         data = data or {}
         return self._call("deal/", data=data, method="POST", **options)
 
-    def update(self, deal_id: str, data: Union[Dict, None] = None, **options):
+    def update(self, deal_id: str, data: Optional[Dict] = None, **options):
         """
         update a deal by id
         :see: https://developers.hubspot.com/docs/methods/deals/update_deal
@@ -144,7 +144,7 @@ class DealsClient(BaseClient):
         recency_type: str,
         limit: int = 100,
         offset: int = 0,
-        since: Union[int, None] = None,
+        since: Optional[int] = None,
         include_versions: bool = False,
         **options,
     ):
@@ -191,7 +191,7 @@ class DealsClient(BaseClient):
         self,
         limit: int = 100,
         offset: int = 0,
-        since: Union[int, None] = None,
+        since: Optional[int] = None,
         include_versions: bool = False,
         **options,
     ):
@@ -214,7 +214,7 @@ class DealsClient(BaseClient):
         self,
         limit: int = 100,
         offset: int = 0,
-        since: Union[int, None] = None,
+        since: Optional[int] = None,
         include_versions: bool = False,
         **options,
     ):

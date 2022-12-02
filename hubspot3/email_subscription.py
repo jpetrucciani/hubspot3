@@ -4,7 +4,7 @@ hubspot email subscription api
 from typing import Dict, Iterable, Mapping
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
-from typing import Union
+from typing import Optional
 
 
 EMAIL_SUBSCRIPTION_API_VERSION = "1"
@@ -41,7 +41,7 @@ class EmailSubscriptionClient(BaseClient):
         return f"email/public/v{EMAIL_SUBSCRIPTION_API_VERSION}/subscriptions/{subpath}"
 
     def get_status(
-        self, email: str, portal_id: Union[int, None] = None, **options
+        self, email: str, portal_id: Optional[int] = None, **options
     ) -> Dict:
         """
         Retrieve the email subscription status for the given email address.
@@ -63,8 +63,8 @@ class EmailSubscriptionClient(BaseClient):
         self,
         email: str,
         subscriptions: Iterable,
-        portal_legal_basis: str = "",
-        portal_legal_basis_explanation: str = "",
+        portal_legal_basis: Optional[str] = None,
+        portal_legal_basis_explanation: Optional[str] = None,
         **options,
     ) -> None:
         """
@@ -91,7 +91,7 @@ class EmailSubscriptionClient(BaseClient):
         self.update_status(email, {"unsubscribeFromAll": True}, **options)
 
     def get_subscription_types(
-        self, portal_id: Union[int, None] = None, **options
+        self, portal_id: Optional[int] = None, **options
     ) -> Dict:
         """
         Retrieve all newsletter subscription types.
