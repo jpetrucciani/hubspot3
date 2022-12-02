@@ -2,11 +2,11 @@
 hubspot ecommerce bridge api
 """
 from collections.abc import Mapping, Sequence
-from typing import Dict, List
-
+from typing import Dict, List, Optional
 from hubspot3.base import BaseClient
 from hubspot3.error import HubspotBadConfig
 from hubspot3.utils import get_log
+
 
 ECOMMERCE_BRIDGE_API_VERSION = "2"
 MAX_ECOMMERCE_BRIDGE_SYNC_MESSAGES = 200  # Maximum number of sync messages per request.
@@ -81,10 +81,10 @@ class EcommerceBridgeClient(BaseClient):
         self,
         subpath: str,
         include_resolved: bool = False,
-        error_type: str = None,
-        object_type: str = None,
-        limit: int = None,
-        starting_page: int = None,
+        error_type: Optional[str] = None,
+        object_type: Optional[str] = None,
+        limit: Optional[int] = None,
+        starting_page: Optional[int] = None,
         **options,
     ) -> List:
         """Internal method to retrieve sync errors from an endpoint."""
@@ -127,10 +127,10 @@ class EcommerceBridgeClient(BaseClient):
     def get_sync_errors_for_account(
         self,
         include_resolved: bool = False,
-        error_type: str = None,
-        object_type: str = None,
-        limit: int = None,
-        starting_page: int = None,
+        error_type: Optional[str] = None,
+        object_type: Optional[str] = None,
+        limit: Optional[int] = None,
+        starting_page: Optional[int] = None,
         **options,
     ) -> List:
         """
@@ -140,7 +140,8 @@ class EcommerceBridgeClient(BaseClient):
         This method and the endpoint it calls can only be used with a portal API key and the portal
         is determined from that key.
 
-        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-a-specific-account # noqa
+        :see: https://developers.hubspot.com/docs\
+            /methods/ecommerce/v2/get-all-sync-errors-for-a-specific-account
         """
         if not self.api_key:
             raise HubspotBadConfig(
@@ -161,10 +162,10 @@ class EcommerceBridgeClient(BaseClient):
         self,
         app_id: int,
         include_resolved: bool = False,
-        error_type: str = None,
-        object_type: str = None,
-        limit: int = None,
-        starting_page: int = None,
+        error_type: Optional[str] = None,
+        object_type: Optional[str] = None,
+        limit: Optional[int] = None,
+        starting_page: Optional[int] = None,
         **options,
     ) -> List:
         """
@@ -174,7 +175,8 @@ class EcommerceBridgeClient(BaseClient):
         This method and the endpoint it calls can only be used with the developer API key of the
         developer portal that created the app.
 
-        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-an-app # noqa
+        :see: https://developers.hubspot.com/docs\
+            /methods/ecommerce/v2/get-all-sync-errors-for-an-app
         """
         if not self.api_key:
             raise HubspotBadConfig(
@@ -194,10 +196,10 @@ class EcommerceBridgeClient(BaseClient):
     def get_sync_errors_for_app_and_account(
         self,
         include_resolved: bool = False,
-        error_type: str = None,
-        object_type: str = None,
-        limit: int = None,
-        starting_page: int = None,
+        error_type: Optional[str] = None,
+        object_type: Optional[str] = None,
+        limit: Optional[int] = None,
+        starting_page: Optional[int] = None,
         **options,
     ):
         """
@@ -207,7 +209,8 @@ class EcommerceBridgeClient(BaseClient):
         This method and the endpoint it calls can only be used with OAuth tokens and both the app
         and the portal are determined from the tokens used.
 
-        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-an-app-and-account # noqa
+        :see: https://developers.hubspot.com/docs\
+            /methods/ecommerce/v2/get-all-sync-errors-for-an-app-and-account
         """
         if not self.access_token:
             raise HubspotBadConfig(
@@ -227,9 +230,9 @@ class EcommerceBridgeClient(BaseClient):
     def create_or_update_settings(
         self,
         mappings: Mapping,
-        webhook_uri: str = None,
+        webhook_uri: Optional[str] = None,
         enabled: bool = True,
-        app_id: int = None,
+        app_id: Optional[int] = None,
         show_provided_mappings: bool = False,
         **options,
     ):
@@ -249,7 +252,7 @@ class EcommerceBridgeClient(BaseClient):
         return self._call("settings", data=data, params=params, method="PUT", **options)
 
     def create_or_update_store(
-        self, store_id: str, label: str, admin_uri: str = None, **options
+        self, store_id: str, label: str, admin_uri: Optional[str] = None, **options
     ):
         """
         Create or update the store with the given ID.

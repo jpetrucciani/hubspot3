@@ -1,9 +1,9 @@
 """
 hubspot tickets api
 """
+from typing import Dict, List, Optional
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
-from typing import Dict, List
 
 
 TICKETS_API_VERSION = "1"
@@ -25,7 +25,7 @@ class TicketsClient(BaseClient):
         return f"crm-objects/v{TICKETS_API_VERSION}/{subpath}"
 
     def create(
-        self, pipeline: str, stage: str, properties: Dict = None, **options
+        self, pipeline: str, stage: str, properties: Optional[Dict] = None, **options
     ) -> Dict:
         """
         create a ticket.
@@ -55,7 +55,7 @@ class TicketsClient(BaseClient):
     def get(
         self,
         ticket_id: str,
-        properties: List[str] = None,
+        properties: Optional[List[str]] = None,
         include_deleted: bool = False,
         **options,
     ) -> Dict:
@@ -81,7 +81,9 @@ class TicketsClient(BaseClient):
             **options,
         )
 
-    def get_all(self, properties: List[str] = None, limit: int = -1, **options) -> list:
+    def get_all(
+        self, properties: Optional[List[str]] = None, limit: int = -1, **options
+    ) -> list:
         """
         Get all tickets in hubspot
         :see: https://developers.hubspot.com/docs/methods/tickets/get-all-tickets

@@ -58,7 +58,7 @@ class LinesClient(BaseClient):
     def get_all(
         self,
         offset: int = 0,
-        extra_properties: Union[list, str] = None,
+        extra_properties: Union[list, str, None] = None,
         limit: int = -1,
         **options,
     ):

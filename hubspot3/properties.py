@@ -113,11 +113,11 @@ class PropertiesClient(BaseClient):
         self,
         object_type: str,
         code: str,
-        label: str = None,
-        description: str = None,
-        group_code: str = None,
-        data_type: str = None,
-        widget_type: str = None,
+        label: Optional[str] = None,
+        description: Optional[str] = None,
+        group_code: Optional[str] = None,
+        data_type: Optional[str] = None,
+        widget_type: Optional[str] = None,
         extra_params: Optional[Dict] = None,
     ) -> Dict:
         """

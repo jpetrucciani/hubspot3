@@ -1,8 +1,8 @@
 """
 hubspot cms_files api
 """
-from hubspot3.base import BaseClient
 from typing import Dict
+from hubspot3.base import BaseClient
 
 
 CMS_FILES_API_VERSION = "2"

@@ -2,11 +2,10 @@
 hubspot contacts api
 """
 import warnings
-from typing import Union
+from typing import Dict, List, Optional, Union
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
-from typing import Dict, List
 
 
 CONTACTS_API_VERSION = "1"
@@ -41,19 +40,21 @@ class ContactsClient(BaseClient):
         """Get contact specified by email address."""
         return self._call(f"contact/email/{email}/profile", method="GET", **options)
 
-    def create(self, data: Dict = None, **options):
+    def create(self, data: Optional[Dict] = None, **options):
         """create a contact"""
         data = data or {}
         return self._call("contact", data=data, method="POST", **options)
 
-    def create_or_update_by_email(self, email: str, data: Dict = None, **options):
+    def create_or_update_by_email(
+        self, email: str, data: Optional[Dict] = None, **options
+    ):
         """Create or Updates a client with the supplied data."""
         data = data or {}
         return self._call(
             f"contact/createOrUpdate/email/{email}", data=data, method="POST", **options
         )
 
-    def update_by_id(self, contact_id: str, data: Dict = None, **options):
+    def update_by_id(self, contact_id: str, data: Optional[Dict] = None, **options):
         """Update the contact by contact_id with the given data."""
         data = data or {}
         return self._call(
@@ -94,7 +95,7 @@ class ContactsClient(BaseClient):
         "associatedcompanyid",
     ]
 
-    def get_batch(self, ids, extra_properties: Union[list, str] = None):
+    def get_batch(self, ids, extra_properties: Union[List, str, None] = None):
         """given a batch of vids, get more of their info"""
         # default properties to fetch
         properties = set(self.default_batch_properties)
@@ -121,7 +122,7 @@ class ContactsClient(BaseClient):
 
     def get_all(
         self,
-        extra_properties: Union[list, str] = None,
+        extra_properties: Union[List, str, None] = None,
         limit: int = -1,
         list_id: str = "all",
         **options,
@@ -266,7 +267,9 @@ class ContactsClient(BaseClient):
         )
         return self.get_by_email(email, **options)
 
-    def create_or_update_a_contact(self, email: str, data: Dict = None, **options):
+    def create_or_update_a_contact(
+        self, email: str, data: Optional[Dict] = None, **options
+    ):
         warnings.warn(
             "ContactsClient.create_or_update_a_contact is deprecated in favor of "
             "ContactsClient.create_or_update_by_email",
@@ -274,7 +277,7 @@ class ContactsClient(BaseClient):
         )
         return self.create_or_update_by_email(email, data, **options)
 
-    def update(self, contact_id: str, data: Dict = None, **options):
+    def update(self, contact_id: str, data: Optional[Dict] = None, **options):
         warnings.warn(
             "ContactsClient.update is deprecated in favor of "
             "ContactsClient.update_by_id",
@@ -282,7 +285,7 @@ class ContactsClient(BaseClient):
         )
         return self.update_by_id(contact_id, data, **options)
 
-    def update_a_contact(self, contact_id: str, data: Dict = None, **options):
+    def update_a_contact(self, contact_id: str, data: Optional[Dict] = None, **options):
         warnings.warn(
             "ContactsClient.update_a_contact is deprecated in favor of "
             "ContactsClient.update_by_id",

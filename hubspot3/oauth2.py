@@ -1,6 +1,7 @@
 """
 hubspot OAuth2 api
 """
+from typing import Optional
 from urllib.parse import urlencode
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
@@ -36,8 +37,8 @@ class OAuth2Client(BaseClient):
         self,
         authorization_code: str,
         redirect_uri: str,
-        client_id: str = None,
-        client_secret: str = None,
+        client_id: Optional[str] = None,
+        client_secret: Optional[str] = None,
         **options,
     ):
         """
@@ -66,9 +67,9 @@ class OAuth2Client(BaseClient):
 
     def refresh_tokens(
         self,
-        client_id: str = None,
-        client_secret: str = None,
-        refresh_token: str = None,
+        client_id: Optional[str] = None,
+        client_secret: Optional[str] = None,
+        refresh_token: Optional[str] = None,
         **options,
     ):
         """
@@ -102,7 +103,7 @@ class OAuth2Client(BaseClient):
         """
         return self._call(f"access-tokens/{access_token}", **options)
 
-    def get_refresh_token_data(self, refresh_token: str = None, **options):
+    def get_refresh_token_data(self, refresh_token: Optional[str] = None, **options):
         """
         Get the meta data for a refresh token.
 
@@ -115,7 +116,7 @@ class OAuth2Client(BaseClient):
             f"refresh-tokens/{refresh_token or self.refresh_token}", **options
         )
 
-    def delete_refresh_token(self, refresh_token: str = None):
+    def delete_refresh_token(self, refresh_token: Optional[str] = None):
         """
         Deletes a refresh token. You can use this to delete your refresh token if a user
         uninstalls your app.

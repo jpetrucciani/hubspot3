@@ -1,9 +1,9 @@
 """
 hubspot companies api
 """
+from typing import List, Dict, Optional, Union
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
-from typing import List, Dict, Optional, Union
 
 
 COMPANIES_API_VERSION = "2"
@@ -23,12 +23,12 @@ class CompaniesClient(BaseClient):
         """get the full api url for the given subpath on this client"""
         return f"companies/v{self.options.get('version') or COMPANIES_API_VERSION}/{subpath}"
 
-    def create(self, data: Dict = None, **options) -> Dict:
+    def create(self, data: Optional[Dict] = None, **options) -> Dict:
         """create a new company"""
         data = data or {}
         return self._call("companies/", data=data, method="POST", **options)
 
-    def update(self, company_id: str, data: Dict = None, **options) -> Dict:
+    def update(self, company_id: str, data: Optional[Dict] = None, **options) -> Dict:
         """update the given company with data"""
         data = data or {}
         return self._call(f"companies/{company_id}", data=data, method="PUT", **options)
@@ -84,7 +84,7 @@ class CompaniesClient(BaseClient):
     def get_all(
         self,
         prettify_output: bool = True,
-        extra_properties: Union[str, List] = None,
+        extra_properties: Union[str, List, None] = None,
         **options,
     ) -> Optional[List]:
         """
@@ -147,7 +147,7 @@ class CompaniesClient(BaseClient):
         recency_type: str,
         limit: int = 250,
         offset: int = 0,
-        since: int = None,
+        since: Optional[int] = None,
         **options,
     ) -> Optional[List]:
         """
@@ -185,7 +185,11 @@ class CompaniesClient(BaseClient):
         return output
 
     def get_recently_modified(
-        self, limit: int = 250, offset: int = 0, since: int = None, **options
+        self,
+        limit: int = 250,
+        offset: int = 0,
+        since: Optional[int] = None,
+        **options,
     ) -> Optional[List]:
         """
         returns all of the recently modified deals
@@ -196,7 +200,11 @@ class CompaniesClient(BaseClient):
         )
 
     def get_recently_created(
-        self, limit: int = 250, offset: int = 0, since: int = None, **options
+        self,
+        limit: int = 250,
+        offset: int = 0,
+        since: Optional[int] = None,
+        **options,
     ) -> Optional[List]:
         """
         returns all of the recently created deals

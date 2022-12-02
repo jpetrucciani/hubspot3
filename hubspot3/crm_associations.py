@@ -1,10 +1,10 @@
 """
 hubspot crm_associations api
 """
-from hubspot3.base import BaseClient
-from hubspot3.utils import get_log
 from enum import Enum
 from typing import Union
+from hubspot3.base import BaseClient
+from hubspot3.utils import get_log
 
 
 ASSOCIATIONS_API_VERSION = "1"

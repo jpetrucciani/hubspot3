@@ -17,7 +17,7 @@ def contacts_client(mock_connection):
     return client
 
 
-class TestContactsClient(object):
+class TestContactsClient:
     def test_get_path(self):
         client = contacts.ContactsClient(disable_auth=True)
         subpath = "contact"

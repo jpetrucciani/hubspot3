@@ -1,15 +1,17 @@
-"""Command-line interface for the Hubspot client."""
+"""
+Command-line interface for the Hubspot client
+"""
 import json
 import sys
 import types
-from fire.core import Fire as fire, _Fire as fire_execute
-from fire.helputils import UsageString as build_usage_string
-from fire.parser import SeparateFlagArgs as separate_flag_args
 from functools import wraps
+from typing import Callable, Dict, List, Tuple
+from fire.core import Fire as fire, _Fire as fire_execute
+from fire.helptext import HelpText as build_usage_string
+from fire.parser import SeparateFlagArgs as separate_flag_args
 from hubspot3 import Hubspot3
 from hubspot3.base import BaseClient
 from hubspot3.leads import LeadsClient
-from typing import Callable, Dict, List, Tuple
 
 
 def get_config_from_file(filename: str) -> Dict:

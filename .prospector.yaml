@@ -9,6 +9,7 @@ ignore-patterns:
   - docs/.*
   - tmp\.py
   - setup\.py
+  - hubspot3\/test\/.*
 
 pylint:
   disable:
@@ -21,13 +22,12 @@ pylint:
     - missing-docstring
     - no-self-use
     - unused-argument
-    - wrong-import-order
     - protected-access
     - cyclic-import
     - import-outside-toplevel
     - unnecessary-comprehension
     - unsubscriptable-object
-    # TODO the two below should be removed after some time
+    # TODO the one below should be removed after some time
     - super-with-arguments
 
   options:
@@ -47,14 +47,15 @@ mccabe:
   options:
     max-complexity: 30
 
-pep8:
+pycodestyle:
   disable:
-    - E203
     - N802
     - N807
     - N813
-    - W503
     - N818
+    - W503
+    - W605
+    - E203
   options:
     max-line-length: 100
     single-line-if-stmt: n
@@ -64,11 +65,11 @@ vulture:
 
 pyroma:
   run: false
-  disable:
-    - PYR19
-    - PYR16
 
-pep257:
+bandit:
+  run: false
+
+pydocstyle:
   disable:
     - D000
     - D100
@@ -95,3 +96,9 @@ pep257:
     - D415
     - D416
     - D417
+
+pyflakes:
+  disable:
+    - F401
+    - F403
+    - F999

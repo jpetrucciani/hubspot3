@@ -2,8 +2,8 @@
 hubspot blog api client
 """
 import json
-from hubspot3.base import BaseClient
 from typing import Any, Dict
+from hubspot3.base import BaseClient
 
 
 BLOG_API_VERSION = "2"

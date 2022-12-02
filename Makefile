@@ -5,7 +5,7 @@ html_report = --cov-report html
 term_report = --cov-report term
 xml_report = --cov-report xml
 reports = $(html_report) $(term_report) $(xml_report)
-target = --target-version py34
+target = --target-version py310
 MAKEFLAGS = --silent --ignore-errors --no-print-directory
 
 

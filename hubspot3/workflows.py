@@ -1,8 +1,10 @@
 """
 hubspot workflows api
 """
+from typing import Optional
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
+
 
 WORKFLOWS_API_VERSION = "3"
 
@@ -28,7 +30,7 @@ class WorkflowsClient(BaseClient):
         """
         return self._call("workflows", **options)
 
-    def get_workflow_by_id(self, workflow_id: int = None, **options):
+    def get_workflow_by_id(self, workflow_id: Optional[int] = None, **options):
         """
         Get workflow specified by ID
         :see: https://developers.hubspot.com/docs/methods/workflows/v3/get_workflow

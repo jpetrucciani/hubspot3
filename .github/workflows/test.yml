@@ -13,7 +13,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - uses: jpetrucciani/prospector-check@master
+      - uses: jpetrucciani/prospector-check@1.8.1
+        with:
+          prospector_flags: '--die-on-tool-error'
   mypy:
     runs-on: ubuntu-20.04
     steps:
@@ -31,8 +33,8 @@ jobs:
     needs: [mypy, prospector, black]
     strategy:
       matrix:
-        # '3.6', '3.7', '3.8', - need to figure out how to get around rate limiting
-        python-version: ['3.9']
+        # '3.7', '3.8', '3.9', - need to figure out how to get around rate limiting
+        python-version: ['3.10']
     name: python ${{ matrix.python-version }} tests
     steps:
       - uses: actions/checkout@v2
