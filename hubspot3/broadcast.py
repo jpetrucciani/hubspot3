@@ -2,7 +2,7 @@
 hubspot broadcast api
 """
 from hubspot3.base import BaseClient
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional
 
 
 HUBSPOT_BROADCAST_API_VERSION = "1"
@@ -146,7 +146,7 @@ class BroadcastClient(BaseClient):
         broadcast_type: str = "",
         page: str = "",
         remote_content_id: str = "",
-        limit: Union[int, None] = None,
+        limit: Optional[int] = None,
         **kwargs: Any,
     ) -> List[Broadcast]:
         """

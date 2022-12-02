@@ -42,7 +42,7 @@ class BaseClient:
     # so tests run faster
     sleep_multiplier = 1
 
-    def __init__(  # nosec
+    def __init__(
         self,
         api_key: Optional[str] = None,
         access_token: Optional[str] = None,
@@ -56,7 +56,7 @@ class BaseClient:
             Callable[[Literal["access_token", "refresh_token"], str, str], None]
         ] = None,
         timeout: int = 10,
-        mixins: Union[List, None] = None,
+        mixins: Optional[List] = None,
         api_base: str = "api.hubapi.com",
         debug: bool = False,
         disable_auth: bool = False,
@@ -408,13 +408,13 @@ class BaseClient:
     def _call(
         self,
         subpath: str,
-        params: Union[Dict, None] = None,
+        params: Optional[Dict] = None,
         method: str = "GET",
         data: Union[str, Dict, List, None] = None,
         doseq: bool = False,
         query: str = "",
         raw: bool = False,
-        properties: Union[List, None] = None,
+        properties: Optional[List] = None,
         **options,
     ):
         result = self._call_raw(
