@@ -3,6 +3,7 @@ hubspot email events api
 """
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
+from typing import Union
 
 
 EMAIL_EVENTS_API_VERSION = "1"
@@ -29,7 +30,7 @@ class EmailEventsClient(BaseClient):
         """
         return self._call("by-id", **options)
 
-    def get_campaign_data(self, campaign_id: int = None, **options):
+    def get_campaign_data(self, campaign_id: Union[int, None] = None, **options):
         """
         Retrieve campaign data for a given campaign ID.
         :see: https://developers.hubspot.com/docs/methods/email/get_campaign_data

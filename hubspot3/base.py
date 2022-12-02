@@ -10,7 +10,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import zlib
-from typing import Callable, List, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 from hubspot3 import utils
 from hubspot3.utils import force_utf8, uglify_hapikey
 from hubspot3.error import (
@@ -42,13 +42,13 @@ class BaseClient:
     # so tests run faster
     sleep_multiplier = 1
 
-    def __init__(
+    def __init__(  # nosec
         self,
-        api_key: str = None,
-        access_token: str = None,
-        refresh_token: str = None,
-        client_id: str = None,
-        client_secret: str = None,
+        api_key: Optional[str] = None,
+        access_token: Optional[str] = None,
+        refresh_token: Optional[str] = None,
+        client_id: Optional[str] = None,
+        client_secret: Optional[str] = None,
         oauth2_token_getter: Optional[
             Callable[[Literal["access_token", "refresh_token"], str], str]
         ] = None,
@@ -56,7 +56,7 @@ class BaseClient:
             Callable[[Literal["access_token", "refresh_token"], str, str], None]
         ] = None,
         timeout: int = 10,
-        mixins: List = None,
+        mixins: Union[List, None] = None,
         api_base: str = "api.hubapi.com",
         debug: bool = False,
         disable_auth: bool = False,
@@ -408,13 +408,13 @@ class BaseClient:
     def _call(
         self,
         subpath: str,
-        params: dict = None,
+        params: Union[Dict, None] = None,
         method: str = "GET",
-        data: Union[str, dict, list] = None,
+        data: Union[str, Dict, List, None] = None,
         doseq: bool = False,
         query: str = "",
         raw: bool = False,
-        properties: list = None,
+        properties: Union[List, None] = None,
         **options,
     ):
         result = self._call_raw(

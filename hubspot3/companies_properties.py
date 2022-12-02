@@ -24,7 +24,7 @@ class CompaniesPropertiesClient(BaseClient):
         return f"properties/v{COMPANIES_PROPERTIES_API_VERSION}/companies/{subpath}"
 
     def get_all_companies_properties(
-        self, extra_properties: Union[str, List] = None, **options
+        self, extra_properties: Union[str, List, None] = None, **options
     ) -> Optional[List]:
         """
         Retrieve all of the company properties, including their definition, for a given account.

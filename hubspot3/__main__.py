@@ -1,9 +1,11 @@
-"""Command-line interface for the Hubspot client."""
+"""
+Command-line interface for the Hubspot client
+"""
 import json
 import sys
 import types
 from fire.core import Fire as fire, _Fire as fire_execute
-from fire.helputils import UsageString as build_usage_string
+from fire.helptext import HelpText as build_usage_string
 from fire.parser import SeparateFlagArgs as separate_flag_args
 from functools import wraps
 from hubspot3 import Hubspot3

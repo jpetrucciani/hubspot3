@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from http.client import HTTPResponse
 from hubspot3.base import BaseClient
 from hubspot3.error import HubspotNotFound, HubspotServerError
-from typing import Dict
+from typing import Dict, Union
 
 
 FORMS_API_VERSION = 2
@@ -37,8 +37,8 @@ class FormSubmissionClient(BaseClient):
         self,
         portal_id: str,
         form_guid: str,
-        data: dict,
-        context: dict = None,
+        data: Dict,
+        context: Union[Dict, None] = None,
         **options,
     ) -> HTTPResponse:
         """

@@ -1,10 +1,10 @@
 """
 hubspot lines api
 """
-from typing import Dict, Union
 from hubspot3.base import BaseClient
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.utils import get_log, prettify, ordered_dict
+from typing import Dict, Union
 
 
 LINES_API_VERSION = "1"
@@ -58,7 +58,7 @@ class LinesClient(BaseClient):
     def get_all(
         self,
         offset: int = 0,
-        extra_properties: Union[list, str] = None,
+        extra_properties: Union[list, str, None] = None,
         limit: int = -1,
         **options,
     ):

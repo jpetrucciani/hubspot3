@@ -47,7 +47,7 @@ mccabe:
   options:
     max-complexity: 30
 
-pep8:
+pycodestyle:
   disable:
     - E203
     - N802
@@ -64,11 +64,11 @@ vulture:
 
 pyroma:
   run: false
-  disable:
-    - PYR19
-    - PYR16
 
-pep257:
+bandit:
+  run: false
+
+pydocstyle:
   disable:
     - D000
     - D100

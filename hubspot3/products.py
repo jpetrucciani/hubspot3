@@ -3,7 +3,7 @@ hubspot products api
 """
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log, ordered_dict
-from typing import Dict, List
+from typing import Dict, List, Union
 
 
 PRODUCTS_API_VERSION = "1"
@@ -20,7 +20,9 @@ class ProductsClient(BaseClient):
         super(ProductsClient, self).__init__(*args, **kwargs)
         self.log = get_log("hubspot3.products")
 
-    def get_product(self, product_id: str, properties: List[str] = None, **options):
+    def get_product(
+        self, product_id: str, properties: Union[List[str], None] = None, **options
+    ):
         """get single product based on product ID in the hubspot account"""
         properties = properties or []
         return self._call(
@@ -32,7 +34,7 @@ class ProductsClient(BaseClient):
         )
 
     def get_all_products(
-        self, properties: List[str] = None, offset: int = 0, **options
+        self, properties: Union[List[str], None] = None, offset: int = 0, **options
     ):
         """get all products in the hubspot account"""
         properties = properties or []
@@ -68,12 +70,12 @@ class ProductsClient(BaseClient):
     def _get_path(self, subpath: str):
         return f"crm-objects/v{self.options.get('version') or PRODUCTS_API_VERSION}/{subpath}"
 
-    def create(self, data: Dict = None, **options):
+    def create(self, data: Union[Dict, None] = None, **options):
         """Create a new product."""
         data = data or {}
         return self._call("objects/products", data=data, method="POST", **options)
 
-    def update(self, product_id: str, data: Dict = None, **options):
+    def update(self, product_id: str, data: Union[Dict, None] = None, **options):
         """Update a product based on its product ID."""
         data = data or {}
         return self._call(

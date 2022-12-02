@@ -4,10 +4,6 @@ tmp.py
 .coverage
 .mypy_cache
 .pytest_cache
-.direnv
-
-
-# Created by https://www.gitignore.io/api/python
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -117,3 +113,7 @@ test_credentials.json
 .idea
 .vscode
 .history/
+
+### nix
+result*
+.direnv

@@ -84,13 +84,13 @@ class Hubspot3UsageLimits:
 class Hubspot3:
     """hubspot3 full client class"""
 
-    def __init__(
+    def __init__(  # nosec
         self,
-        api_key: str = None,
-        access_token: str = None,
-        refresh_token: str = None,
-        client_id: str = None,
-        client_secret: str = None,
+        api_key: str = "",
+        access_token: str = "",
+        refresh_token: str = "",
+        client_id: str = "",
+        client_secret: str = "",
         timeout: int = 10,
         api_base: str = "api.hubapi.com",
         debug: bool = False,
