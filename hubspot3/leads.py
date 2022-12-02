@@ -2,9 +2,9 @@
 hubspot leads api
 """
 import time
+from typing import Dict, List
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
-from typing import Dict, List
 
 
 LEADS_API_VERSION = "1"

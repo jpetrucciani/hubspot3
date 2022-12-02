@@ -58,6 +58,6 @@ setup(
         "Programming Language :: Python :: 3.11",
     ],
     zip_safe=False,
-    extras_require={"cli": ["fire==0.1.3"]},
+    extras_require={"cli": ["fire==0.4.0"]},
     entry_points={"console_scripts": ["hubspot3=hubspot3.__main__:main"]},
 )

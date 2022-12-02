@@ -1,9 +1,9 @@
 """
 hubspot email events api
 """
+from typing import Optional
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
-from typing import Optional
 
 
 EMAIL_EVENTS_API_VERSION = "1"

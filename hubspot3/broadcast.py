@@ -1,8 +1,8 @@
 """
 hubspot broadcast api
 """
-from hubspot3.base import BaseClient
 from typing import Any, Dict, List, Optional
+from hubspot3.base import BaseClient
 
 
 HUBSPOT_BROADCAST_API_VERSION = "1"

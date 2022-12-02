@@ -2,10 +2,10 @@
 hubspot contacts api
 """
 import warnings
+from typing import Dict, List, Optional, Union
 from hubspot3.crm_associations import CRMAssociationsClient
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
-from typing import Dict, List, Optional, Union
 
 
 CONTACTS_API_VERSION = "1"

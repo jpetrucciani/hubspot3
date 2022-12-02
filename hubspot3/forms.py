@@ -4,9 +4,9 @@ hubspot forms api
 import json
 from urllib.parse import urlencode
 from http.client import HTTPResponse
+from typing import Dict, Optional
 from hubspot3.base import BaseClient
 from hubspot3.error import HubspotNotFound, HubspotServerError
-from typing import Dict, Optional
 
 
 FORMS_API_VERSION = 2

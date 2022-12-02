@@ -2,8 +2,8 @@
 hubspot3 module
 """
 from datetime import datetime, timedelta
-from hubspot3.error import HubspotBadConfig, HubspotNoConfig
 from typing import Any, Optional
+from hubspot3.error import HubspotBadConfig, HubspotNoConfig
 
 
 class Hubspot3UsageLimits:

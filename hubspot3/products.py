@@ -1,9 +1,9 @@
 """
 hubspot products api
 """
+from typing import Dict, List, Optional
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log, ordered_dict
-from typing import Dict, List, Optional
 
 
 PRODUCTS_API_VERSION = "1"

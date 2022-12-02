@@ -1,9 +1,9 @@
 """
 hubspot workflows api
 """
+from typing import Optional
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
-from typing import Optional
 
 
 WORKFLOWS_API_VERSION = "3"

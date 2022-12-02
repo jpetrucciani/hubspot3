@@ -2,10 +2,10 @@
 hubspot ecommerce bridge api
 """
 from collections.abc import Mapping, Sequence
+from typing import Dict, List, Optional
 from hubspot3.base import BaseClient
 from hubspot3.error import HubspotBadConfig
 from hubspot3.utils import get_log
-from typing import Dict, List, Optional
 
 
 ECOMMERCE_BRIDGE_API_VERSION = "2"
@@ -140,7 +140,8 @@ class EcommerceBridgeClient(BaseClient):
         This method and the endpoint it calls can only be used with a portal API key and the portal
         is determined from that key.
 
-        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-a-specific-account # noqa
+        :see: https://developers.hubspot.com/docs\
+            /methods/ecommerce/v2/get-all-sync-errors-for-a-specific-account
         """
         if not self.api_key:
             raise HubspotBadConfig(
@@ -174,7 +175,8 @@ class EcommerceBridgeClient(BaseClient):
         This method and the endpoint it calls can only be used with the developer API key of the
         developer portal that created the app.
 
-        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-an-app # noqa
+        :see: https://developers.hubspot.com/docs\
+            /methods/ecommerce/v2/get-all-sync-errors-for-an-app
         """
         if not self.api_key:
             raise HubspotBadConfig(
@@ -207,7 +209,8 @@ class EcommerceBridgeClient(BaseClient):
         This method and the endpoint it calls can only be used with OAuth tokens and both the app
         and the portal are determined from the tokens used.
 
-        :see: https://developers.hubspot.com/docs/methods/ecommerce/v2/get-all-sync-errors-for-an-app-and-account # noqa
+        :see: https://developers.hubspot.com/docs\
+            /methods/ecommerce/v2/get-all-sync-errors-for-an-app-and-account
         """
         if not self.access_token:
             raise HubspotBadConfig(

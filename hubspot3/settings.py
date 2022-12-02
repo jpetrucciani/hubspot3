@@ -1,9 +1,9 @@
 """
 hubspot settings api
 """
+from typing import Dict
 from hubspot3.base import BaseClient
 from hubspot3.error import HubspotError
-from typing import Dict
 
 
 SETTINGS_API_VERSION = "v1"

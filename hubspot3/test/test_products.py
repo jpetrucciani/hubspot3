@@ -20,7 +20,7 @@ def products_client(mock_connection) -> products.ProductsClient:
 HUBSPOT_PRODUCT_ID = 1642767
 
 
-class TestProductsClient(object):
+class TestProductsClient:
     """Performs few tests on the Hubspot ProductsClient."""
 
     def test_get_path(self) -> None:
@@ -134,7 +134,10 @@ class TestProductsClient(object):
         mock_connection.assert_num_requests(1)
         mock_connection.assert_has_request(
             method="GET",
-            url="/crm-objects/v1/objects/products/paged?limit=100&offset=0&properties=name&properties=description",
+            url=(
+                "/crm-objects/v1/objects/products/paged"
+                "?limit=100&offset=0&properties=name&properties=description"
+            ),
             data=None,
         )
         assert response == [

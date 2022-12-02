@@ -1,9 +1,9 @@
 """
 hubspot companies api
 """
+from typing import List, Dict, Optional, Union
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
-from typing import List, Dict, Optional, Union
 
 
 COMPANIES_API_VERSION = "2"

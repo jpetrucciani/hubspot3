@@ -38,7 +38,7 @@ def properties_input_data() -> Dict:
     )
 
 
-class TestPropertiesClient(object):
+class TestPropertiesClient:
     @pytest.mark.parametrize(
         "object_type, api_version",
         [

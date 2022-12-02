@@ -2,9 +2,9 @@
 hubspot deals api
 """
 import urllib.parse
+from typing import Dict, Optional, Union
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log, prettify
-from typing import Dict, Optional, Union
 
 
 DEALS_API_VERSION = "1"

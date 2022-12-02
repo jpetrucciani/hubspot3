@@ -1,10 +1,10 @@
 """
 hubspot OAuth2 api
 """
+from typing import Optional
 from urllib.parse import urlencode
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
-from typing import Optional
 
 
 OAUTH2_API_VERSION = "1"

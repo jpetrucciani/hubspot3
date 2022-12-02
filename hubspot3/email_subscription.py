@@ -1,10 +1,9 @@
 """
 hubspot email subscription api
 """
-from typing import Dict, Iterable, Mapping
+from typing import Dict, Iterable, Mapping, Optional
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
-from typing import Optional
 
 
 EMAIL_SUBSCRIPTION_API_VERSION = "1"
