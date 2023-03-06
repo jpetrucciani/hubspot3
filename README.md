@@ -16,6 +16,8 @@ here](https://hubspot3.readthedocs.io/en/latest/)\! (thanks readthedocs)
 
 # Quick start
 
+## **Note: I'd recommend that you consider using the [official HubSpot Python API](https://github.com/HubSpot/hubspot-api-python). I no longer work at a company that uses HubSpot, and this library is a few versions behind on many of their APIs. I will be open to small PRs and usability fixes, but there will likely not be any further significant work on this library**
+
 ## Installation
 
 ```bash

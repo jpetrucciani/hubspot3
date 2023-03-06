@@ -10,26 +10,24 @@ on:
 
 jobs:
   prospector:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
-      - uses: jpetrucciani/prospector-check@1.8.1
-        with:
-          prospector_flags: '--die-on-tool-error'
+      - uses: jpetrucciani/prospector-check@master
   mypy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - uses: jpetrucciani/mypy-check@master
   black:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - uses: jpetrucciani/black-check@master
         with:
           path: 'hubspot3/'
   tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [mypy, prospector, black]
     strategy:
       matrix:
@@ -37,7 +35,7 @@ jobs:
         python-version: ['3.10']
     name: python ${{ matrix.python-version }} tests
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: setup python
         uses: actions/setup-python@v2
         with:
