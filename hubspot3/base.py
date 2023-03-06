@@ -391,7 +391,9 @@ class BaseClient:
                 raise
             except HubspotError as exception:
                 if try_count > num_retries:
-                    logging.warning(f"Too many retries for {uglify_hapikey(url)}")
+                    # Only output a warning in case the auto-retry mechanism is not disabled
+                    if num_retries != 0:
+                        logging.warning(f"Too many retries for {uglify_hapikey(url)}")
                     raise
                 # Don't retry errors from 300 to 499
                 if exception.result and 300 <= exception.result.status < 500:
