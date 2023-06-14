@@ -218,6 +218,13 @@ class Hubspot3:
         return CRMAssociationsClient(**self.auth, **self.options)
 
     @property
+    def crm_association_labels(self):
+        """returns a hubspot3 crm_association_labels client"""
+        from hubspot3.crm_association_labels import CRMAssociationLabelsClient
+
+        return CRMAssociationLabelsClient(**self.auth, **self.options)
+
+    @property
     def crm_pipelines(self):
         """returns a hubspot3 crm_pipelines client"""
         from hubspot3.crm_pipelines import PipelinesClient
