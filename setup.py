@@ -25,7 +25,9 @@ def find_version(*file_paths):
     base_module_file = os.path.join(*file_paths)
     with open(base_module_file) as module_file:
         base_module_data = module_file.read()
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", base_module_data, re.M)
+    version_match = re.search(
+        r"^__version__ = ['\"]([^'\"]*)['\"]", base_module_data, re.M
+    )
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
