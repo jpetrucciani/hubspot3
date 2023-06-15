@@ -1,8 +1,8 @@
 { jacobi ? import
     (fetchTarball {
-      name = "jpetrucciani-2023-03-06";
-      url = "https://github.com/jpetrucciani/nix/archive/fbae576baf69718f4328f88a958b93e7784b0539.tar.gz";
-      sha256 = "0kcc7rwfy4zdmfcv4rqllwmk9igx0v3mfz196q7k5j1nhhhlnnwj";
+      name = "jpetrucciani-2023-06-15";
+      url = "https://github.com/jpetrucciani/nix/archive/88e5beefe6fd625bba224bc3e97bf29d009b634f.tar.gz";
+      sha256 = "111vvzlckmiz1kfmxvyphlv6riss6690v3wkn89mmmym5n7148si";
     })
     { }
 }:
@@ -16,7 +16,7 @@ let
       nixpkgs-fmt
     ];
     python = [
-      (python310.withPackages (p: with p; [
+      (python311.withPackages (p: with p; [
         fire
 
         # testing

@@ -12,17 +12,17 @@ jobs:
   prospector:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: jpetrucciani/prospector-check@master
   mypy:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: jpetrucciani/mypy-check@master
   black:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: jpetrucciani/black-check@master
         with:
           path: 'hubspot3/'
@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         # '3.7', '3.8', '3.9', - need to figure out how to get around rate limiting
-        python-version: ['3.10']
+        python-version: ['3.11']
     name: python ${{ matrix.python-version }} tests
     steps:
       - uses: actions/checkout@v3

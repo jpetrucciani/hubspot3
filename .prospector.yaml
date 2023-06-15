@@ -29,6 +29,8 @@ pylint:
     - unsubscriptable-object
     # TODO the one below should be removed after some time
     - super-with-arguments
+    - use-dict-literal
+    - broad-exception-raised
 
   options:
     max-args: 12

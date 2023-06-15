@@ -25,9 +25,7 @@ def find_version(*file_paths):
     base_module_file = os.path.join(*file_paths)
     with open(base_module_file) as module_file:
         base_module_data = module_file.read()
-    version_match = re.search(
-        r"^__version__ = ['\"]([^'\"]*)['\"]", base_module_data, re.M
-    )
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", base_module_data, re.M)
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
@@ -51,10 +49,10 @@ setup(
     install_requires=["typing_extensions; python_version < '3.8'"],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     zip_safe=False,
     extras_require={"cli": ["fire==0.4.0"]},
