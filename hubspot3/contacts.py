@@ -77,7 +77,7 @@ class ContactsClient(BaseClient):
         """merge the data from the secondary_id into the data of the primary_id"""
         data = dict(vidToMerge=secondary_id)
 
-        self._call(
+        return self._call(
             f"contact/merge-vids/{primary_id}/", data=data, method="POST", **options
         )
 
@@ -300,6 +300,46 @@ class ContactsClient(BaseClient):
             DeprecationWarning,
         )
         return self.delete_by_id(contact_id, **options)
+
+    def get_secondary_emails(self, contact_id: str, **options):
+        """Get contact's secondary emails by its ID"""
+        return self._call(f"secondary-email/{contact_id}", method="GET", **options)
+
+    def add_secondary_email(self, contact_id: str, email_address: str, **options):
+        """Add a secondary email to a contact"""
+        return self._call(
+            f"secondary-email/{contact_id}/email/{email_address}",
+            method="PUT",
+            **options,
+        )
+
+    def update_secondary_email(
+        self,
+        contact_id: str,
+        target_email_address: str,
+        updated_email_address: str,
+        **options,
+    ):
+        """Update the secondary email of a contact"""
+        data = {
+            "targetSecondaryEmail": target_email_address,
+            "updatedSecondaryEmail": updated_email_address,
+        }
+
+        return self._call(
+            f"secondary-email/{contact_id}",
+            data=data,
+            method="PATCH",
+            **options,
+        )
+
+    def delete_secondary_email(self, contact_id: str, email_address: str, **options):
+        """Delete a secondary email of a contact"""
+        return self._call(
+            f"secondary-email/{contact_id}/email/{email_address}",
+            method="DELETE",
+            **options,
+        )
 
     def search(self, search_query: str, **options):
         """
