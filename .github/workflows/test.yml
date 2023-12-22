@@ -12,40 +12,41 @@ jobs:
   prospector:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: jpetrucciani/prospector-check@master
   mypy:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: jpetrucciani/mypy-check@master
         with:
           mypy_flags: '--config-file pyproject.toml'
   black:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: jpetrucciani/black-check@master
         with:
           path: 'hubspot3/'
-  tests:
-    runs-on: ubuntu-22.04
-    needs: [mypy, prospector, black]
-    strategy:
-      matrix:
-        # '3.7', '3.8', '3.9', - need to figure out how to get around rate limiting
-        python-version: ['3.11']
-    name: python ${{ matrix.python-version }} tests
-    steps:
-      - uses: actions/checkout@v3
-      - name: setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-      - name: install requirements
-        run: |
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-      - name: run Tox
-        run: tox -e py
+  ### TESTS ARE DISABLED SINCE I NO LONGER HAVE A VALID API KEY
+  # tests:
+  #   runs-on: ubuntu-22.04
+  #   needs: [mypy, prospector, black]
+  #   strategy:
+  #     matrix:
+  #       # '3.7', '3.8', '3.9', - need to figure out how to get around rate limiting
+  #       python-version: ['3.11']
+  #   name: python ${{ matrix.python-version }} tests
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: setup python
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
+  #         architecture: x64
+  #     - name: install requirements
+  #       run: |
+  #         pip install -r requirements.txt
+  #         pip install -r requirements-dev.txt
+  #     - name: run Tox
+  #       run: tox -e py
