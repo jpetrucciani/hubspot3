@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+spec:
+  serviceAccountName: aplazame-appdeployer
+  serviceAccount: aplazame-appdeployer
+  securityContext:
+    fsGroup: 1000
+  containers:
+  - name: php
+    image: 666356151544.dkr.ecr.eu-central-1.amazonaws.com/thirdparty/php:7.3.9_v5
+    imagePullPolicy: Always
+    command:
+    - cat
+    tty: true
+    resources:
+      requests:
+        #memory: 200Mi
+        memory: 2Gi
+        cpu: 200m
+      limits:
+        #memory: 450Mi
+        memory: 4Gi
+        cpu: 500m
