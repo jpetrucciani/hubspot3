@@ -25,7 +25,10 @@ class OwnersClient(BaseClient):
         more = True
         while more:
             data = self._call("owners", **opts)
-            owners.extend(data['results'])
+            owners.extend(data['results'][:opts['limit']])
+            opts['limit'] -= len(data['results'])
+            if opts['limit'] < 1:
+                more = False
             if 'paging' in data:
                 opts['after'] = data['paging']['next']['after']
             else:
