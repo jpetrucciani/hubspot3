@@ -1,6 +1,7 @@
 """
 hubspot ecommerce bridge api
 """
+
 from collections.abc import Mapping, Sequence
 from typing import Dict, List, Optional
 from hubspot3.base import BaseClient

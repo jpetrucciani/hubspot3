@@ -1,6 +1,7 @@
 """
 testing hubspot3.tickets
 """
+
 import pytest
 from hubspot3.tickets import TicketsClient
 from hubspot3.test.globals import TEST_KEY

@@ -1,6 +1,7 @@
 """
 hubspot deals api
 """
+
 import urllib.parse
 from typing import Dict, Optional, Union
 from hubspot3.base import BaseClient

@@ -1,6 +1,7 @@
 """
 hubspot properties api
 """
+
 from typing import Dict, Optional
 from hubspot3.base import BaseClient
 from hubspot3.globals import (

@@ -1,6 +1,7 @@
 """
 hubspot lines api
 """
+
 from typing import Dict, Union
 from hubspot3.base import BaseClient
 from hubspot3.crm_associations import CRMAssociationsClient

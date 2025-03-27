@@ -1,6 +1,7 @@
 """
 hubspot email subscription api
 """
+
 from typing import Dict, Iterable, Mapping, Optional
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log
@@ -75,9 +76,9 @@ class EmailSubscriptionClient(BaseClient):
         if portal_legal_basis:
             data["portalSubscriptionLegalBasis"] = portal_legal_basis
         if portal_legal_basis_explanation:
-            data[
-                "portalSubscriptionLegalBasisExplanation"
-            ] = portal_legal_basis_explanation
+            data["portalSubscriptionLegalBasisExplanation"] = (
+                portal_legal_basis_explanation
+            )
         self.update_status(email, data, **options)
 
     def unsubscribe_permanently(self, email: str, **options) -> None:

@@ -1,6 +1,7 @@
 """
 base utils for the hubspot3 library
 """
+
 import logging
 import sys
 from collections import OrderedDict

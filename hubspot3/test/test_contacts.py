@@ -1,6 +1,7 @@
 """
 testing hubspot3.contacts
 """
+
 import json
 import warnings
 from unittest.mock import Mock, patch

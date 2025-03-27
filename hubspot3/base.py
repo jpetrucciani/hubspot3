@@ -1,6 +1,7 @@
 """
 base hubspot client class
 """
+
 import http.client
 import json
 import logging

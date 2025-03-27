@@ -1,6 +1,7 @@
 """
 hubspot blog api client
 """
+
 import json
 from typing import Any, Dict
 from hubspot3.base import BaseClient

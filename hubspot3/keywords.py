@@ -1,6 +1,7 @@
 """
 hubspot keywords api
 """
+
 from hubspot3.base import BaseClient
 
 KEYWORDS_API_VERSION = "v1"

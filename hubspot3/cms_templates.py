@@ -1,6 +1,7 @@
 """
 hubspot cms_templates api client
 """
+
 from hubspot3.base import BaseClient
 
 

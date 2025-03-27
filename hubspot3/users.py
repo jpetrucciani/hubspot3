@@ -1,6 +1,7 @@
 """
 hubspot users api
 """
+
 from typing import Union
 
 from hubspot3.base import BaseClient

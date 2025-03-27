@@ -1,6 +1,7 @@
 """
 hubspot prospects client
 """
+
 from hubspot3.base import BaseClient
 
 

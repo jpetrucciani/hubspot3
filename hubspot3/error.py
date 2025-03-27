@@ -1,6 +1,7 @@
 """
 hubspot3 error helpers
 """
+
 import json
 
 from hubspot3.utils import force_utf8, uglify_hapikey

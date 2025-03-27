@@ -1,6 +1,7 @@
 """
 testing hubspot3.deals
 """
+
 import pytest
 from hubspot3.forms import FormsClient, FormSubmissionClient
 from hubspot3.error import HubspotNotFound

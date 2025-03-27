@@ -1,6 +1,7 @@
 """
 hubspot crm_association_labels api
 """
+
 from enum import Enum
 from typing import List, Dict, Optional, Union
 

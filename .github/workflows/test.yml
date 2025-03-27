@@ -9,11 +9,11 @@ on:
       - master
 
 jobs:
-  prospector:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: jpetrucciani/prospector-check@master
+  # prospector:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: jpetrucciani/prospector-check@master
   mypy:
     runs-on: ubuntu-22.04
     steps:

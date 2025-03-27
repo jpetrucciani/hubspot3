@@ -1,6 +1,7 @@
 """
 hubspot3 module
 """
+
 from datetime import datetime, timedelta
 from typing import Any, Optional
 from hubspot3.error import HubspotBadConfig, HubspotNoConfig

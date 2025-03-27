@@ -1,6 +1,7 @@
 """
 Tests for the Hubspot3 main module.
 """
+
 import io
 import pytest
 from contextlib import contextmanager

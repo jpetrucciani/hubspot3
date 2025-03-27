@@ -1,6 +1,7 @@
 """
 hubspot broadcast api
 """
+
 from typing import Any, Dict, List, Optional
 from hubspot3.base import BaseClient
 

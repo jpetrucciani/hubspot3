@@ -1,6 +1,7 @@
 """
 hubspot OAuth2 api
 """
+
 from typing import Optional
 from urllib.parse import urlencode
 from hubspot3.base import BaseClient

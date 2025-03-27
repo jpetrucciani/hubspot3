@@ -1,6 +1,7 @@
 """
 hubspot contacts api
 """
+
 import warnings
 from typing import Dict, List, Optional, Union
 from hubspot3.crm_associations import CRMAssociationsClient

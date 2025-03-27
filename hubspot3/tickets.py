@@ -1,6 +1,7 @@
 """
 hubspot tickets api
 """
+
 from typing import Dict, List, Optional
 from hubspot3.base import BaseClient
 from hubspot3.utils import get_log

@@ -1,6 +1,7 @@
 """
 hubspot companies api
 """
+
 from typing import List, Dict, Optional, Union
 from hubspot3.base import BaseClient
 from hubspot3.utils import prettify, get_log
@@ -130,9 +131,11 @@ class CompaniesClient(BaseClient):
             )
             output.extend(
                 [
-                    prettify(company, id_key="companyId")
-                    if prettify_output
-                    else company
+                    (
+                        prettify(company, id_key="companyId")
+                        if prettify_output
+                        else company
+                    )
                     for company in batch["companies"]
                     if not company["isDeleted"]
                 ]

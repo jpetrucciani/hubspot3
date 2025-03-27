@@ -1,6 +1,7 @@
 """
 hubspot leads api
 """
+
 import time
 from typing import Dict, List
 from hubspot3.base import BaseClient

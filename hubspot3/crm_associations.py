@@ -1,6 +1,7 @@
 """
 hubspot crm_associations api
 """
+
 from enum import Enum
 from typing import Union
 from hubspot3.base import BaseClient

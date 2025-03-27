@@ -1,6 +1,7 @@
 """
 testing hubspot3.properties
 """
+
 import json
 from unittest.mock import Mock
 from typing import Dict

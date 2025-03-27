@@ -1,6 +1,7 @@
 """
 testing hubspot3.products
 """
+
 import json
 from unittest.mock import Mock
 

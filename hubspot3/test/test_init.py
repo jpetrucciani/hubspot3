@@ -1,6 +1,7 @@
 """
 basic testing on the main Hubspot3 client
 """
+
 import pytest
 from hubspot3 import Hubspot3, Hubspot3UsageLimits
 from hubspot3.error import HubspotBadConfig, HubspotNoConfig

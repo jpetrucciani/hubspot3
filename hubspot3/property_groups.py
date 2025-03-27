@@ -1,6 +1,7 @@
 """
 hubspot property groups api
 """
+
 from hubspot3.base import BaseClient
 from hubspot3.globals import (
     OBJECT_TYPE_COMPANIES,

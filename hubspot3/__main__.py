@@ -1,6 +1,7 @@
 """
 Command-line interface for the Hubspot client
 """
+
 import json
 import sys
 import types

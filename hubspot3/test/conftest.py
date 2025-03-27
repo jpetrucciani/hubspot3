@@ -1,6 +1,7 @@
 """
 configure pytest
 """
+
 import json
 import pytest
 from http.client import HTTPSConnection
