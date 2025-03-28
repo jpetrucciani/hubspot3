@@ -17,7 +17,7 @@ class OwnersClient(BaseClient):
 
     def _get_path(self, subpath):
         """get the full api url for the given subpath on this client"""
-        return f"crm/{OWNERS_API_VERSION}/owners"
+        return f"crm/{OWNERS_API_VERSION}/{subpath}"
 
     def get_owners(self, **options):
         """Only returns the list of owners, does not include additional metadata"""
@@ -26,10 +26,14 @@ class OwnersClient(BaseClient):
         more = True
         while more:
             data = self._call("owners", **opts)
-            owners.extend(data["results"][: opts["limit"]])
-            opts["limit"] -= len(data["results"])
-            if opts["limit"] < 1:
-                more = False
+            new_owners = data["results"]
+            if "limit" in opts:
+                new_owners = new_owners[: opts["limit"]]
+                opts["limit"] -= len(data["results"])
+                if opts["limit"] < 1:
+                    more = False
+
+            owners.extend(new_owners)
             if "paging" in data:
                 opts["after"] = data["paging"]["next"]["after"]
             else:
@@ -39,25 +43,24 @@ class OwnersClient(BaseClient):
     def get_owner_name_by_id(self, owner_id: str, **options) -> str:
         """Given an id of an owner, return their name"""
         owner_name = "value_missing"
-        owners = self._call(f"owners/{owner_id}", **options)
-        if owners["results"]:
-            owner = owners["results"][0]
+        owner = self._call(f"owners/{owner_id}", **options)
+        if owner:
             owner_name = f"{owner['firstName']} {owner['lastName']}"
         return owner_name
 
     def get_owner_email_by_id(self, owner_id: str, **options) -> str:
         """given an id of an owner, return their email"""
         owner_email = "value_missing"
-        owners = self._call(f"owners/{owner_id}", **options)
-        if owners["results"]:
-            owner_email = owners["results"][0]["email"]
+        owner = self._call(f"owners/{owner_id}", **options)
+        if owner:
+            owner_email = owner["email"]
         return owner_email
 
     def get_owner_by_id(self, owner_id, **options):
         """Retrieve an owner by its id."""
-        owners = self._call(f"owners/{owner_id}", **options)
-        if owners["results"]:
-            return owners["results"][0]
+        owner = self._call(f"owners/{owner_id}", **options)
+        if owner:
+            return owner
         return None
 
     def get_owner_by_email(self, owner_email: str, **options):
@@ -65,8 +68,8 @@ class OwnersClient(BaseClient):
         Retrieve an owner by its email.
         """
         owners = self.get_owners(method="GET", params={"email": owner_email}, **options)
-        if owners["results"]:
-            return owners["results"][0]
+        if owners:
+            return owners[0]
         return None
 
     def link_owner_to_company(self, owner_id, company_id):
